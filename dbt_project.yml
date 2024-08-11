@@ -1,13 +1,11 @@
 config-version: 2
 
-name: "jaffle_shop"
-version: "3.0.0"
+name: "brave_de_project"
+version: "1.0.0"
 require-dbt-version: ">=1.5.0"
 
-dbt-cloud:
-  project-id: 275557 # Put your project id here
 
-profile: default # Put your profile here
+profile: my-snowflake-db # Put your profile here
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -25,12 +23,15 @@ vars:
   "dbt_date:time_zone": "America/Los_Angeles"
 
 seeds:
-  jaffle_shop:
+  brave_data:
     +schema: raw
 
 models:
-  jaffle_shop:
+  brave_data:
+    raw:
+      +materialized: table
     staging:
       +materialized: view
     marts:
       +materialized: table
+
