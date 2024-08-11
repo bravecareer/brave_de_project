@@ -1,8 +1,26 @@
-[0m04:41:23  Running with dbt=1.8.5
-[0m04:41:23  Registered adapter: snowflake=1.8.3
-[0m04:41:23  Unable to do partial parsing because a project config has changed
-[0m04:41:23  Encountered an error:
-Parsing Error
-  Error reading brave_de_project: staging/jaffle_shop/stg_jaffle_shop__orders.yml - Runtime Error
-    unacceptable character #x001b: control characters are not allowed
-      in "<unicode string>", position 0
+# Generate code by:
+# dbt --quiet run-operation generate_source --args '{"schema_name": "project_market_risk", "database_name": "brave_database", "table_names": ["aircanada_cad"], "generate_columns": true, "include_data_types": true}' > models/raw_data/aircanada.yml
+
+version: 2
+
+sources:
+  - name: project_market_risk
+    database: brave_database
+    tables:
+      - name: aircanada_cad
+        columns:
+          - name: date
+            data_type: date
+          - name: open
+            data_type: number
+          - name: high
+            data_type: number
+          - name: low
+            data_type: number
+          - name: close
+            data_type: number
+          - name: adj_close
+            data_type: number
+          - name: volume
+            data_type: number
+

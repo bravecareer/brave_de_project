@@ -8,5 +8,7 @@ packages:
   - package: Montreal-Analytics/snowflake_utils
     version: 0.6.3
   - package: dbt-labs/codegen
-    version: 0.12.0
-sha1_hash: a65141e7188e674c00f6cb44a220660a26955f2a
+    version: 0.12.1
+  - package: data-mie/dbt_profiler
+    version: 0.8.1
+sha1_hash: 8e66da55f0ec10cb742d09c3e420aa40aa85c111
