@@ -1,0 +1,8 @@
+[0m04:41:23  Running with dbt=1.8.5
+[0m04:41:23  Registered adapter: snowflake=1.8.3
+[0m04:41:23  Unable to do partial parsing because a project config has changed
+[0m04:41:23  Encountered an error:
+Parsing Error
+  Error reading brave_de_project: staging/jaffle_shop/stg_jaffle_shop__orders.yml - Runtime Error
+    unacceptable character #x001b: control characters are not allowed
+      in "<unicode string>", position 0

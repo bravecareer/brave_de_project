@@ -1,2 +1,0 @@
-[0m04:27:13  Encountered an error while running operation: Compilation Error
-  macro 'dbt_macro__generate_source' takes no keyword argument 'schema_name:PROJECT_MARKET_RISK'
