@@ -23,12 +23,12 @@ vars:
   "dbt_date:time_zone": "America/Los_Angeles"
 
 seeds:
-  brave_data:
+  brave_de_project:
     +schema: raw
 
 models:
-  brave_data:
-    raw:
+  brave_de_project:
+    raw_data:
       +materialized: table
     staging:
       +materialized: view
