@@ -17,6 +17,6 @@ customer_orders_summary as (
     from customers
     group by 1
 
-),
+)
 
 select * from customer_orders_summary
