@@ -1,6 +1,6 @@
 config-version: 2
 
-name: "brave_de_project"
+name: brave_de_project
 version: "1.0.0"
 require-dbt-version: ">=1.5.0"
 
