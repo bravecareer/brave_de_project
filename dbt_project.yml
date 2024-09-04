@@ -1,11 +1,11 @@
 config-version: 2
 
-name: brave_de_project
+name: "brave_de_project"
 version: "1.0.0"
 require-dbt-version: ">=1.5.0"
 
 
-profile: brave_de_project # Put your profile here
+profile: "brave_de_project" # Put your profile here
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -29,7 +29,7 @@ seeds:
 models:
   brave_de_project:
     database: BRAVE_DATABASE
-    schema: DE_PROJECT
+    schema: PROJECT_TEST
     raw_data:
       +materialized: table
     staging:
