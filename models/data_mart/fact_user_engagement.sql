@@ -42,8 +42,8 @@ final AS (
         uj.session_id,
         uj.timestamp
     FROM user_journey uj
-    JOIN valid_users vu ON uj.user_id = vu.user_id
-    JOIN valid_products vp ON uj.product_id = vp.product_id
+    LEFT JOIN valid_users vu ON uj.user_id = vu.user_id
+    LEFT JOIN valid_products vp ON uj.product_id = vp.product_id
 )
 
 SELECT * FROM final

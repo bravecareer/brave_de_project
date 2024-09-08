@@ -26,9 +26,7 @@ transaction_data AS (
         uj.session_id,
         uj.cart_id
     FROM user_journey uj
-    JOIN {{ source('de_project', 'user_data') }} ud
-      ON uj.user_id = ud.user_id
-    JOIN {{ source('de_project', 'product_data') }} p
+    LEFT JOIN {{ source('de_project', 'product_data') }} p
       ON uj.product_id = p.product_id
     GROUP BY uj.user_id, uj.product_id, uj.timestamp, uj.session_id, uj.cart_id
 )
