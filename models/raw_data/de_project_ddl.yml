@@ -99,14 +99,14 @@ sources:
           - name: loyalty_points_balance
             data_type: varchar
 
-      - name: user_journey_data
+      - name: user_journey
         columns:
           - name: search_event_id
             data_type: varchar
           - name: timestamp
-            data_type: varchar
+            data_type: timestamp_ntz
           - name: collector_tstamp
-            data_type: varchar
+            data_type: timestamp_ntz
           - name: app_id
             data_type: varchar
           - name: has_qv
@@ -118,8 +118,6 @@ sources:
           - name: has_purchase
             data_type: boolean
           - name: impressions_with_attributions
-            data_type: varchar
-          - name: journey_id
             data_type: varchar
           - name: cart_id
             data_type: varchar
@@ -136,8 +134,6 @@ sources:
           - name: search_terms_type
             data_type: varchar
           - name: search_type
-            data_type: varchar
-          - name: typed_search_terms
             data_type: varchar
           - name: aes_hash
             data_type: varchar
