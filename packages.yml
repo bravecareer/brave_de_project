@@ -11,3 +11,4 @@ packages:
     version: 0.12.1
   - package: data-mie/dbt_profiler
     version: 0.8.1
+
