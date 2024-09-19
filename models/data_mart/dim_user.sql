@@ -9,7 +9,7 @@ WITH user_data AS (
        u.user_id,
        u.first_name,
        u.last_name,
-       u.email,
+       CASE WHEN u.email not like '%_@__%.__%' THEN NULL ELSE u.email END AS email,
        u.signup_date,
        u.preferred_language,
        u.dob,
