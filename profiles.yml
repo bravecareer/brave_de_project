@@ -4,16 +4,16 @@ brave_de_project:
   outputs:
     dev:
       type: snowflake
-      account: QDLMHKH-FM67721
+      account: pq32479.ca-central-1.aws
 
       # User/password auth
-      user: USER
-      password: PSWD
+      user: BRAVE_LEARNER_OLUREMI_M
+      password: Lovely@5050
 
       role: PROJECT_LEARNER
       database: BRAVE_DATABASE
       warehouse: BRAVE_WAREHOUSE
-      schema: PROJECT_TEST
+      schema: DE_PROJECT
       threads: 1
       client_session_keep_alive: False
       query_tag: dbt
