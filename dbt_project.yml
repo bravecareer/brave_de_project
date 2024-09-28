@@ -32,9 +32,7 @@ models:
     schema: DE_PROJECT
     raw_data:
       +materialized: table
-    staging:
-      +materialized: view
-    marts:
+    data_mart:
       +materialized: table
   +copy_grants: true
 

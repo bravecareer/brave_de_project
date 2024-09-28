@@ -10,7 +10,7 @@ brave_de_project:
       user: BRAVE_LEARNER_OLUREMI_M
       password: Lovely@5050
 
-      role: PROJECT_LEARNER
+      role: YOURROLE
       database: BRAVE_DATABASE
       warehouse: BRAVE_WAREHOUSE
       schema: DE_PROJECT
