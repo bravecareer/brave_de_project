@@ -10,10 +10,10 @@ brave_de_project:
       user: BRAVE_LEARNER_OLUREMI_M
       password: Lovely@5050
 
-      role: YOURROLE
+      role: PROJECT_LEARNER_WRITE
       database: BRAVE_DATABASE
       warehouse: BRAVE_WAREHOUSE
-      schema: DE_PROJECT
+      schema: PROJECT_TEST
       threads: 1
       client_session_keep_alive: False
       query_tag: dbt
