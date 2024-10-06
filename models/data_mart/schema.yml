@@ -1,8 +1,8 @@
 version: 2
 
 models:
-  - name: fact_user_engagement  # Replace with your actual model name
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: fact_user_engagement_om  # Replace with your actual model name
+    description: "fact_user_engagement_om on user_id, product_id, serach_event_id, timestamp level"
     columns:
       - name: user_id
         description: "Unique identifier for the user"
