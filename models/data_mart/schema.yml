@@ -1,24 +1,24 @@
 version: 2
 
 models:
-  - name: fact_user_engagement  # Replace with your actual model name
+  - name: fact_user_engagement_arsen_c  # Replace with your actual model name
     description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
     columns:
       - name: user_id
         description: "Unique identifier for the user"
-        tests:
+        data_tests:
           - not_null
       - name: product_id
         description: "Unique identifier for the product"
-        tests:
+        data_tests:
           - not_null
       - name: search_event_id
         description: "Unique identifier for the search event"
-        tests:
+        data_tests:
           - not_null
       - name: timestamp
         description: "Timestamp of the event"
-        tests:
+        data_tests:
           - not_null
       - name: has_qv
         description: "Boolean flag indicating whether the user has viewed the product"
@@ -30,5 +30,5 @@ models:
         description: "Boolean flag indicating whether the user has made a purchase"
       - name: session_id
         description: "Session identifier for the user interaction"
-        tests:
+        data_tests:
           - not_null
