@@ -1,5 +1,5 @@
 {{ config(
-   materialized='incremental',
+   materialized='table',
    unique_key='product_id'
 ) }}
 
@@ -7,6 +7,7 @@
 WITH product_data AS (
    SELECT
        p.product_id,
+       p.price * 10 AS airflow, --tried running this model through airflow
        p.product_name,
        p.product_category,
        p.price,
