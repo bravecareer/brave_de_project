@@ -28,5 +28,4 @@ WITH inventory_data AS (
    FROM {{ source('de_project', 'inventory_data') }} i
 )
 
-
 SELECT * FROM inventory_data
