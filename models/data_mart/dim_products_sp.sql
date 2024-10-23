@@ -20,9 +20,9 @@ WITH product_data AS (
        p.weight_grams,
        p.discount_percentage
    FROM {{ ref( 'stg_products_sp') }} p
-   LEFT JOIN {{ ref('stg_inventory_sp') }} i 
-   ON p.product_id = i.product_id
-)
+   --LEFT JOIN {{ ref('stg_inventory_sp') }} i --Multiple supplier of the same product 
+   --ON p.product_id = i.product_id            --Concluding that suppliers in inventory are
+)                                              -- different from suppliers in product
 
 
 SELECT * FROM product_data

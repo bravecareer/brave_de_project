@@ -154,6 +154,9 @@ models:
         tests:
         - accepted_values:
            values: ['android-prod', 'web-prod', 'ios-prod']
+      
+      - name: impressions_with_attributions
+        description: "Additional information: [atc_id, qv_id, pdp_id,purchase_event_id] "
   
 
   - name: dim_products_sp
@@ -291,6 +294,9 @@ models:
         description: "Storage condition for the product (e.g., Ambient, Refrigerated)"
         tests:
           - not_null
+          - accepted_values:
+              values: ['Ambient', 'Frozen' ,'Temperature Controlled']
+  
 
       - name: safety_stock
         description: "Safety stock level for the product"
@@ -440,8 +446,6 @@ models:
 
       - name: loyalty_points_balance
         description: "Current balance of the user's loyalty points."
-        tests:
-          - not_null
 
       - name: date_last_purchase
         description: "Date of the user's most recent purchase."

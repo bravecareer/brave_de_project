@@ -15,6 +15,7 @@ WITH search_event_data AS (
        se.timestamp,
        se.device_class,
        se.app_id,
+       se.impressions_with_attributions
    FROM {{ ref('stg_userjourney_sp') }} se
    WHERE se.search_event_id IS NOT NULL
 )
