@@ -35,4 +35,3 @@ models:
     data_mart:
       +materialized: table
   +copy_grants: true
-

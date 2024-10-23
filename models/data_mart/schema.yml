@@ -1,34 +1,262 @@
 version: 2
 
 models:
-  - name: fact_user_engagement  # Replace with your actual model name
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: dim_inventory_michael_w
+    description: "Dimension table for inventory management"
+    columns:
+      - name: inventory_id
+        description: "Unique identifier for the inventory"
+        data_tests:
+          - not_null
+          - unique
+      - name: reorder_level
+        description: "Lowest acceptable level for inventory replenishment"
+      - name: product_id
+        description: "Unique identifier for the product"
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_product_michael_w')
+              field: product_id
+      - name: warehouse_id
+        description: "Unique identifier for the warehouse"
+        data_tests:
+          - not_null
+      - name: rating
+      - name: stock_level
+        description: "Current stock for the product in the warehouse"
+        data_tests:
+          - not_null      
+      - name: sales_volume
+        description: "Amount of sales for the product from the warehouse"
+      - name: restock_date
+        description: "Date that inventory was restocked"
+      - name: weight
+        description: "Total weight for the inventory"
+      - name: supplier_id
+        description: "Unique identifier for the inventory supplier"
+      - name: discounts
+      - name: storage_condition
+        description: "Temperature condition for storage"
+        data_tests:
+          - accepted_values:
+              values: ['Ambient', 'Frozen', 'Temperature Controlled']
+      - name: safety_stock
+        description: "Amount of safety stock as emergency stash"
+      - name: inventory_status
+        description: "Availability of the product in the warehouse"
+        data_tests:
+          - accepted_values:
+              values: ['backordered', 'in-stock']
+      - name: average_monthly_demand
+        description: "Average demand of the product for the warehouse per month"
+      - name: last_audit_datetime
+        description: "Last time that the stock was audited"
+      - name: last_restock_date
+        description: "Restock date before the most recent restock date"
+      - name: next_restock_date
+        description: "Estimated date for the next restock"
+
+  - name: dim_product_michael_w
+    description: "Dimension table for product management"
+    columns:
+      - name: product_id
+        description: "Unique identifier for the product"
+        data_tests:
+          - not_null
+          - unique
+      - name: product_name
+        description: "Name of the product"
+        data_tests:
+          - not_null
+          - unique
+      - name: product_category
+        description: "Category of the product"
+        data_tests:
+          - accepted_values:
+              values: ['Bakery', 'Beverages', 'Dairy', 'Frozen Foods', 'Fruits', 'Snacks', 'Vegetables']
+      - name: price
+        description: "Unit price of the product"
+      - name: supplier_id
+        description: "Unique identifier for the product supplier"
+      - name: product_color
+        description: "Colour of the product"
+      - name: manufacturing_date
+        description: "Manufacturing date of the product"
+      - name: expiration_date
+        description: "Expiration date of the product"
+      - name: warranty_period_in_month
+        description: "Warranty period of the product (in month)"
+      - name: rating
+        description: "User rating of the product"
+      - name: weight_grams
+        description: "Weight of the product (in gram)"
+      - name: discount_percentage
+        description: "Discount percentage of the product price"
+
+  - name: dim_user_michael_w
+    description: "Dimension table for user profile"
     columns:
       - name: user_id
         description: "Unique identifier for the user"
-        tests:
+        data_tests:
           - not_null
-      - name: product_id
-        description: "Unique identifier for the product"
-        tests:
-          - not_null
+          - unique
+      - name: first_name
+        description: "First name of the user"
+      - name: last_name
+        description: "Last name of the user"
+      - name: email
+        description: "Email of the user"
+      - name: signup_date
+        description: "The date that user signed up for the service"
+      - name: preferred_language
+        description: "Preferred language of the user"
+      - name: expiration_date
+        description: "Expiration date of the product"
+      - name: warranty_period_in_month
+        description: "Warranty period of the product (in month)"
+      - name: dob
+        description: "Date of birth of the user"
+      - name: marketing_opt_in
+        description: "Whether the user has opted in for marketing promotion"
+        data_tests:
+          - accepted_values:
+              values: ['False', 'True']
+      - name: account_status
+        description: "Account status of the user"
+        data_tests:
+          - accepted_values:
+              values: ['active', 'inactive', 'suspended']
+      - name: loyalty_points_balance
+        description: "Balance of loyalty points for the user"
+
+  - name: dim_search_event_michael_w
+    description: "Dimension table for search event"
+    columns:
       - name: search_event_id
         description: "Unique identifier for the search event"
-        tests:
+        data_tests:
           - not_null
+          - unique
       - name: timestamp
-        description: "Timestamp of the event"
-        tests:
+        description: "Time of the search event"
+        data_tests:
           - not_null
-      - name: has_qv
-        description: "Boolean flag indicating whether the user has viewed the product"
+      - name: app_id
+        description: "The application used for search event"
+        data_tests:
+          - accepted_values:
+              values: ['android-prod', 'ios-prod', 'web-prod']
+      - name: email
+        description: "Email of the user"
       - name: has_pdp
-        description: "Boolean flag indicating whether the user has viewed the product detail page"
+        description: "Whether the search event includes looking into product detail page"
+        data_tests:
+          - accepted_values:
+              values: [FALSE, TRUE]
       - name: has_atc
-        description: "Boolean flag indicating whether the user has added to cart"
+        description: "Whether the search event includes adding item to cart"
+        data_tests:
+          - accepted_values:
+              values: [FALSE, TRUE]
       - name: has_purchase
-        description: "Boolean flag indicating whether the user has made a purchase"
-      - name: session_id
-        description: "Session identifier for the user interaction"
-        tests:
+        description: "Whether the search event includes purchase"
+        data_tests:
+          - accepted_values:
+              values: [FALSE, TRUE]
+      - name: impressions_with_attributions
+      - name: search_results
+      - name: search_terms
+        description: "Term searched in the event"
+      - name: search_feature
+        description: "The way of how search is done"
+        data_tests:
+          - accepted_values:
+              values: ['alternate', 'multi-search', 'organic']
+      - name: search_terms_type
+        data_tests:
+          - accepted_values:
+              values: ['manual-search', 'type-ahead']
+      - name: search_type
+        data_tests:
+          - accepted_values:
+              values: ['product', 'product:grocery']
+      - name: login_status
+        description: "Whether the user has logged in while searching"
+      - name: user_id
+        description: "Unique identifier for the search event"
+        data_tests:
+          - relationships:
+              to: ref('dim_user_michael_w')
+              field: user_id
+      - name: registration_status
+        description: "Whether the user has registered while searching"
+        data_tests:
+          - accepted_values:
+              values: ['registered', 'unknown']
+      - name: banner
+        description: "Ad provider of the search event"
+      - name: fulfillment_type
+        description: "The item delivery method"
+        data_tests:
+          - accepted_values:
+              values: ['courier', 'delivery', 'pickup']
+      - name: selected_store_id
+        description: "Store of the search event"
+      - name: selected_timeslot_date
+        description: "Selected date of item fulfillment"
+      - name: selected_timeslot_time
+        description: "Selected timeslot on the day of item fulfillment"
+      - name: device_class
+        description: "Device used in the search event"
+        data_tests:
+          - accepted_values:
+              values: ['Desktop', 'Mobile']
+      - name: br_viewwidth
+      - name: br_viewheight
+      - name: dvce_screenwidth
+      - name: dvce_screenheight
+      - name: doc_width
+      - name: doc_height
+      - name: mkt_medium
+        description: "Medium of marketing in the search event"
+        data_tests:
+          - accepted_values:
+              values: ['display', 'email', 'paid search', 'social']
+      - name: mkt_source
+        description: "Source of marketing in the search event"
+      - name: mkt_content
+        description: "Content type of marketing in the search event"
+        data_tests:
+          - accepted_values:
+              values: ['demo', 'product_ad', 'webinar', 'whitepaper']
+      - name: mkt_campaign
+        description: "Campaign type of marketing in the search event"
+        data_tests:
+          - accepted_values:
+              values: ['black_friday', 'new_user', 'spring_sale', 'summer_promo']
+      - name: page_language
+        description: "Language of the search page"      
+      - name: geo_country
+        description: "Country of the search event"      
+      - name: geo_region
+        description: "Region of the search event"
+      - name: geo_city
+        description: "City of the search event"
+      - name: geo_zipcode
+        description: "Zipcode of the search event"
+      - name: geo_latitude
+        description: "Latitude of the search event"
+      - name: geo_longitude
+        description: "Longitude of the search event"
+      - name: geo_timezone
+        description: "Timezone of the search event"
+      - name: search_model
+      - name: product_id
+        description: "Unique identifier for the product"
+        data_tests:
           - not_null
+          - relationships:
+              to: ref('dim_product_michael_w')
+              field: product_id
