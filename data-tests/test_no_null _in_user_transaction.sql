@@ -4,7 +4,7 @@ SELECT
   product_id,
   search_event_id,
   timestamp
-FROM {{ ref('fact_user_engagement') }}
+FROM {{ ref('fact_user_transaction_sp') }}
 WHERE user_id IS NULL
    OR product_id IS NULL
    OR search_event_id IS NULL

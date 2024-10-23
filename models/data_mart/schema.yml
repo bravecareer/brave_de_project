@@ -1,0 +1,459 @@
+version: 2
+
+models:
+  - name: fact_user_engagement_sp 
+    description: "fact user engagement on search_event_id"
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user"
+        tests:
+          - not_null
+      - name: product_id
+        description: "Unique identifier for the product"
+        tests:
+          - not_null
+      - name: search_event_id
+        description: "Unique identifier for the search event"
+        tests:
+          - not_null
+          - unique
+      - name: timestamp
+        description: "Timestamp of the event"
+        tests:
+          - not_null
+      - name: has_qv
+        description: "Boolean flag indicating whether the user has viewed the product"
+      - name: has_pdp
+        description: "Boolean flag indicating whether the user has viewed the product detail page"
+      - name: has_atc
+        description: "Boolean flag indicating whether the user has added to cart"
+      - name: has_purchase
+        description: "Boolean flag indicating whether the user has made a purchase"
+      - name: session_id
+        description: "Session identifier for the user interaction"
+        tests:
+          - not_null
+  - name: fact_user_transaction_sp 
+    description: "fact user transaction on search_event_id"
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user"
+        tests:
+          - not_null
+      - name: product_id
+        description: "Unique identifier for the product"
+        tests:
+          - not_null
+      - name: timestamp
+        description: "Timestamp of the event"
+        tests:
+          - not_null
+      - name: search_event_id
+        description: "Unique identifier for the search event"
+        tests:
+          - not_null
+          - unique
+      - name: session_id
+        description: "Session identifier for the user interaction"
+        tests:
+          - not_null
+      - name: cart_id
+        description: "Unique identifier for the shopping cart"
+        tests:
+          - not_null
+      - name: has_purchase
+        description: "Boolean flag indicating whether the user has purchased the product"
+      - name: quantity_sold
+        description: "Total purchase events"
+      - name: total_amoount
+        description: "Summing the price of purchased products"
+
+  - name: dim_users_sp
+    description: "A table containing active users' data"
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user"
+        tests:
+          - unique
+          - not_null
+
+      - name: first_name
+        description: "First name of the user"
+        
+
+      - name: last_name
+        description: "Last name of the user"
+        
+
+      - name: email
+        description: "Validated email address of the user"
+
+      - name: signup_date
+        description: "Date when the user signed up"
+        
+
+      - name: preferred_language
+        description: "User's preferred language"
+
+      - name: dob
+        description: "Date of birth of the user"
+
+      - name: marketing_opt_in
+        description: "Indicates if the user has opted in for marketing"
+
+      - name: account_status
+        description: "The status of the user account (e.g., active)"
+        tests:
+          - accepted_values:
+              values: ['active']
+
+      - name: loyalty_points_balance
+        description: "Loyalty points balance of the user"
+         
+ 
+  - name: dim_search_event_sp
+    description: "A table capturing user search events with relevant metadata."
+    columns:
+      - name: search_event_id
+        description: "Unique identifier for the search event"
+        tests:
+          - unique
+          - not_null
+
+      - name: session_id
+        description: "Identifier for the user session during which the search event took place"
+        tests:
+          - not_null
+
+      - name: cart_id
+        description: "Identifier for the shopping cart associated with the search event"
+      
+      - name: search_terms
+        description: "The search keywords entered by the user"
+      
+      - name: search_results
+        description: "Number of search results returned for the search terms"
+        
+      - name: search_type
+        description: "The type of search, e.g., product or category search"
+
+      - name: timestamp
+        description: "Timestamp when the search event occurred"
+        tests:
+          - not_null
+
+      - name: device_class
+        description: "Type of device used for the search, e.g., mobile or desktop"
+        tests:
+        - accepted_values:
+           values: ['Mobile', 'Desktop']
+           quote: true
+
+      - name: app_id
+        description: "Identifier of the application used for the search event"
+        tests:
+        - accepted_values:
+           values: ['android-prod', 'web-prod', 'ios-prod']
+  
+
+  - name: dim_products_sp
+    description: "A table capturing detailed product data"
+    columns:
+      - name: product_id
+        description: "Unique identifier for the product"
+        tests:
+          - unique
+          - not_null
+
+      - name: supplier_id
+        description: "Identifier for the supplier of the product"
+        tests:
+          - not_null
+
+      - name: product_name
+        description: "Name of the product"
+        tests:
+          - not_null
+
+      - name: product_category
+        description: "Category to which the product belongs"
+        tests:
+          - not_null
+
+      - name: price
+        description: "Price of the product"
+        tests:
+          - not_null
+          - accepted_range: 
+              min_value: 0
+
+      - name: product_color
+        description: "Color of the product"
+
+      - name: manufacturing_date
+        description: "Date when the product was manufactured"
+        tests:
+          - not_null
+
+      - name: expiration_date
+        description: "Expiration date for perishable products"
+
+      - name: warranty_period
+        description: "Duration of the product's warranty period, in months"
+
+      - name: product_rating
+        description: "Average user rating of the product"
+        tests:
+          - accepted_range:
+              min_value: 0
+              max_value: 5
+
+      - name: weight_grams
+        description: "Weight of the product in grams"
+        tests:
+          - not_null
+
+      - name: discount_percentage
+        description: "Discount percentage applied to the product"
+        tests:
+          - accepted_range:
+              min_value: 0
+              max_value: 100
+  
+  - name: dim_inventory_sp
+    description: "This table stores information about product inventory, restocking, and warehouse data."
+    columns:
+      - name: inventory_id
+        description: "Unique identifier for the inventory record"
+        tests:
+          - unique
+          - not_null
+
+      - name: reorder_level
+        description: "The level of stock at which a product should be reordered"
+        tests:
+          - not_null
+          - accepted_range:
+              min_value: 0
+
+      - name: product_id
+        description: "Unique identifier for the product"
+        tests:
+          - not_null
+
+      - name: quantity_in_stock
+        description: "Current quantity of the product in stock"
+        tests:
+          - not_null
+          - accepted_range:
+              min_value: 0
+
+      - name: warehouse_id
+        description: "Identifier for the warehouse where the product is stored"
+        tests:
+          - not_null
+
+      - name: rating
+        description: "Product rating, rounded to 2 decimal places"
+        tests:
+          - accepted_range:
+              min_value: 0
+              max_value: 5
+
+      - name: sales_volume
+        description: "Total sales volume for the product"
+        tests:
+          - not_null
+          - accepted_range:
+              min_value: 0
+
+      - name: restock_date
+        description: "Date when the product was last restocked"
+
+      - name: weight
+        description: "Weight of the product, rounded to 2 decimal places"
+        tests:
+          - not_null
+
+      - name: supplier_id
+        description: "Unique identifier for the supplier"
+        tests:
+          - not_null
+
+      - name: discounts
+        description: "Discount percentage applied to the product, rounded to 2 decimal places"
+        tests:
+          - accepted_range:
+              min_value: 0
+              max_value: 100
+
+      - name: storage_condition
+        description: "Storage condition for the product (e.g., Ambient, Refrigerated)"
+        tests:
+          - not_null
+
+      - name: safety_stock
+        description: "Safety stock level for the product"
+        tests:
+          - not_null
+          - accepted_range:
+              min_value: 0
+
+      - name: inventory_status
+        description: "Current status of the inventory (e.g., in-stock, out-of-stock)"
+        tests:
+          - not_null
+
+      - name: average_monthly_demand
+        description: "Average monthly demand for the product"
+        tests:
+          - accepted_range:
+              min_value: 0
+
+      - name: last_audit_date
+        description: "Date when the inventory was last audited"
+
+      - name: last_restock_date
+        description: "Date when the product was last restocked"
+
+      - name: next_restock_date
+        description: "Estimated date for the next restock"
+    
+  - name: dim_campaign_effectiveness_sp
+    description: "This table captures marketing-related search event data, including geographical and campaign information."
+    columns:
+      - name: search_event_id
+        description: "Unique identifier for each search event"
+        tests:
+          - unique
+          - not_null
+
+      - name: user_id
+        description: "Unique identifier for the user"
+        tests:
+          - not_null
+
+      - name: product_id
+        description: "Unique identifier for the product being searched"
+        tests:
+          - not_null
+
+      - name: timestamp
+        description: "Timestamp when the search event occurred"
+
+      - name: mkt_campaign
+        description: "Marketing campaign associated with the search event"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['black_friday', 'summer_promo', 'new_user', 'spring_sale']
+
+      - name: mkt_source
+        description: "Source of the marketing campaign (e.g., Google, Facebook)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['facebook', 'google', 'linkedin', 'twitter']
+
+      - name: mkt_medium
+        description: "Medium used in the marketing campaign (e.g., email, social media)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['paid search', 'email', 'display', 'social']
+
+      - name: mkt_content
+        description: "Content details for the marketing campaign"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['webinar', 'product_ad', 'demo', 'whitepaper']
+
+      - name: geo_country
+        description: "Country from which the search event was made"
+        tests:
+          - not_null
+
+      - name: geo_region
+        description: "Region or state from which the search event was made"
+        tests:
+          - not_null
+
+      - name: geo_city
+        description: "City from which the search event was made"
+        tests:
+          - not_null
+
+      - name: geo_zipcode
+        description: "ZIP or postal code of the location from which the search event was made"
+        tests:
+          - not_null
+
+      - name: geo_latitude
+        description: "Latitude of the location of the search event"
+        tests:
+          - not_null
+
+      - name: geo_longitude
+        description: "Longitude of the location of the search event"
+        tests:
+          - not_null
+
+      - name: geo_timezone
+        description: "Timezone of the location of the search event"
+        tests:
+          - not_null
+
+      - name: has_purchase
+        description: "Indicates whether a purchase was made after the search event (true/false)"
+        tests:
+          - not_null
+
+      - name: has_pdp
+        description: "Indicates whether the user visited a product details page (true/false)"
+        tests:
+          - not_null
+
+      - name: has_atc
+        description: "Indicates whether the user added a product to the cart (true/false)"
+        tests:
+          - not_null
+
+  - name: dim_user_value_sp
+    description: "User Value table that aggregates user data of active users"
+    columns:
+      - name: user_id
+        description: "Unique identifier for each user."
+        tests:
+          - unique
+          - not_null
+
+      - name: total_orders
+        description: "Total number of purchases made by the user."
+        tests:
+          - not_null
+
+      - name: total_amount
+        description: "Total amount spent by the user."
+        tests:
+          - not_null
+
+      - name: loyalty_points_balance
+        description: "Current balance of the user's loyalty points."
+        tests:
+          - not_null
+
+      - name: date_last_purchase
+        description: "Date of the user's most recent purchase."
+        tests:
+          - not_null
+
+      - name: lifetime_offline_orders_count
+        description: "Total number of offline orders made by the user."
+        tests:
+          - not_null
+
+      - name: lifetime_online_orders_count
+        description: "Total number of online orders made by the user."
+        tests:
+          - not_null

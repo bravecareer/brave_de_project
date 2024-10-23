@@ -1,5 +1,5 @@
 {{ config(
-   materialized='incremental',
+   materialized='view',
    unique_key='product_id'
 ) }}
 

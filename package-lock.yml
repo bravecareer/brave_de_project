@@ -4,7 +4,7 @@ packages:
   - package: calogica/dbt_date
     version: 0.10.0
   - git: https://github.com/dbt-labs/dbt-audit-helper.git
-    revision: c0be07f84e61dd01517292a15a2c084af9c95f01
+    revision: 6499107b5960d7c6140a8a44345034e6eb7b336d
   - package: Montreal-Analytics/snowflake_utils
     version: 0.6.3
   - package: dbt-labs/codegen
