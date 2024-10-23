@@ -31,7 +31,7 @@ models:
     database: BRAVE_DATABASE
     schema: DE_PROJECT
     raw_data:
-      +materialized: table
+      +materialized: view
     data_mart:
       +materialized: table
   +copy_grants: true
