@@ -1,26 +1,96 @@
 unit_tests:
-  - name: test_is_valid_timestamp
-    description: "Check my test_is_valid_timestamp logic captures all known edge cases - timestamp."
-    model: fact_user_engagement
+  - name: test_is_valid_ts_user_journey
+    description: "fix timestamp"
+    model: stg_user_journey_qu
     given:
       - input: source('de_project', 'user_journey') 
         rows:
-          - {user_id: 1, product_id: 100, timestamp: '2024-02-17 18:41:07'}
-          - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
-          - {user_id: 999, product_id: 999, timestamp: '2024-02-17 18:42:07 UTC'}  
-      - input: source('de_project', 'user_data')
-        rows:
-          - {user_id: 1}
-          - {user_id: 2}
-      - input: source('de_project', 'product_data')
-        rows:
-          - {product_id: 100}
-          - {product_id: 101}
+          - {timestamp: '2024-02-17 18:41:07'}
+          - {timestamp: '2024-02-17 18:42:07 UTC'}  
     expect:
       rows:
-        - {user_id: 1, product_id: 100, timestamp: '2024-02-17 18:41:07'}
-        - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
-        - {user_id: 999, product_id: 999, timestamp: null}
+        - { search_timestamp: '2024-02-17 18:41:07'}
+        - { search_timestamp: null}
 
+  - name: test_reformate_user_journey
+    description: "verify reformatted data"
+    model: stg_user_journey_qu
+    given:
+      - input: source('de_project', 'user_journey')
+        rows:
+          - {app_id: 'andriod-prod', date_last_login: '2024-10-03', product_id: 76456 } 
+          - {app_id: 'ios', date_last_login: null, product_id: 'prod-02928'}     
+    expect:
+      rows:
+        - {app_id: 'andriod', date_last_login: 'datetime.date(2024,10,03)', product_id: 76456}
+        - {app_id: 'ios', date_last_login: null, product_id: 2928}
 
+  - name: test_reformate_user_data_dates
+    description: "verify reformatted dates fields"
+    model: stg_user_data_qu
+    given:
+      - input: source('de_project', 'user_data')
+        rows:
+          - {signup_date: '2024-10-03', dob: '2000-10-03' } 
+          - {signup_date: null, dob: null }      
+    expect:
+      rows:
+        - {signup_date: 'datetime.date(2024, 10, 3)', dob: 'datetime.date(2000, 10, 3)' } 
+        - {signup_date: NULL, dob: NULL }       
 
+  - name: test_reformate_user_data_email
+    description: "verify reformatted email"
+    model: stg_user_data_qu
+    given:
+      - input: source('de_project', 'user_data')
+        rows:
+          - {email: 'gtgtg@gmail.com' } 
+          - {email: 'abcdefg@hi@klmn' }      
+    expect:
+      rows:
+        - {email: 'gtgtg@gmail.com' } 
+        - {email: null }   
+
+  - name: test_reformate_user_data_loyalty_points
+    description: "verify correct format for points"
+    model: stg_user_data_qu
+    given:
+      - input: source('de_project', 'user_data')
+        rows:
+          - {loyalty_points_balance: '1234.0' } 
+          - {loyalty_points_balance: null }       
+    expect:
+      rows:
+        - {loyalty_points_balance: 1234 } 
+        - {loyalty_points_balance: 0 } 
+
+  - name: test_reformate_product_data_warranty
+    description: "convert warrenty period from varchar to number"
+    model: stg_product_data_qu
+    given:
+      - input: source('de_project', 'product_data')
+        rows:
+          - {warranty_period: '22 months' } 
+          - {warranty_period: 'm 24' }
+          - {warranty_period: null }  
+          - {warranty_period: '' }
+              
+    expect:
+      rows:
+        - {warranty_period_months: 22 } 
+        - {warranty_period_months: 24 }
+        - {warranty_period_months: 0 }
+        - {warranty_period_months: 0 }
+
+  - name: test_reformate_inventory_data
+    description: "verify correct format for numbers"
+    model: stg_inventory_data_qu
+    given:
+      - input: source('de_project', 'inventory_data')
+        rows:
+          - {rating: '4,56', weight: '21,94744', discounts: '25,0333' } 
+          - {rating: '4', weight: null, discounts: '' } 
+    expect:
+      rows:
+        - {rating: 4.6, prod_weight: 21.95, discounts: 25.03 }
+        - {rating: 4.0, prod_weight: 0, discounts: 0 }

@@ -1,34 +1,408 @@
 version: 2
 
 models:
-  - name: fact_user_engagement  # Replace with your actual model name
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: dim_campaign_qu
+    description: "Dimensional model for marketing campaign"
+    columns:
+      - name: campaign_id
+        data_type: number
+        description: "unique identifier for the campaign"
+        tests:
+          - not_null
+          - unique
+
+      - name: campaign_name
+        data_type: varchar
+        description: "Name of the campaign"
+        tests:
+          - not_null
+
+      - name: medium
+        data_type: varchar
+        description: "Name of the medium used for marketing"
+        tests:
+          - not_null
+
+      - name: source
+        data_type: varchar
+        description: "Name of the online source that was used for marketing"
+        tests:
+          - not_null
+
+      - name: content
+        data_type: varchar
+        description: "Name of the content type used for marketing"
+        tests:
+          - not_null
+
+  - name: dim_inventory_qu
+    description: "Dimensional model for the inventory management"
+    columns:
+      - name: inventory_id
+        data_type: number
+        description: "unique identifier for the inventory"
+        tests:
+          - not_null
+          - unique
+
+      - name: storage_condition
+        data_type: varchar
+        description: "Describe the condition of the environment in which the product was stored."
+
+      - name: inventory_status
+        data_type: varchar
+        description: "Show the product in the inventory is in-stock or backordered"
+        tests:
+          - accepted_values:
+              values: ['in-stock','backordered']
+
+      - name: last_audit_date
+        data_type: date
+        description: "The last audit date of the inventory"
+
+      - name: last_restock_date
+        data_type: date
+        description: "The last date of the restocking the product"
+
+      - name: restock_date
+        data_type: date
+        description: "The date of the restocking"
+
+      - name: next_restock_date
+        data_type: date
+        description: "The date of when next restocking will happen"
+
+  - name: dim_product_qu
+    description: "Dimensional model for the product"
+    columns:
+      - name: product_id
+        data_type: number
+        description: "Unique product id to identify the product"
+        tests:
+          - not_null
+          - unique
+
+      - name: product_name
+        data_type: varchar
+        description: "The name of the product"
+        tests:
+          - not_null
+
+      - name: product_category
+        data_type: varchar
+        description: "The category whihc the product belongs to"
+
+      - name: product_color
+        data_type: varchar
+        description: "Color of the product"
+
+      - name: supplier_id
+        data_type: varchar
+        description: "The id of the supplier"
+        tests:
+          - not_null
+
+      - name: manufacturing_date
+        data_type: date
+        description: "The manufacturing date of the product"
+
+      - name: expiration_date
+        data_type: date
+        description: "The expiration date of the product"
+
+      - name: warranty_period_months
+        data_type: number
+        description: "The warrenty duration, given in number of months"
+
+  - name: dim_search_event_qu
+    description: "Dimensional model for the product search event"
+    columns:
+      - name: search_model
+        data_type: varchar
+        description: "The type search model used for producing search results"
+        tests:
+          - not_null
+          
+      - name: search_terms
+        data_type: varchar
+        description: "The terms used by the user to search the product."
+
+      - name: search_results_count
+        data_type: number
+        description: "Number of the search results produced"
+
+      - name: search_type
+        data_type: varchar
+        description: ""
+
+      - name: search_feature
+        data_type: varchar
+        description: "Describes the features of the search"
+
+      - name: search_terms_type
+        data_type: varchar
+        description: "Describe what kind of search user choose"
+        tests:
+          - accepted_values:
+              values: ['manual-search','type-ahead']
+
+
+      - name: search_timestamp
+        data_type: timestamp_ntz
+        description: "Timestamp for the search event"
+
+      - name: shopping_mode
+        data_type: varchar
+        description: "Describes shopping mode of the user"
+
+      - name: country
+        data_type: varchar
+        description: "Country of the search event"
+
+      - name: city
+        data_type: varchar
+        description: "city of the search event"
+
+      - name: search_event_id
+        data_type: varchar
+        description: "Unique identifier of the search event"
+        tests:
+          - not_null
+          - unique
+
+      - name: session_id
+        data_type: varchar
+        description: "Identifier of the session"
+        tests:
+          - not_null
+
+      - name: user_id
+        data_type: varchar
+        description: "Identifier of the user"
+        tests:
+          - not_null
+
+      - name: product_id
+        data_type: number
+        description: "Identifier for the product"
+        tests:
+          - not_null
+
+  - name: dim_user_qu
+    description: "Dimensional model for the user information"
     columns:
       - name: user_id
-        description: "Unique identifier for the user"
+        data_type: varchar
+        description: "Unique identifier of a user"
         tests:
           - not_null
+          - unique
+
+      - name: first_name
+        data_type: varchar
+        description: "First name of the user"
+
+      - name: last_name
+        data_type: varchar
+        description: "The last ame of the user"
+
+      - name: email
+        data_type: varchar
+        description: "registered email of the user"
+
+      - name: signup_date
+        data_type: date
+        description: "The date when the user signed up"
+
+      - name: preferred_language
+        data_type: varchar
+        description: "Preferred language of the user"
+
+      - name: dob
+        data_type: date
+        description: "Date of birth of the user"
+
+      - name: marketing_opt_in
+        data_type: boolean
+        description: "Did the user opted for marketing content"
+        tests:
+          - not_null
+
+      - name: account_status
+        data_type: varchar
+        description: "Show a user is active or not"
+        tests:
+          - accepted_values:
+              values: ['active','in-active', 'suspended']
+
+      - name: loyalty_points_balance
+        data_type: number
+        description: "The loyalty points user has earned"
+
+  - name: fact_campaign_effectiveness_qu
+    description: "Fact model for analyzing campaign effectiveness.
+     The model lists the number of product sold, viewed for particular user and campaign. "
+    columns:
+      - name: product_price
+        data_type: number
+        description: "The unit price of the product."
+        tests:
+          - not_null
+
+      - name: total_unit_sold
+        data_type: number
+        description: "Number of units bought by a particular user under particular campaign."
+
+      - name: total_atc
+        data_type: number
+        description: "Add to cart"
+
+      - name: total_qv
+        data_type: number
+        description: "quick view"
+
+      - name: total_pdp
+        data_type: number
+        description: "Number of view for product details page"
+
       - name: product_id
-        description: "Unique identifier for the product"
+        data_type: number
+        description: "Unique product identifier"
         tests:
           - not_null
+
+      - name: user_id
+        data_type: varchar
+        description: "Unique user identifier"
+        tests:
+          - not_null
+
+      - name: campaign_id
+        data_type: number
+        description: "Unique campaign identifier"
+        tests:
+          - not_null
+
+  - name: fact_inventory_management_qu
+    description: "Fact model table used for inventory management."
+    columns:
+      - name: inventory_id
+        data_type: number
+        description: "Unique identifier for inventory"
+        tests:
+          - not_null
+
+      - name: product_id
+        data_type: number
+        description: "Product identifier"
+        tests:
+          - not_null
+
+      - name: warehouse_id
+        data_type: number
+        description: "Warehouse identifier"
+        tests:
+          - not_null
+
+      - name: supplier_id
+        data_type: number
+        description: "Supplier identifier"
+        tests:
+          - not_null
+
+      - name: price
+        data_type: number
+        description: "Unit price of the product"
+
+      - name: stock_level
+        data_type: number
+        description: "Stock level of the product"
+
+      - name: reorder_level
+        data_type: number
+        description: "If the product level reach this level, it needs to reordered."
+
+      - name: quantity_in_stock
+        data_type: number
+        description: "Quantity of the product in stock"
+
+      - name: sales_volume
+        data_type: number
+        description: "sales volume"
+
+      - name: safety_stock
+        data_type: number
+        description: "Safety stock of the product"
+
+      - name: average_monthly_demand
+        data_type: number
+        description: "averge monthly demand of the product"
+
+      - name: rating
+        data_type: number
+        description: "Product rating"
+
+      - name: prod_weight
+        data_type: number
+        description: "Product weight"
+
+      - name: discounts
+        data_type: number
+        description: "Discount on the product price"
+
+  - name: fact_search_product_performance_qu
+    description: "Fact model for the analyzing product performance of a product and analyzing user engagement"
+    columns:
       - name: search_event_id
-        description: "Unique identifier for the search event"
+        data_type: varchar
+        description: "Unique event identifier"
         tests:
           - not_null
-      - name: timestamp
-        description: "Timestamp of the event"
+
+      - name: user_id
+        data_type: varchar
+        description: "User identifier"
         tests:
           - not_null
+
+      - name: product_id
+        data_type: number
+        description: "Product identifier"
+        tests:
+          - not_null
+
+      - name: price
+        data_type: number
+        description: "Product price"
+
+      - name: rating
+        data_type: number
+        description: "Product rating"
+
+      - name: sales_volume
+        data_type: number
+        description: "sales volume"
+
+      - name: discount_percentage
+        data_type: number
+        description: "Percentage discount on the product"
+
+      - name: weight_grams
+        data_type: number
+        description: "product weight"
+
       - name: has_qv
-        description: "Boolean flag indicating whether the user has viewed the product"
+        data_type: boolean
+        description: "whether the user has viewed the quick view of the product"
+
       - name: has_pdp
-        description: "Boolean flag indicating whether the user has viewed the product detail page"
+        data_type: boolean
+        description: "whether the user had viewed product details page"
+
       - name: has_atc
-        description: "Boolean flag indicating whether the user has added to cart"
+        data_type: boolean
+        description: "Whether the user added the product to cart"
+
       - name: has_purchase
-        description: "Boolean flag indicating whether the user has made a purchase"
-      - name: session_id
-        description: "Session identifier for the user interaction"
-        tests:
-          - not_null
+        data_type: boolean
+        description: "Whether the user purchased the product"
