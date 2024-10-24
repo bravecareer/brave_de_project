@@ -13,7 +13,7 @@ WITH inventory_data AS (
        i.warehouse_id,
        i.rating,
        i.stock_level,
-       i.sales_volume,
+       i.sales_volume, 
        i.restock_date,
        i.weight,
        i.supplier_id,

@@ -9,6 +9,7 @@ WITH search_event_data AS (
        se.search_event_id,
        se.session_id,
 --       se.journey_id,
+       se.product_id,  
        se.cart_id,
        se.search_terms,
        se.search_results_count AS search_results, -- Renaming column for clarity

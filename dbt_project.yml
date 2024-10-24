@@ -1,9 +1,7 @@
 config-version: 2
-
 name: "brave_de_project"
 version: "1.0.0"
 require-dbt-version: ">=1.5.0"
-
 profile: "brave_de_project"
 
 model-paths: ["models"]
@@ -12,7 +10,6 @@ test-paths: ["data-tests"]
 seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
-
 target-path: "target"
 clean-targets:
   - "target"
@@ -31,8 +28,8 @@ models:
     schema: PROJECT_TEST
     raw_data:
       +materialized: table
-    staging:   # Add the staging section here
-      +schema: staging   # Use 'staging' as the schema for staging models
+    staging:
+      +schema: staging
       +materialized: table
     data_mart:
       +materialized: table

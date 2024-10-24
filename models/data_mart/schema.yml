@@ -1,34 +1,123 @@
 version: 2
 
 models:
-  - name: fact_user_engagement_om  # Replace with your actual model name
-    description: "fact_user_engagement_om on user_id, product_id, serach_event_id, timestamp level"
+  - name: fact_search_effectiveness_om
+    description: "A model capturing search effectiveness metrics for user journeys."
     columns:
       - name: user_id
-        description: "Unique identifier for the user"
+        description: "Non-Null identifier for the user."
         tests:
+          - not_null
+      - name: search_event_id
+        description: "Unique identifier for the search event."
+        tests:
+          - not_null
+          - unique
+      - name: timestamp
+        description: "Timestamp of the search event."
+        tests:
+          - not_null
+      - name: product_id
+        description: "Unique identifier for the product involved in the search event."
+        tests:
+          - not_null
+      - name: has_qv
+        description: "Boolean flag indicating if the user viewed the quick view of the product."
+        tests:
+          - not_null
+      - name: has_pdp
+        description: "Boolean flag indicating if the user viewed the product detail page."
+        tests:
+          - not_null
+      - name: has_atc
+        description: "Boolean flag indicating if the user added the product to cart."
+        tests:
+          - not_null
+      - name: has_purchase
+        description: "Boolean flag indicating if the user purchased the product."
+        tests:
+          - not_null
+      - name: session_id
+        description: "Unique identifier for the session in which the search event took place."
+        tests:
+          - not_null
+
+  - name: fact_campaign_effectiveness_om
+    description: "Fact table that summarizes campaign performance metrics"
+    columns:
+      - name: campaign_id
+        description: "Unique identifier for the campaign"
+        data_tests:
+          - not_null
+          - unique
+      - name: total_views
+        description: "Total number of views the campaign received"
+        data_tests:
+          - not_null
+      - name: total_atc_events
+        description: "Total number of 'Add to Cart' events triggered by the campaign"
+        data_tests:
+          - not_null
+      - name: total_purchases
+        description: "Total number of purchases made as a result of the campaign"
+        data_tests:
+          - not_null
+
+  - name: fact_inventory_management_om
+    description: "Fact table for inventory management, including restock status"
+    columns:
+      - name: inventory_id
+        description: "Unique identifier for the inventory record"
+        tests:
+          - unique
           - not_null
       - name: product_id
         description: "Unique identifier for the product"
         tests:
           - not_null
-      - name: search_event_id
-        description: "Unique identifier for the search event"
+      - name: warehouse_id
+        description: "Unique identifier for the warehouse"
         tests:
           - not_null
-      - name: timestamp
-        description: "Timestamp of the event"
+      - name: restock_status
+        description: "Indicates if the product needs restocking or is on track"
         tests:
           - not_null
-      - name: has_qv
-        description: "Boolean flag indicating whether the user has viewed the product"
-      - name: has_pdp
-        description: "Boolean flag indicating whether the user has viewed the product detail page"
-      - name: has_atc
-        description: "Boolean flag indicating whether the user has added to cart"
-      - name: has_purchase
-        description: "Boolean flag indicating whether the user has made a purchase"
-      - name: session_id
-        description: "Session identifier for the user interaction"
+          - accepted_values:
+              values: ['Action Needed', 'On Track']
+    
+  - name: fact_product_performance_om
+    description: "Tracks product performance metrics including views, ATC events, purchases, pricing, and more."
+    columns:
+      - name: product_id
+        description: "Unique identifier for the product."
+        tests:
+          - unique
+          - not_null
+      - name: total_views
+        description: "Total number of views for the product."
         tests:
           - not_null
+      - name: total_atc_events
+        description: "Total number of 'Add to Cart' events for the product."
+        tests:
+          - not_null
+      - name: total_purchases
+        description: "Total number of purchases for the product."
+        tests:
+          - not_null
+      - name: price
+        description: "Latest price of the product."
+        tests: []
+      - name: rating
+        description: "Average rating of the product."
+        tests: []
+      - name: sales_volume
+        description: "Total sales volume for the product."
+        tests: []
+      - name: discount_percentage
+        description: "Discount applied to the product, if any."
+        tests: []
+      - name: weight_grams
+        description: "Weight of the product in grams."
+        tests: []

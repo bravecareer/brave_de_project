@@ -1,34 +1,41 @@
 {{ config(
-   materialized='incremental',
-   unique_key=['product_id', 'warehouse_id']
+    materialized='incremental',
+    unique_key=['inventory_id', 'product_id', 'warehouse_id']
 ) }}
 
 WITH inventory_data AS (
-   SELECT
-       i.product_id,
-       i.warehouse_id,
-       i.stock_level,
-       i.restock_date,
-       i.last_audit_date,
-       i.inventory_status,
-       i.safety_stock,
-       i.quantity_in_stock,
-       i.average_monthly_demand
-   FROM {{ source('de_project', 'inventory_data') }} i
-),
-
-inventory_summary AS (
-   SELECT
-      product_id,
-      warehouse_id,
-      MAX(stock_level) AS current_stock_level,
-      MAX(restock_date) AS next_restock_date,
-      MAX(inventory_status) AS latest_inventory_status,
-      SUM(quantity_in_stock) AS total_quantity_in_stock,
-      SUM(safety_stock) AS total_safety_stock,
-      AVG(average_monthly_demand) AS avg_monthly_demand
-   FROM inventory_data
-   GROUP BY product_id, warehouse_id
+    SELECT
+        i.inventory_id,
+        i.product_id,
+        i.warehouse_id,
+        i.supplier_id,
+        p.price,
+        i.stock_level,
+        i.reorder_level,
+        SUM(i.quantity_in_stock) AS quantity_in_stock,
+        SUM(i.sales_volume) AS sales_volume,
+        i.safety_stock,
+        i.average_monthly_demand,
+        p.rating,
+        p.weight_grams AS prod_weight,
+        i.discounts,
+        i.last_restock_date,
+        i.next_restock_date,
+        CASE
+            WHEN i.last_restock_date < CURRENT_DATE AND CURRENT_DATE < i.next_restock_date THEN 'On Track'
+            ELSE 'Action Needed'
+        END AS restock_status
+    FROM
+        brave_database.de_project.dim_inventory i
+    JOIN
+        brave_database.de_project.dim_product p
+    ON
+        i.product_id = p.product_id
+    GROUP BY
+        i.inventory_id, i.product_id, i.warehouse_id, i.supplier_id, p.price, i.stock_level, i.reorder_level, i.safety_stock, i.average_monthly_demand, p.rating, p.weight_grams, i.discounts, i.last_restock_date, i.next_restock_date
 )
 
-SELECT * FROM inventory_summary
+SELECT
+    *
+FROM
+    inventory_data
