@@ -29,7 +29,7 @@ product_performance_data AS (
        p.weight_grams,
        p.discount_percentage
    FROM user_journey uj
-   LEFT JOIN {{ source('de_project', 'product_data') }} p
+   INNER JOIN {{ source('de_project', 'product_data') }} p
      ON uj.product_id = p.product_id
 )
 
