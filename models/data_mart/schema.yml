@@ -1,34 +1,56 @@
 version: 2
 
 models:
-  - name: fact_user_engagement_arsen_c  # Replace with your actual model name
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: dim_inventory_arsen_c
+    description: "Dimensional table about inventory restocking. Each row represents a restocking of a certain product in a warehouse."
     columns:
-      - name: user_id
-        description: "Unique identifier for the user"
+      - name: inventory_id
+        description: "Unique identifier for the restocking"
         data_tests:
           - not_null
+          - unique
       - name: product_id
         description: "Unique identifier for the product"
         data_tests:
           - not_null
-      - name: search_event_id
-        description: "Unique identifier for the search event"
+          - unique
+      - name: warehouse_id
+        description: "Unique identifier for the warehouset"
         data_tests:
           - not_null
-      - name: timestamp
-        description: "Timestamp of the event"
+          - unique
+      - name: stock_level
+        description: "Current stock of the item (or at the time of the row creation)"
         data_tests:
           - not_null
-      - name: has_qv
-        description: "Boolean flag indicating whether the user has viewed the product"
-      - name: has_pdp
-        description: "Boolean flag indicating whether the user has viewed the product detail page"
-      - name: has_atc
-        description: "Boolean flag indicating whether the user has added to cart"
-      - name: has_purchase
-        description: "Boolean flag indicating whether the user has made a purchase"
-      - name: session_id
-        description: "Session identifier for the user interaction"
+      - name: restock_date
+        description: "The date which represents a specific restock"
         data_tests:
           - not_null
+      - name: supplier_id
+        description: "Supplier of the product to the warehouse"
+        data_tests:
+          - not_null
+      - name: storage_condition
+        description: "This field is supposed to show how to store the product"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['Ambient', 'Frozen', 'Temperature Controlled']
+      
+  - name: dim_product_arsen_c
+    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: dim_search_event_arsen_c
+    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: dim_user_arsen_c
+    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: fact_aggregated_product_performance_arsen_c
+    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: fact_campaign_effectiveness_arsen_c
+    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: fact_demand_forecasting_arsen_c
+    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: fact_inventory_condition_arsen_c
+    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: fact_user_decisions_arsen_c
+    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"

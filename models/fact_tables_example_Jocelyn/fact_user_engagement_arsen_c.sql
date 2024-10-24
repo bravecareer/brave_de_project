@@ -18,7 +18,6 @@ WITH user_journey AS (
    FROM {{ source('de_project', 'user_journey') }} uj
 ),
 
-
 valid_users AS (
    SELECT
        u.user_id
@@ -26,13 +25,11 @@ valid_users AS (
    WHERE u.account_status = 'active'
 ),
 
-
 valid_products AS (
    SELECT
        p.product_id
    FROM {{ source('de_project', 'product_data') }} p
 ),
-
 
 final AS (
    SELECT
@@ -49,6 +46,5 @@ final AS (
    LEFT JOIN valid_users vu ON uj.user_id = vu.user_id
    LEFT JOIN valid_products vp ON uj.product_id = vp.product_id
 )
-
 
 SELECT * FROM final

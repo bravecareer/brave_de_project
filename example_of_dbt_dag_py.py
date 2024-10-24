@@ -21,7 +21,7 @@ with DAG(
 
     dbt_run = BashOperator(
         task_id='dim_product_dag_example2',
-        bash_command='source bravede/bin/activate && cd /Users/arsenchuzhykov/Desktop/brave_de_project/brave_de_project && dbt run --select dim_product_arsen_c',
+        bash_command='source bravede/bin/activate && cd /Users/arsenchuzhykov/Desktop/brave_de_project/brave_de_project && dbt run --select +dim_product_arsen_c',
         env={'DBT_PROFILES_DIR': '/Users/arsenchuzhykov/Desktop/brave_de_project/brave_de_project'},
         dag=dag,
     )
