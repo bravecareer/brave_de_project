@@ -1,0 +1,22 @@
+{{ config(
+   materialized='incremental',
+   unique_key='user_id'
+) }}
+
+WITH user_data AS (
+    SELECT
+        u.user_id,
+        u.first_name,
+        u.last_name,
+        CASE WHEN u.email NOT LIKE '%@%.com' THEN NULL ELSE LOWER(u.email) END AS email,
+        u.signup_date,
+        u.preferred_language,
+        u.dob,
+        u.marketing_opt_in,
+        u.account_status,
+        u.loyalty_points_balance
+    FROM {{ ref('stg_user_data_PS') }} u
+    WHERE u.account_status IN ('active', 'inactive', 'banned')
+)
+
+SELECT * FROM user_data

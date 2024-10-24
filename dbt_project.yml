@@ -1,0 +1,59 @@
+# dbt_project.yml
+
+config-version: 2
+
+# Project details
+name: "brave_de_project"
+version: "1.0.0"
+require-dbt-version: ">=1.5.0"
+
+# Profile to use for this project
+profile: "brave_de_project"
+
+# Paths to various dbt files
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["data-tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+# Where dbt will put compiled code and other outputs
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Variable definitions
+vars:
+  "dbt_date:time_zone": "America/Los_Angeles"
+
+# Configuration for seeds (CSV files)
+seeds:
+  brave_de_project:
+    +schema: raw
+
+# Configuration for models
+models:
+  brave_de_project:
+    # Default configurations for all models in this project
+    database: BRAVE_DATABASE
+    schema: DE_PROJECT
+    +copy_grants: true
+
+    # Specific configurations for model folders
+    raw_data:
+      +materialized: table
+    data_mart:
+      +materialized: table
+
+    staging:
+      +materialized: incremental
+
+    fact_tables:
+      +materialized: table
+      +schema: fact
+
+    dimension_tables:
+      +materialized: table
+      +schema: dimension

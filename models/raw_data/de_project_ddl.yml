@@ -1,0 +1,220 @@
+version: 2
+
+sources:
+  - name: de_project
+    database: brave_database
+    tables:
+      - name: inventory_data
+        columns:
+          - name: inventory_id
+            data_type: number
+          - name: product_id
+            data_type: varchar
+          - name: warehouse_id
+            data_type: number
+          - name: stock_level
+            data_type: number
+          - name: restock_date
+            data_type: date
+          - name: supplier_id
+            data_type: number
+          - name: storage_condition
+            data_type: varchar
+          - name: inventory_status
+            data_type: varchar
+          - name: last_audit_date
+            data_type: timestamp_ntz
+          - name: reorder_level
+            data_type: number
+          - name: quantity_in_stock
+            data_type: number
+          - name: rating
+            data_type: varchar
+          - name: sales_volume
+            data_type: number
+          - name: weight
+            data_type: varchar
+          - name: discounts
+            data_type: varchar
+          - name: safety_stock
+            data_type: number
+          - name: average_monthly_demand
+            data_type: number
+          - name: last_restock_date
+            data_type: date
+          - name: next_restock_date
+            data_type: date
+
+      - name: product_data
+        columns:
+          - name: product_id
+            data_type: varchar
+          - name: product_name
+            data_type: varchar
+          - name: product_category
+            data_type: varchar
+          - name: price
+            data_type: number
+          - name: supplier_id
+            data_type: varchar
+          - name: product_color
+            data_type: varchar
+          - name: manufacturing_date
+            data_type: date
+          - name: expiration_date
+            data_type: date
+          - name: warranty_period
+            data_type: varchar
+          - name: quantity_in_stock
+            data_type: number
+          - name: rating
+            data_type: number
+          - name: sales_volume
+            data_type: number
+          - name: weight_grams
+            data_type: number
+          - name: discount_percentage
+            data_type: number
+
+      - name: user_data
+        columns:
+          - name: user_id
+            data_type: varchar
+          - name: first_name
+            data_type: varchar
+          - name: last_name
+            data_type: varchar
+          - name: email
+            data_type: varchar
+          - name: signup_date
+            data_type: varchar
+          - name: preferred_language
+            data_type: varchar
+          - name: dob
+            data_type: varchar
+          - name: marketing_opt_in
+            data_type: varchar
+          - name: account_status
+            data_type: varchar
+          - name: loyalty_points_balance
+            data_type: varchar
+
+      - name: user_journey
+        columns:
+          - name: search_event_id
+            data_type: varchar
+          - name: timestamp
+            data_type: timestamp_ntz
+          - name: collector_tstamp
+            data_type: timestamp_ntz
+          - name: app_id
+            data_type: varchar
+          - name: has_qv
+            data_type: boolean
+          - name: has_pdp
+            data_type: boolean
+          - name: has_atc
+            data_type: boolean
+          - name: has_purchase
+            data_type: boolean
+          - name: impressions_with_attributions
+            data_type: varchar
+          - name: cart_id
+            data_type: varchar
+          - name: session_id
+            data_type: varchar
+          - name: search_request_id
+            data_type: varchar
+          - name: search_results_count
+            data_type: number
+          - name: search_terms
+            data_type: varchar
+          - name: search_feature
+            data_type: varchar
+          - name: search_terms_type
+            data_type: varchar
+          - name: search_type
+            data_type: varchar
+          - name: aes_hash
+            data_type: varchar
+          - name: date_last_login
+            data_type: varchar
+          - name: date_last_purchase
+            data_type: date
+          - name: grocery_home_store_id
+            data_type: varchar
+          - name: lifetime_offline_orders_count
+            data_type: number
+          - name: lifetime_online_orders_count
+            data_type: number
+          - name: login_status
+            data_type: varchar
+          - name: user_id
+            data_type: varchar
+          - name: registration_status
+            data_type: varchar
+          - name: rx_home_store_id
+            data_type: varchar
+          - name: sha256_hash
+            data_type: varchar
+          - name: banner
+            data_type: varchar
+          - name: auto_localized_store_id
+            data_type: varchar
+          - name: fulfillment_type
+            data_type: varchar
+          - name: selected_store_id
+            data_type: number
+          - name: selected_timeslot_date
+            data_type: date
+          - name: selected_timeslot_time
+            data_type: varchar
+          - name: selected_timeslot_type
+            data_type: varchar
+          - name: shopping_mode
+            data_type: varchar
+          - name: device_class
+            data_type: varchar
+          - name: br_viewwidth
+            data_type: number
+          - name: br_viewheight
+            data_type: number
+          - name: dvce_screenwidth
+            data_type: number
+          - name: dvce_screenheight
+            data_type: number
+          - name: doc_width
+            data_type: number
+          - name: doc_height
+            data_type: number
+          - name: mkt_medium
+            data_type: varchar
+          - name: mkt_source
+            data_type: varchar
+          - name: mkt_content
+            data_type: varchar
+          - name: mkt_campaign
+            data_type: varchar
+          - name: br_lang
+            data_type: varchar
+          - name: page_language
+            data_type: varchar
+          - name: geo_country
+            data_type: varchar
+          - name: geo_region
+            data_type: varchar
+          - name: geo_city
+            data_type: varchar
+          - name: geo_zipcode
+            data_type: varchar
+          - name: geo_latitude
+            data_type: number
+          - name: geo_longitude
+            data_type: number
+          - name: geo_timezone
+            data_type: varchar
+          - name: search_model
+            data_type: varchar
+          - name: product_id
+            data_type: varchar
+

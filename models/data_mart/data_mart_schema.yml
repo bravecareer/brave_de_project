@@ -1,0 +1,125 @@
+=version: 2
+
+models:
+  - name: fact_campaign_effectiveness_PS
+    description: "Fact table for analyzing the effectiveness of marketing campaigns by tracking user interactions and conversion metrics."
+    columns:
+      - name: campaign_id
+        description: "Unique identifier for each campaign."
+        tests:
+          - not_null
+      - name: session_id
+        description: "Unique identifier for each session."
+        tests:
+          - not_null
+      - name: user_id
+        description: "Unique identifier for each user."
+        tests:
+          - not_null
+      - name: timestamp
+        description: "Timestamp of the campaign interaction."
+        tests:
+          - not_null
+      - name: total_interactions
+        description: "Total number of interactions made by users with the campaign."
+        tests:
+          - not_null
+      - name: total_purchases
+        description: "Total number of purchases resulting from the campaign."
+        tests:
+          - not_null
+      - name: conversion_rate
+        description: "Conversion rate of the campaign calculated as total purchases over total interactions."
+      - name: has_atc
+        description: "Indicates if the user added the product to cart (true/false)."
+      - name: has_purchase
+        description: "Indicates if the user made a purchase (true/false)."
+      - name: mkt_medium
+        description: "Marketing medium used for the campaign (e.g., email, social media)."
+        tests:
+          - accepted_values:
+              values: ['paid search', 'email', 'social', 'display']
+      - name: mkt_source
+        description: "Source of the campaign (e.g., website, referral)."
+      - name: mkt_content
+        description: "Content type used in the campaign."
+
+  - name: fact_search_effectiveness_PS
+    description: "Fact table for analyzing the effectiveness of product search by tracking user actions and outcomes."
+    columns:
+      - name: user_id
+        description: "Unique identifier for each user."
+        tests:
+          - not_null
+      - name: search_event_id
+        description: "Unique identifier for each search event."
+        tests:
+          - not_null
+      - name: product_id
+        description: "Unique identifier for each product."
+        tests:
+          - not_null
+      - name: has_atc
+        description: "Indicates if the user added the product to cart (true/false)."
+        tests:
+          - accepted_values:
+              values: ['true', 'false']
+      - name: has_purchase
+        description: "Indicates if the user made a purchase (true/false)."
+        tests:
+          - accepted_values:
+              values: ['true', 'false']
+      - name: timestamp
+        description: "Timestamp of the search event."
+        tests:
+          - not_null
+
+  - name: fact_product_performance_PS
+    description: "Fact table for analyzing product performance metrics such as quick views, PDP views, add to carts, purchases, and total sales."
+    columns:
+      - name: product_id
+        description: "Unique identifier for each product."
+        tests:
+          - not_null
+      - name: total_qv_events
+        description: "Total number of quick view (QV) events for the product."
+        tests:
+          - not_null
+      - name: total_pdp_views
+        description: "Total number of product detail page (PDP) views for the product."
+        tests:
+          - not_null
+      - name: total_atc_events
+        description: "Total number of add-to-cart (ATC) events for the product."
+        tests:
+          - not_null
+      - name: quantity_sold
+        description: "Total quantity of the product sold."
+        tests:
+          - not_null
+      - name: total_sales_amount
+        description: "Total revenue generated from product sales."
+        tests:
+          - not_null
+      - name: avg_rating
+        description: "Average rating of the product."
+      - name: avg_weight
+        description: "Average weight of the product, in grams."
+
+  - name: fact_inventory_management_PS
+    description: "Fact table for analyzing inventory levels by product and warehouse."
+    columns:
+      - name: product_id
+        description: "Unique identifier for each product."
+        tests:
+          - not_null
+      - name: warehouse_id
+        description: "Unique identifier for each warehouse."
+        tests:
+          - not_null
+      - name: inventory_status
+        description: "Inventory status indicating availability of the product."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['in-stock', 'backordered']

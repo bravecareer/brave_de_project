@@ -1,0 +1,26 @@
+brave_de_project:
+  target: dev
+  
+  outputs:
+    dev:
+      type: snowflake
+      account: QDLMHKH-FM67721
+
+      # User/password auth
+      user: BRAVE_LEARNER_PRABHAT_S
+      password: Brunobruno123!@#
+
+      role: PROJECT_LEARNER_WRITE
+      database: BRAVE_DATABASE
+      warehouse: BRAVE_WAREHOUSE
+      schema: PROJECT_TEST
+      threads: 1
+      client_session_keep_alive: False
+      query_tag: dbt
+
+      # optional
+      connect_retries: 0 # default 0
+      connect_timeout: 10 # default: 10
+      retry_on_database_errors: False # default: false
+      retry_all: False  # default: false
+      reuse_connections: False
