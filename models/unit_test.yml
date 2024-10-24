@@ -1,25 +1,18 @@
 unit_tests:
-  - name: test_is_valid_timestamp
-    description: "Check my test_is_valid_timestamp logic captures all known edge cases - timestamp."
-    model: fact_user_engagement_sp
+  - name: test_inventory_format
+    description: "Check if format of rating, weight and discount"
+    model: dim_inventory_sp
     given:
-      - input: source('de_project', 'user_journey') 
+      - input: ref('stg_inventory_sp') 
         rows:
-          - {user_id: 1, product_id: 100, timestamp: '2024-02-17 18:41:07'}
-          - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
-          - {user_id: 999, product_id: 999, timestamp: '2024-02-17 18:42:07 UTC'}  
-      - input: source('de_project', 'user_data')
-        rows:
-          - {user_id: 1}
-          - {user_id: 2}
-      - input: source('de_project', 'product_data')
-        rows:
-          - {product_id: 100}
-          - {product_id: 101}
+          - {inventory_id: 1, rating: '1,5235', weight: '776,78', discounts: '545,7788765566'}
+          - {inventory_id: 2, rating: '3,0401306928136800', weight: '3,39092019', discounts: '493,7796948390'}
+          - {inventory_id: 3, rating: '2,5', weight: '31,869334164229500', discounts: '3,30022'}
     expect:
-      rows:
-        - {user_id: 1, product_id: 100, timestamp: '2024-02-17 18:41:07'}
-        - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
-        - {user_id: 999, product_id: 999, timestamp: null}
+        rows:
+          - {inventory_id: 1, rating: 1.52, weight: 776.78, discounts: 545.78}
+          - {inventory_id: 2, rating: 3.04, weight: 3.39, discounts: 493.78}
+          - {inventory_id: 3, rating: 2.50, weight: 31.87, discounts: 3.30}
 
 
+ 
