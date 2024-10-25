@@ -15,6 +15,10 @@ product_data AS (
 
 ),
 
+inv_detail AS (
+
+    select * from {{ ref('dim_inv_detail_qu') }}
+),
 
 inventory_management AS (
     SELECT
@@ -23,6 +27,7 @@ inventory_management AS (
     id.product_id,
     id.warehouse_id,
     id.supplier_id,
+    idt.inv_detail_id,
 
     pd.price,
     id.stock_level,
@@ -33,9 +38,16 @@ inventory_management AS (
     id.average_monthly_demand,
     id.rating,
     id.prod_weight,
-    id.discounts
+    id.discounts,
+    last_audit_date,
+    last_restock_date,
+    restock_date,
+    next_restock_date
                 
     FROM inventory_data id
+    INNER JOIN inv_detail idt 
+        ON id.inventory_status = idt.storage_condition
+        AND idt.inventory_status = id.inventory_status
     LEFT JOIN product_data pd ON id.product_id = pd.product_id
 )
 

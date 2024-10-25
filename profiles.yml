@@ -7,10 +7,10 @@ brave_de_project:
       account: QDLMHKH-FM67721
 
       # User/password auth
-      user: YOURUSERNAME
-      password: YOURPASSWORD
+      user: BRAVE_LEARNER_QURRATULAIN
+      password: W5nh0e1#^br5^#IO
 
-      role: YOURROLE
+      role: PROJECT_LEARNER_WRITE
       database: BRAVE_DATABASE
       warehouse: BRAVE_WAREHOUSE
       schema: PROJECT_TEST

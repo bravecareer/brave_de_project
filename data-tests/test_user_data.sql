@@ -1,3 +1,7 @@
+-- Test: test_user_data
+-- Description: This test checks if the account_status in the dim_user_qu table is 'active',
+-- if the email in the dim_user_qu table is a valid email address, and if the loyalty_points_balance
+-- in the dim_user_qu table is greater than or equal to 0.
 SELECT
     COUNT(*) AS invalid_rows
 FROM

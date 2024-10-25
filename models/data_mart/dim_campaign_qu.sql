@@ -1,6 +1,6 @@
 {{ config(
    materialized='incremental',
-   unique_key= ['campaign_name', 'medium', 'source', 'content' ]
+   unique_key= 'campaign_id'
 ) }}
 
 with source as (
@@ -11,7 +11,9 @@ with source as (
 
 campaign_data AS (
    SELECT
-      ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS campaign_id,
+      --ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS campaign_id,
+      {{dbt_utils.generate_surrogate_key(['campaign_name', 
+               'medium', 'source', 'content'])}} AS campaign_id,
       campaign_name,
       medium,
       source,

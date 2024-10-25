@@ -1,3 +1,8 @@
+-- Test: test_fspp_data
+-- Description: This test checks if the user_id in the fact_search_product_performance_qu
+-- table is present in the dim_user_qu table and if the discount_percentage in the
+-- fact_search_product_performance_qu table is between 0 and 100, given the account_status
+-- in the dim_user_qu table is 'active'.
 SELECT
     COUNT(*) AS invalid_rows
 FROM

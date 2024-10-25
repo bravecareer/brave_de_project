@@ -1,3 +1,4 @@
+-- checking for all combinations of fields are unique
 SELECT
     campaign_name,
     medium,

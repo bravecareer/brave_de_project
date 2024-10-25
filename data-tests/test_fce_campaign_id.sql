@@ -1,3 +1,4 @@
+-- Testing for the presence of campaign_id in fact_campaign_effectiveness_qu
 SELECT
     fce.campaign_id
 FROM

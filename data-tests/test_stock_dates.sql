@@ -1,3 +1,7 @@
+-- Test: test_stock_dates
+-- Description: This test checks if the last_restock_date in the dim_inventory_qu
+-- table is before the restock_date and if the restock_date is before the next_restock_date.
+
 SELECT
     COUNT(*) AS invalid_rows
 FROM

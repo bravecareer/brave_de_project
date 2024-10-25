@@ -35,11 +35,11 @@ models:
         tests:
           - not_null
 
-  - name: dim_inventory_qu
+  - name: dim_inv_detail_qu
     description: "Dimensional model for the inventory management"
     columns:
-      - name: inventory_id
-        data_type: number
+      - name: inv_detail_id
+        data_type: varchar
         description: "unique identifier for the inventory"
         tests:
           - not_null
@@ -48,29 +48,16 @@ models:
       - name: storage_condition
         data_type: varchar
         description: "Describe the condition of the environment in which the product was stored."
+        tests:
+          - not_null
 
       - name: inventory_status
         data_type: varchar
         description: "Show the product in the inventory is in-stock or backordered"
         tests:
+          - not_null
           - accepted_values:
               values: ['in-stock','backordered']
-
-      - name: last_audit_date
-        data_type: date
-        description: "The last audit date of the inventory"
-
-      - name: last_restock_date
-        data_type: date
-        description: "The last date of the restocking the product"
-
-      - name: restock_date
-        data_type: date
-        description: "The date of the restocking"
-
-      - name: next_restock_date
-        data_type: date
-        description: "The date of when next restocking will happen"
 
   - name: dim_product_qu
     description: "Dimensional model for the product"
@@ -114,30 +101,69 @@ models:
         data_type: number
         description: "The warrenty duration, given in number of months"
 
-  - name: dim_search_event_qu
+  - name: dim_search_location_qu
+    description: "Dimensional model for the search location"
+    columns:
+
+      - name : location_id
+        data_type: varchar
+        description: "Unique identifier for the location"
+        tests:
+          - not_null
+          - unique
+
+      - name: country
+        data_type: varchar
+        description: "Country of the search event"
+        tests:
+          - not_null
+
+      - name: city
+        data_type: varchar
+        description: "City of the search event"
+        tests:
+          - not_null
+
+      - name: region
+        data_type: varchar
+        description: "Region of the search event"
+        tests:
+          - not_null
+
+      - name: zipcode
+        data_type: varchar
+        description: "Zipcode of the search event" 
+        tests:
+          - not_null
+
+  - name: dim_search_qu
     description: "Dimensional model for the product search event"
     columns:
+
+      - name: search_data_id
+        data_type: varchar
+        description: "Unique identifier for the search data"
+        tests:
+          - not_null
+          - unique
+
       - name: search_model
         data_type: varchar
         description: "The type search model used for producing search results"
         tests:
           - not_null
           
-      - name: search_terms
-        data_type: varchar
-        description: "The terms used by the user to search the product."
-
-      - name: search_results_count
-        data_type: number
-        description: "Number of the search results produced"
-
       - name: search_type
         data_type: varchar
         description: ""
+        tests:
+          - not_null
 
       - name: search_feature
         data_type: varchar
         description: "Describes the features of the search"
+        tests:
+          - not_null
 
       - name: search_terms_type
         data_type: varchar
@@ -145,48 +171,6 @@ models:
         tests:
           - accepted_values:
               values: ['manual-search','type-ahead']
-
-
-      - name: search_timestamp
-        data_type: timestamp_ntz
-        description: "Timestamp for the search event"
-
-      - name: shopping_mode
-        data_type: varchar
-        description: "Describes shopping mode of the user"
-
-      - name: country
-        data_type: varchar
-        description: "Country of the search event"
-
-      - name: city
-        data_type: varchar
-        description: "city of the search event"
-
-      - name: search_event_id
-        data_type: varchar
-        description: "Unique identifier of the search event"
-        tests:
-          - not_null
-          - unique
-
-      - name: session_id
-        data_type: varchar
-        description: "Identifier of the session"
-        tests:
-          - not_null
-
-      - name: user_id
-        data_type: varchar
-        description: "Identifier of the user"
-        tests:
-          - not_null
-
-      - name: product_id
-        data_type: number
-        description: "Identifier for the product"
-        tests:
-          - not_null
 
   - name: dim_user_qu
     description: "Dimensional model for the user information"
@@ -310,6 +294,12 @@ models:
         tests:
           - not_null
 
+      - name: inv_detail_id
+        data_type: varchar
+        description: "Inventory detail identifier"
+        tests:
+          - not_null
+
       - name: price
         data_type: number
         description: "Unit price of the product"
@@ -350,6 +340,22 @@ models:
         data_type: number
         description: "Discount on the product price"
 
+      - name: last_audit_date
+        data_type: date
+        description: "The last audit date of the inventory"
+
+      - name: last_restock_date
+        data_type: date
+        description: "The last date of the restocking the product"
+
+      - name: restock_date
+        data_type: date
+        description: "The date of the restocking"
+
+      - name: next_restock_date
+        data_type: date
+        description: "The date of when next restocking will happen"
+  
   - name: fact_search_product_performance_qu
     description: "Fact model for the analyzing product performance of a product and analyzing user engagement"
     columns:
@@ -370,6 +376,30 @@ models:
         description: "Product identifier"
         tests:
           - not_null
+
+      - name: search_data_id
+        data_type: varchar
+        description: "Search data identifier"
+        tests:
+          - not_null
+
+      - name: location_id
+        data_type: varchar
+        description: "Location identifier"
+        tests:
+          - not_null
+
+      - name: search_terms
+        data_type: varchar
+        description: "The terms used by the user to search the product."
+
+      - name: search_results_count
+        data_type: number
+        description: "Number of the search results produced"
+
+      - name: search_timestamp
+        data_type: timestamp_ntz
+        description: "Timestamp for the search event"
 
       - name: price
         data_type: number

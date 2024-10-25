@@ -21,13 +21,7 @@ product_data AS (
 ),
 
 campaign_dim AS (
-   SELECT
-      campaign_name,
-      medium,
-      content,
-      source,
-      campaign_id
-   FROM {{ ref('dim_campaign_qu') }}
+   SELECT * FROM {{ ref('dim_campaign_qu') }}
 ),
 
 filteirng AS (
@@ -43,7 +37,7 @@ filteirng AS (
       cd.campaign_id -- Foreign key from dim_campaign
     
    FROM user_journey uj
-   LEFT JOIN campaign_dim cd
+   INNER JOIN campaign_dim cd
      ON uj.campaign_name = cd.campaign_name
     AND uj.medium = cd.medium
     AND uj.source = cd.source
