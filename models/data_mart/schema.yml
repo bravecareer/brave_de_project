@@ -1,34 +1,136 @@
 version: 2
 
 models:
-  - name: fact_user_engagement  # Replace with your actual model name
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: fact_product_performance
+    description: "Fact table tracking key metrics for product performance, including views, add-to-cart events, and sales."
     columns:
-      - name: user_id
-        description: "Unique identifier for the user"
-        tests:
-          - not_null
       - name: product_id
-        description: "Unique identifier for the product"
+        description: "Unique identifier for each product"
         tests:
           - not_null
-      - name: search_event_id
-        description: "Unique identifier for the search event"
+          - unique
+      - name: total_qv_events
+        description: "Total count of quick views for each product"
+        tests:
+          - not_null
+      - name: total_pdp_views
+        description: "Total count of product detail page views for each product"
+        tests:
+          - not_null
+      - name: total_atc_events
+        description: "Total count of add-to-cart events for each product"
+        tests:
+          - not_null
+      - name: quantity_sold
+        description: "Total quantity of the product sold"
+        tests:
+          - not_null
+      - name: total_sales_amount
+        description: "Total revenue generated from product sales"
+        tests:
+          - not_null
+
+  - name: fact_campaign_effectiveness
+    description: "Fact table for measuring campaign effectiveness by capturing user interactions, purchases, and conversion metrics."
+    columns:
+      - name: campaign_id
+        description: "Unique identifier for each marketing campaign"
+        tests:
+          - not_null
+          - unique
+      - name: session_id
+        description: "Unique session identifier related to campaign engagement"
+        tests:
+          - not_null
+      - name: user_id
+        description: "Unique identifier for each user involved in the campaign"
         tests:
           - not_null
       - name: timestamp
-        description: "Timestamp of the event"
+        description: "Timestamp when the campaign interaction took place"
         tests:
           - not_null
-      - name: has_qv
-        description: "Boolean flag indicating whether the user has viewed the product"
-      - name: has_pdp
-        description: "Boolean flag indicating whether the user has viewed the product detail page"
+      - name: total_interactions
+        description: "Total count of user interactions with the campaign"
+        tests:
+          - not_null
+      - name: total_purchases
+        description: "Total number of purchases attributed to the campaign"
+        tests:
+          - not_null
+      - name: conversion_rate
+        description: "Campaign conversion rate calculated as total purchases / total interactions"
       - name: has_atc
-        description: "Boolean flag indicating whether the user has added to cart"
+        description: "Indicates whether user added the product to cart during the campaign"
       - name: has_purchase
-        description: "Boolean flag indicating whether the user has made a purchase"
-      - name: session_id
-        description: "Session identifier for the user interaction"
+        description: "Indicates whether user completed a purchase during the campaign"
+      - name: mkt_medium
+        description: "Marketing medium used in the campaign, such as email or social media"
+        tests:
+          - accepted_values:
+              values: ['email', 'social', 'paid search', 'display']
+
+  - name: fact_inventory_management
+    description: "Fact table to monitor inventory management, summarizing stock levels and restock activities by product and warehouse."
+    columns:
+      - name: product_id
+        description: "Unique identifier for each product"
+        tests:
+          - not_null
+          - unique
+      - name: warehouse_id
+        description: "Unique identifier for each warehouse holding the product inventory"
+        tests:
+          - not_null
+      - name: stock_level
+        description: "Current stock level for the product in the warehouse"
+        tests:
+          - not_null
+      - name: reorder_level
+        description: "Threshold stock level that triggers a reorder"
+        tests:
+          - not_null
+      - name: quantity_in_stock
+        description: "Total quantity available in stock for each product"
+        tests:
+          - not_null
+      - name: last_restock_date
+        description: "Last recorded restock date for the product"
+      - name: next_restock_date
+        description: "Scheduled restock date for the product in the warehouse"
+      - name: inventory_status
+        description: "Current inventory status indicating stock availability, such as 'in-stock' or 'backordered'"
+        tests:
+          - accepted_values:
+              values: ['in-stock', 'backordered']
+
+  - name: fact_search_effectiveness
+    description: "Fact table analyzing the effectiveness of search events by tracking key actions like add-to-cart and purchase outcomes."
+    columns:
+      - name: user_id
+        description: "Unique identifier for each user involved in the search event"
+        tests:
+          - not_null
+          - unique
+      - name: search_event_id
+        description: "Unique identifier for each search event"
+        tests:
+          - not_null
+      - name: product_id
+        description: "Unique identifier for each product viewed in the search event"
+        tests:
+          - not_null
+      - name: has_atc
+        description: "Flag indicating if the product was added to the cart in this search event"
+        tests:
+          - accepted_values:
+              values: ['true', 'false']
+      - name: has_purchase
+        description: "Flag indicating if the user made a purchase after the search event"
+        tests:
+          - accepted_values:
+              values: ['true', 'false']
+      - name: timestamp
+        description: "Timestamp of the search event"
         tests:
           - not_null

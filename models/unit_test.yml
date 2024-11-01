@@ -1,26 +1,56 @@
 unit_tests:
-  - name: test_is_valid_timestamp
-    description: "Check my test_is_valid_timestamp logic captures all known edge cases - timestamp."
-    model: fact_user_engagement
+  - name: test_no_null_values_fact_search_effectiveness
+    description: "Ensure no NULL values exist in critical columns for fact_search_effectiveness."
+    model: fact_search_effectiveness
     given:
-      - input: source('de_project', 'user_journey') 
+      - input: source('de_project', 'user_journey')
         rows:
-          - {user_id: 1, product_id: 100, timestamp: '2024-02-17 18:41:07'}
-          - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
-          - {user_id: 999, product_id: 999, timestamp: '2024-02-17 18:42:07 UTC'}  
+          - {user_id: 'U001', product_id: 'P001', search_event_id: 'SE001', timestamp: '2024-02-17 18:41:07'}
+          - {user_id: 'U002', product_id: 'P002', search_event_id: 'SE002', timestamp: '2024-02-17 18:42:07'}
       - input: source('de_project', 'user_data')
         rows:
-          - {user_id: 1}
-          - {user_id: 2}
+          - {user_id: 'U001'}
+          - {user_id: 'U002'}
       - input: source('de_project', 'product_data')
         rows:
-          - {product_id: 100}
-          - {product_id: 101}
+          - {product_id: 'P001'}
+          - {product_id: 'P002'}
     expect:
       rows:
-        - {user_id: 1, product_id: 100, timestamp: '2024-02-17 18:41:07'}
-        - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
-        - {user_id: 999, product_id: 999, timestamp: null}
+        - {user_id: 'U001', product_id: 'P001', search_event_id: 'SE001', timestamp: '2024-02-17 18:41:07'}
+        - {user_id: 'U002', product_id: 'P002', search_event_id: 'SE002', timestamp: '2024-02-17 18:42:07'}
 
+  - name: test_no_null_values_fact_product_performance
+    description: "Ensure no NULL values exist in key metrics for fact_product_performance."
+    model: fact_product_performance
+    given:
+      - input: source('de_project', 'user_journey')
+        rows:
+          - {product_id: 'P200', timestamp: '2024-03-17 12:34:56', has_qv: true, has_pdp: true, has_atc: false, has_purchase: true}
+          - {product_id: 'P201', timestamp: '2024-03-17 12:34:56', has_qv: false, has_pdp: true, has_atc: true, has_purchase: false}
+      - input: source('de_project', 'product_data')
+        rows:
+          - {product_id: 'P200', price: 100, rating: 4.5}
+          - {product_id: 'P201', price: 50, rating: 3.9}
+    expect:
+      rows:
+        - {product_id: 'P200', timestamp: '2024-03-17 12:34:56', has_qv: true, has_pdp: true, has_atc: false, has_purchase: true}
+        - {product_id: 'P201', timestamp: '2024-03-17 12:34:56', has_qv: false, has_pdp: true, has_atc: true, has_purchase: false}
 
+  - name: test_inventory_status_values_fact_inventory_management
+    description: "Ensure inventory statuses and values are valid in fact_inventory_management."
+    model: fact_inventory_management
+    given:
+      - input: source('de_project', 'inventory_data')
+        rows:
+          - {product_id: 'P300', warehouse_id: 'W001', inventory_status: 'in-stock', quantity_in_stock: 50, reorder_level: 20}
+          - {product_id: 'P301', warehouse_id: 'W002', inventory_status: 'backordered', quantity_in_stock: 0, reorder_level: 15}
+      - input: source('de_project', 'product_data')
+        rows:
+          - {product_id: 'P300'}
+          - {product_id: 'P301'}
+    expect:
+      rows:
+        - {product_id: 'P300', warehouse_id: 'W001', inventory_status: 'in-stock', quantity_in_stock: 50, reorder_level: 20}
+        - {product_id: 'P301', warehouse_id: 'W002', inventory_status: 'backordered', quantity_in_stock: 0, reorder_level: 15}
 

@@ -1,5 +1,5 @@
 {{ config(
-   materialized='table',
+   materialized='incremental',
    unique_key='inventory_id'
 ) }}
 
@@ -8,7 +8,8 @@ SELECT
    product_id,
    warehouse_id,
    stock_level,
-   inventory_status,
-   quantity_in_stock
+   reorder_level,
+   quantity_in_stock,
+   inventory_status
 FROM {{ ref('stg_inventory_data') }}
 WHERE inventory_status IS NOT NULL
