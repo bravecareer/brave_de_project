@@ -31,4 +31,88 @@ unit_tests:
           - {product_id: 'prod-00002', warranty_period_in_month: 32}
           - {product_id: 'prod-00003', warranty_period_in_month: 31}
 
+  - name: test_is_valid_timestamp
+    description: "Check my test_is_valid_timestamp logic captures all known edge cases - timestamp."
+    model: fact_search_effectiveness_michael_w
+    given:
+      - input: source('de_project', 'user_journey') 
+        rows:
+          - {user_id: 1, product_id: 100, timestamp: '2024-02-17 18:41:07'}
+          - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
+          - {user_id: 999, product_id: 999, timestamp: '2024-02-17 18:42:07 UTC'}  
+      - input: source('de_project', 'user_data')
+        rows:
+          - {user_id: 1}
+          - {user_id: 2}
+      - input: source('de_project', 'product_data')
+        rows:
+          - {product_id: 100}
+          - {product_id: 101}
+    expect:
+      rows:
+        - {user_id: 1, product_id: 100, timestamp: '2024-02-17 18:41:07'}
+        - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
+        - {user_id: 999, product_id: 999, timestamp: null}
 
+  - name: test_search_event_data_format
+    description: "Check if dim_search_event table cast strings to integers correctly."
+    model: dim_search_event_michael_w
+    given:
+      - input: source('de_project', 'user_journey') 
+        rows:
+          - {search_event_id: '1', selected_store_id: 1033.0, br_viewwidth: 2360, br_viewheight: 713, doc_width: 1180, doc_height: 713}
+          - {search_event_id: '2', selected_store_id: 7506, br_viewwidth: 2732.0, br_viewheight: 2224, doc_width: 1180, doc_height: 713}
+          - {search_event_id: '3', selected_store_id: 2803, br_viewwidth: 1284, br_viewheight: 2778.0, doc_width: 1180, doc_height: 713}
+          - {search_event_id: '4', selected_store_id: 1575, br_viewwidth: 1640, br_viewheight: 2266, doc_width: 1180.0, doc_height: 713}
+          - {search_event_id: '5', selected_store_id: 389, br_viewwidth: 1620, br_viewheight: 2266, doc_width: 1423, doc_height: 4838.0}
+    expect:
+      rows:
+          - {search_event_id: '1', selected_store_id: 1033, br_viewwidth: 2360, br_viewheight: 713, doc_width: 1180, doc_height: 713}
+          - {search_event_id: '2', selected_store_id: 7506, br_viewwidth: 2732, br_viewheight: 2224, doc_width: 1180, doc_height: 713}
+          - {search_event_id: '3', selected_store_id: 2803, br_viewwidth: 1284, br_viewheight: 2778, doc_width: 1180, doc_height: 713}
+          - {search_event_id: '4', selected_store_id: 1575, br_viewwidth: 1640, br_viewheight: 2266, doc_width: 1180, doc_height: 713}
+          - {search_event_id: '5', selected_store_id: 389, br_viewwidth: 1620, br_viewheight: 2266, doc_width: 1423, doc_height: 4838}
+
+  - name: test_user_email
+    description: "Check if user email is in correct format."
+    model: dim_user_michael_w
+    given:
+      - input: source('de_project', 'user_data') 
+        rows:
+          - {user_id: '1', first_name: 'a', last_name: 'b', email: 'griffith.kyle@webmail.net'}
+          - {user_id: '2', first_name: 'c', last_name: 'd', email: 'amy14cobb.com'}
+          - {user_id: '3', first_name: 'e', last_name: 'f', email: 'rog951@mailservicecom'}
+    expect:
+      rows:
+          - {user_id: '1', first_name: 'a', last_name: 'b', email: 'griffith.kyle@webmail.net'}
+          - {user_id: '2', first_name: 'c', last_name: 'd', email: null}
+          - {user_id: '3', first_name: 'e', last_name: 'f', email: null}
+
+  - name: test_user_loyalty_points_balance
+    description: "Check if user loyalty points balance are in integer format."
+    model: dim_user_michael_w
+    given:
+      - input: source('de_project', 'user_data') 
+        rows:
+          - {user_id: '1', first_name: 'a', last_name: 'b', loyalty_points_balance: 9192.0}
+          - {user_id: '2', first_name: 'c', last_name: 'd', loyalty_points_balance: 3794.1}
+    expect:
+      rows:
+          - {user_id: '1', first_name: 'a', last_name: 'b', loyalty_points_balance: 9192}
+          - {user_id: '2', first_name: 'c', last_name: 'd', loyalty_points_balance: 3794}
+
+  - name: test_user_first_last_name
+    description: "Check if user has either first name or last name."
+    model: dim_user_michael_w
+    given:
+      - input: source('de_project', 'user_data') 
+        rows:
+          - {user_id: '1', first_name: 'a', last_name: 'b'}
+          - {user_id: '2', first_name: 'c', last_name: null}
+          - {user_id: '3', first_name: null, last_name: 'd'}
+          - {user_id: '4', first_name: null, last_name: null}
+    expect:
+      rows:
+          - {user_id: '1', first_name: 'a', last_name: 'b'}
+          - {user_id: '2', first_name: 'c', last_name: null}
+          - {user_id: '3', first_name: null, last_name: 'd'}
