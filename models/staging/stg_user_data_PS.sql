@@ -8,7 +8,7 @@ WITH user_enriched AS (
        u.user_id,
        INITCAP(TRIM(u.first_name)) AS first_name,
        INITCAP(TRIM(u.last_name)) AS last_name,
-       CASE WHEN u.email NOT LIKE '%@%.com' THEN NULL ELSE LOWER(u.email) END AS email,
+       CASE WHEN u.email NOT LIKE '^[^@]+@[^@]+\.[^@]+$' THEN NULL ELSE LOWER(u.email) END AS email,
        TRY_CAST(u.signup_date AS DATE) AS signup_date,
        LOWER(u.preferred_language) AS preferred_language,
        TRY_CAST(u.dob AS DATE) AS dob,

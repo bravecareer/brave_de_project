@@ -217,4 +217,3 @@ sources:
             data_type: varchar
           - name: product_id
             data_type: varchar
-

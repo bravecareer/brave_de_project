@@ -1,0 +1,20 @@
+- name: test_inventory_data_validity
+  description: "Check that inventory data from stg_inventory_data_ps is valid and captures all known edge cases."
+  model: stg_inventory_data_ps
+  given:
+    - input: ref('inventory_data_dummy')  # Replace this with the seed or dummy data reference
+      rows:
+        - {inventory_id: 1, reorder_level: 853, product_id: 'prod-00370', quantity_in_stock: 3098, warehouse_id: 25, rating: 4.55, stock_level: 3098, sales_volume: 3275, restock_date: '2024-02-11', weight: 21.93, supplier_id: 83, discounts: 26.06, storage_condition: 'Ambient', safety_stock: 347, inventory_status: 'backordered', average_monthly_demand: 800, last_audit_date: '2024-03-25 14:56:40', last_restock_date: '2023-10-26', next_restock_date: '2024-05-09'}
+        - {inventory_id: 2890, reorder_level: 459, product_id: 'prod-00370', quantity_in_stock: 234, warehouse_id: 9, rating: 3.04, stock_level: 234, sales_volume: 2641, restock_date: '2024-03-13', weight: 38.41, supplier_id: 100, discounts: 20.65, storage_condition: 'Frozen', safety_stock: 496, inventory_status: 'backordered', average_monthly_demand: 579, last_audit_date: '2024-04-28 14:56:40', last_restock_date: '2023-11-16', next_restock_date: '2024-04-14'}
+        - {inventory_id: 5421, reorder_level: 153, product_id: 'prod-00370', quantity_in_stock: 3054, warehouse_id: 19, rating: 1.25, stock_level: 3054, sales_volume: 9559, restock_date: '2024-07-12', weight: 15.87, supplier_id: 68, discounts: 27.90, storage_condition: 'Frozen', safety_stock: 449, inventory_status: 'in-stock', average_monthly_demand: 803, last_audit_date: '2024-08-10 14:56:40', last_restock_date: '2024-02-04', next_restock_date: '2024-10-01'}
+    - input: ref('warehouse_data')
+      rows:
+        - {warehouse_id: 25}
+        - {warehouse_id: 9}
+        - {warehouse_id: 19}
+  
+  expect:
+    rows:
+      - {inventory_id: 1, reorder_level: 853, product_id: 'prod-00370', quantity_in_stock: 3098, warehouse_id: 25, rating: 4.55, stock_level: 3098, sales_volume: 3275, restock_date: '2024-02-11', weight: 21.93, supplier_id: 83, discounts: 26.06, storage_condition: 'Ambient', safety_stock: 347, inventory_status: 'backordered', average_monthly_demand: 800, last_audit_date: '2024-03-25 14:56:40', last_restock_date: '2023-10-26', next_restock_date: '2024-05-09'}
+      - {inventory_id: 2890, reorder_level: 459, product_id: 'prod-00370', quantity_in_stock: 234, warehouse_id: 9, rating: 3.04, stock_level: 234, sales_volume: 2641, restock_date: '2024-03-13', weight: 38.41, supplier_id: 100, discounts: 20.65, storage_condition: 'Frozen', safety_stock: 496, inventory_status: 'backordered', average_monthly_demand: 579, last_audit_date: '2024-04-28 14:56:40', last_restock_date: '2023-11-16', next_restock_date: '2024-04-14'}
+      - {inventory_id: 5421, reorder_level: 153, product_id: 'prod-00370', quantity_in_stock: 3054, warehouse_id: 19, rating: 1.25, stock_level: 3054, sales_volume: 9559, restock_date: '2024-07-12', weight: 15.87, supplier_id: 68, discounts: 27.90, storage_condition: 'Frozen', safety_stock: 449, inventory_status: 'in-stock', average_monthly_demand: 803, last_audit_date: '2024-08-10 14:56:40', last_restock_date: '2024-02-04', next_restock_date: '2024-10-01'}
