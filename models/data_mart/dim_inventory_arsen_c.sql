@@ -19,13 +19,12 @@ WITH inventory_data AS (
       --inv.rating,
       inv.sales_volume,
       --inv.weight,
-      --inv.discounts,
+      ROUND(CAST(REPLACE(inv.discounts, ',', '.') AS FLOAT), 2) AS discounts,
       inv.safety_stock,
       inv.average_monthly_demand,
       inv.last_restock_date,
       inv.next_restock_date
    FROM {{ source('de_project', 'inventory_data') }} inv
-   WHERE inv.inventory_id IS NOT NULL
 )
 
 SELECT * FROM inventory_data

@@ -8,10 +8,7 @@ WITH inventory_data AS (
         inv.inventory_id,
         inv.product_id,
         inv.warehouse_id,
-        inv.supplier_id,
         inv.storage_condition,
-        CAST(inv.last_audit_date AS DATE) AS last_audit_date,
-        inv.restock_date
     FROM {{ source('de_project', 'inventory_data') }} inv
 ),
 
@@ -28,12 +25,9 @@ final AS (
         inv.inventory_id,
         inv.product_id,
         inv.warehouse_id,
-        inv.supplier_id,
         p.product_name,
         p.product_category,
-        inv.storage_condition,
-        inv.restock_date,
-        last_audit_date
+        inv.storage_condition
    FROM inventory_data inv
    LEFT JOIN product_data p ON inv.product_id = p.product_id
 )

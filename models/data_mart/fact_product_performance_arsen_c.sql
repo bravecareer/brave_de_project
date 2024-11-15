@@ -1,10 +1,12 @@
 {{ config(
     materialized='incremental',
-    unique_key='product_id'
+    unique_key=['search_event_id', 'user_id', 'product_id']
 ) }}
 
 WITH user_journey AS (
     SELECT
+        uj.search_event_id,
+        uj.user_id,
         uj.product_id,
         uj.has_qv,
         uj.has_pdp,
@@ -22,15 +24,16 @@ product_data AS (
 
 final AS (
     SELECT
+        uj.search_event_id,
+        uj.user_id,
         uj.product_id,
         p.product_name,
-        COUNT(uj.has_qv) AS qv_count,
-        COUNT(uj.has_pdp) AS pdp_count,
-        COUNT(uj.has_atc) AS atc_count,
-        COUNT(uj.has_purchase) AS purchase_count
+        uj.has_qv,
+        uj.has_pdp,
+        uj.has_atc,
+        uj.has_purchase
    FROM user_journey uj
    LEFT JOIN product_data p ON uj.product_id = p.product_id
-   GROUP BY uj.product_id, p.product_name
 )
 
 SELECT * FROM final

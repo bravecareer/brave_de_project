@@ -17,7 +17,6 @@ WITH search_event_data AS (
        se.search_feature,
        se.search_request_id
    FROM {{ source('de_project', 'user_journey') }} se
-   WHERE se.search_event_id IS NOT NULL
 )
 
 SELECT * FROM search_event_data

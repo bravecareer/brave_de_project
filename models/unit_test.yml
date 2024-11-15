@@ -1,7 +1,7 @@
 unit_tests:
   - name: test_is_valid_timestamp
     description: "Check my test_is_valid_timestamp logic captures all known edge cases - timestamp."
-    model: fact_user_engagement_arsen_c
+    model: fact_user_decisions_arsen_c
     given:
       - input: source('de_project', 'user_journey') 
         rows:
@@ -22,5 +22,28 @@ unit_tests:
         - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
         - {user_id: 999, product_id: 999, timestamp: null}
 
+  - name: test_is_valid_last_audit_date
+    description: "change last_audit_date to DATE"
+    model: dim_inventory_arsen_c
+    given:
+      - input: source('de_project', 'inventory_data') 
+        rows:
+          - {last_audit_date: '2024-04-28T14:56:40.582659Z'}
+          - {last_audit_date: '2024-03-25T14:56:40.567056Z'}  
+    expect:
+      rows:
+        - {last_audit_date: '2024-04-28'}
+        - {last_audit_date: '2024-03-25'}
 
-
+  - name: test_commas_to_points
+    description: "comma to point change"
+    model: dim_inventory_arsen_c
+    given:
+      - input: source('de_project', 'inventory_data') 
+        rows:
+          - {discounts: '20,645172331607300'}
+          - {discounts: '26,064000421987600'}  
+    expect:
+      rows:
+        - {discounts: 20.65}
+        - {discounts: 26.06}

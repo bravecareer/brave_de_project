@@ -19,4 +19,4 @@ WITH user_data AS (
    WHERE u.signup_date != 'signup_date'
 )
 
-SELECT * FROM user_data WHERE user_id IS NOT NULL
+SELECT * FROM user_data

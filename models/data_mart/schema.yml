@@ -37,20 +37,84 @@ models:
           - not_null
           - accepted_values:
               values: ['Ambient', 'Frozen', 'Temperature Controlled']
-      
+      - name: inventory_status
+        description: "If it's still in stock or backordered"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['backordered', 'in-stock']
+      - name: last_audit_date
+        description: "Date of last audit"
+        data_tests:
+          - not_null     
+      - name: reorder_level
+        description: "Quantity for restock"
+        data_tests:
+          - not_null
   - name: dim_product_arsen_c
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+    description: "Dimensional table. Contains detailed information about products, including attributes like name, category, and price."
+    columns:
+      - name: product_name
+        description: "Name"
+        data_tests:
+          - not_null
   - name: dim_search_event_arsen_c
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+    description: "Dimensional table. Stores information on user search events, capturing search terms, types, and other parameters related to search behavior."
+    columns:
+      - name: search_feature
+        description: "Search feature characteristic"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['alternate', 'organic', 'multi-search']
   - name: dim_user_arsen_c
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
-  - name: fact_aggregated_product_performance_arsen_c
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+    description: "Holds user profile data, including languages, sign-up dates, and user attributes essential for segmentation and analysis."
+    columns:
+      - name: first_name
+        description: "First Name"
+        data_tests:
+          - not_null
+  - name: fact_product_performance_arsen_c
+    description: "Fact table. Stores data on product performance metrics, such as views, opens, ATCs etc."
+    columns:
+      - name: has_qv
+        description: "Quick view"
+        data_tests:
+          - not_null
   - name: fact_campaign_effectiveness_arsen_c
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+    description: "Fact table. Records data on marketing campaign performance."
+    columns:
+      - name: app_id
+        description: "App ID"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['web-prod', 'ios-prod', 'android-prod']
   - name: fact_demand_forecasting_arsen_c
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+    description: "Fact table. Contains demand forecasting metrics, projecting future demand based on sales volume, price, and monthly demand."
+    columns:
+      - name: average_monthly_demand
+        description: "Demand"
+        data_tests:
+          - not_null
   - name: fact_inventory_condition_arsen_c
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+    description: "Fact table. Tracks inventory storage condition details, allowing to spot discrepancies in how products should be stored."
+    columns:
+      - name: storage_condition
+        description: "Storage condition"
+        data_tests:
+          - not_null
   - name: fact_user_decisions_arsen_c
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+    description: "Fact table. Captures user interactions with the website to analyze behavior patterns."
+    columns:
+      - name: banner
+        description: "Banner"
+        data_tests:
+          - not_null
+  - name: fact_inventory_stock_levels_arsen_c
+    description: "Stores current and historical stock levels for products, helping to monitor and manage inventory availability."
+    columns:
+        - name: safety_stock
+          description: "Safety Stock"
+          data_tests:
+            - not_null

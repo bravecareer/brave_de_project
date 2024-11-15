@@ -20,7 +20,6 @@ WITH product_data AS (
       p.weight_grams,
       p.discount_percentage
    FROM {{ source('de_project', 'product_data') }} p
-   WHERE p.product_id IS NOT NULL
 )
 
 SELECT * FROM product_data
