@@ -15,9 +15,11 @@ WITH product_performance AS (
         MAX(p.discount_percentage) AS discount_percentage,
         MAX(p.weight_grams) AS weight_grams
     FROM
-        brave_database.de_project.user_journey uj
+        --brave_database.de_project.user_journey uj
+        {{ source('de_project', 'user_journey') }} uj
     JOIN
-        brave_database.de_project.product_data p
+        --brave_database.de_project.product_data p
+        {{ source('de_project', 'product_data') }} p
     ON
         uj.product_id = p.product_id
     GROUP BY

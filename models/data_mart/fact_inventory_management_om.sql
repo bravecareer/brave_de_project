@@ -26,9 +26,13 @@ WITH inventory_data AS (
             ELSE 'Action Needed'
         END AS restock_status
     FROM
-        brave_database.de_project.dim_inventory i
+       --brave_database.de_project.dim_inventory i
+       {{ source('de_project', 'dim_inventory') }} i
+       --    {{ ref('brave_database.de_project', 'dim_inventory') }} i
     JOIN
-        brave_database.de_project.dim_product p
+       --brave_database.de_project.dim_product p
+        {{ source('de_project', 'dim_product_om') }} p
+        --{{ ref('brave_database.de_project', 'dim_product') }} p
     ON
         i.product_id = p.product_id
     GROUP BY
