@@ -46,7 +46,7 @@ inventory_management AS (
                 
     FROM inventory_data id
     INNER JOIN inv_detail idt 
-        ON id.inventory_status = idt.storage_condition
+        ON idt.storage_condition = id.storage_condition
         AND idt.inventory_status = id.inventory_status
     LEFT JOIN product_data pd ON id.product_id = pd.product_id
 )
