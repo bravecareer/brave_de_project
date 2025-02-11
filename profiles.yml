@@ -10,7 +10,7 @@ brave_de_project:
       user: BRAVE_LEAD_JOCELYN_CUI
       password: 940401lM
 
-      role: TABLE_MANAGER
+      role: PROJECT_LEARNER_DE_READ
       database: BRAVE_DATABASE
       warehouse: BRAVE_WAREHOUSE
       schema: PROJECT_TEST
