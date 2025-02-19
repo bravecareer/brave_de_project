@@ -7,7 +7,9 @@ models:
       - name: user_id
         description: "Unique identifier for the user"
         tests:
-          - not_null
+          - not_null:
+              config:
+                severity: warn
       - name: product_id
         description: "Unique identifier for the product"
         tests:

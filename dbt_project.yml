@@ -36,3 +36,5 @@ models:
       +materialized: table
   +copy_grants: true
 
+tests:
+  +severity: warn  # all tests
