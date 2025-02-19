@@ -16,6 +16,8 @@ WITH user_journey AS (
        uj.session_id,
        to_timestamp(replace(timestamp,' UTC','')) AS timestamp
    FROM {{ source('de_project', 'user_journey') }} uj
+   WHERE timestamp >= CURRENT_DATE() - 5
+
 ),
 
 
