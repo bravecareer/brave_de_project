@@ -18,6 +18,8 @@ WITH product_data AS (
        p.weight_grams,
        p.discount_percentage
    FROM {{ source('de_project', 'product_data') }} p
+   WHERE manufacturing_date >= CURRENT_DATE() - 5
+
 )
 
 
