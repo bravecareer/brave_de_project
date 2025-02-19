@@ -1,5 +1,5 @@
 {{ config(
-   materialized='incremental',
+   materialized='view',
    unique_key='inventory_id'
 ) }}
 
@@ -26,6 +26,7 @@ WITH inventory_data AS (
        i.last_restock_date,
        i.next_restock_date
    FROM {{ source('de_project', 'inventory_data') }} i
+   WHERE last_audit_date >= CURRENT_DATE() - 5 
 )
 
 

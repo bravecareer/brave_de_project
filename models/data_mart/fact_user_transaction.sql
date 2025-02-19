@@ -14,6 +14,7 @@ WITH user_journey AS (
        uj.timestamp
    FROM {{ source('de_project', 'user_journey') }} uj
    WHERE uj.has_purchase = TRUE
+      AND timestamp >= CURRENT_DATE() - 5
 ),
 
 transaction_data AS (
