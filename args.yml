@@ -1,0 +1,4 @@
+schema_name: PROJECT_TEST
+database_name: BRAVE_DATABASE
+generate_columns: true
+include_descriptions: true

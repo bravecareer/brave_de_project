@@ -1,0 +1,115 @@
+erDiagram
+    dim_user {
+        int user_id PK
+        string email
+        string account_status
+    }
+
+    dim_product {
+        int product_id PK
+        string product_name
+        string product_category
+        decimal price
+        string product_color
+        date manufacturing_date
+        date expiration_date
+        string warranty_period
+        decimal rating
+        int weight_grams
+        decimal discount_percentage
+    }
+
+    dim_inventory {
+        int inventory_id PK
+        int product_id FK
+        int quantity_in_stock
+        int warehouse_id
+        decimal rating
+        string stock_level
+        int sales_volume
+        date restock_date
+        decimal weight
+        int supplier_id
+        json discounts
+        string storage_condition
+        int safety_stock
+        string inventory_status
+        decimal average_monthly_demand
+        date last_audit_date
+        date last_restock_date
+        date next_restock_date
+        decimal total_inventory_value
+        decimal estimated_days_of_inventory
+    }
+
+    dim_search_event {
+        string search_event_id PK
+        string search_terms
+        string search_type
+        string search_terms_type
+        int search_results_count
+    }
+
+    fact_user_engagement {
+        int user_id FK
+        int product_id FK
+        string search_event_id FK
+        boolean has_qv
+        boolean has_pdp
+        boolean has_atc
+        boolean has_purchase
+        string session_id
+        timestamp timestamp
+    }
+
+    fact_user_transaction {
+        int user_id FK
+        int product_id FK
+        string search_event_id FK
+        string session_id
+        string cart_id
+        boolean has_purchase
+        int quantity_sold
+        decimal total_amount
+        timestamp timestamp
+    }
+
+    fact_search_metrics {
+        string search_event_id FK
+        date date_key
+        string search_terms
+        string search_type
+        string search_terms_type
+        int search_results_count
+        int total_searches
+        int total_quick_views
+        int total_product_detail_views
+        int total_add_to_cart
+        int total_purchases
+        decimal quick_view_rate
+        decimal atc_rate
+        decimal purchase_rate
+    }
+
+    fact_inventory_metrics {
+        int product_id FK
+        int warehouse_id
+        date date_key
+        int current_stock_level
+        int safety_stock_level
+        int restock_point
+        decimal unit_price
+        decimal total_inventory_value
+        string stock_status
+        decimal estimated_days_of_inventory
+    }
+
+    dim_user ||--o{ fact_user_engagement : has
+    dim_user ||--o{ fact_user_transaction : makes
+    dim_product ||--o{ fact_user_engagement : viewed_in
+    dim_product ||--o{ fact_user_transaction : bought_in
+    dim_product ||--|| dim_inventory : has_inventory
+    dim_product ||--o{ fact_inventory_metrics : tracks
+    dim_search_event ||--o{ fact_user_engagement : triggers
+    dim_search_event ||--o{ fact_user_transaction : leads_to
+    dim_search_event ||--|| fact_search_metrics : analyzed_in

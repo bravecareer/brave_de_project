@@ -1,22 +1,19 @@
 {{ config(
-   materialized='incremental',
-   unique_key='search_event_id'
+    materialized='view',
+    unique_key='search_event_id'
 ) }}
 
-
-WITH search_event_data AS (
-   SELECT
-       se.search_event_id,
-       se.session_id,
-       se.cart_id,
-       se.search_terms,
-       se.search_results_count AS search_results, -- Renaming column for clarity
-       se.search_type,
-       se.timestamp
-   FROM {{ source('de_project', 'user_journey') }} se
-   WHERE se.search_event_id IS NOT NULL
-      AND timestamp >= CURRENT_DATE() - 5
+-- Get search event data with search details
+WITH search_events AS (
+    SELECT
+        uj.search_event_id,
+        uj.search_terms,
+        uj.search_type,
+        uj.search_feature,
+        uj.search_terms_type,
+        uj.search_results_count,
+        uj.event_timestamp
+    FROM {{ ref('stg_user_journey') }} uj
 )
 
-
-SELECT * FROM search_event_data
+SELECT * FROM search_events

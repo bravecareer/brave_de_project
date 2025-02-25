@@ -1,0 +1,226 @@
+version: 2
+
+models:
+  - name: stg_inventory_data
+    description: "Staging table for inventory data"
+    columns:
+      - name: inventory_id
+        description: "Unique identifier for inventory record"
+        tests:
+          - unique
+          - not_null
+      
+      - name: product_id
+        description: "Product identifier"
+        tests:
+          - not_null
+          
+      - name: warehouse_id
+        description: "Warehouse identifier"
+        tests:
+          - not_null
+          
+      - name: stock_level
+        description: "Current stock level"
+        tests:
+          - not_null
+          
+      - name: restock_date
+        description: "Date when inventory was restocked"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "restock_date <= CURRENT_DATE()"
+          
+      - name: supplier_id
+        description: "Supplier identifier"
+        tests:
+          - not_null
+          
+      - name: storage_condition
+        description: "Storage condition of the product"
+        tests:
+          - not_null
+          
+      - name: inventory_status
+        description: "Current status of the inventory"
+        tests:
+          - not_null
+          
+      - name: last_audit_date
+        description: "Last audit timestamp"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "last_audit_date <= CURRENT_DATE()"
+          
+      - name: reorder_level
+        description: "Level at which reorder should be triggered"
+        tests:
+          - not_null
+          
+      - name: quantity_in_stock
+        description: "Current quantity in stock"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "quantity_in_stock >= 0"
+          
+      - name: rating
+        description: "Product rating"
+        tests:
+          - not_null
+          
+      - name: sales_volume
+        description: "Sales volume"
+        tests:
+          - not_null
+          
+      - name: weight
+        description: "Product weight"
+        tests:
+          - not_null
+          
+      - name: discounts
+        description: "Available discounts"
+        tests:
+          - not_null
+          
+      - name: safety_stock
+        description: "Safety stock level"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "safety_stock >= 0"
+          
+      - name: average_monthly_demand
+        description: "Average monthly demand"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "average_monthly_demand >= 0"
+          
+      - name: last_restock_date
+        description: "Date of last restock"
+        tests:
+          - not_null
+          
+      - name: next_restock_date
+        description: "Planned date for next restock"
+        tests:
+          - not_null
+
+  - name: stg_product_data
+    description: "Staging table for product data"
+    columns:
+      - name: product_id
+        description: "Unique identifier for product"
+        tests:
+          - unique
+          - not_null
+      - name: product_name
+        description: "Product name"
+        tests:
+          - not_null
+      - name: price
+        description: "Product price"
+        tests:
+          - not_null
+      - name: product_category
+        description: "Product category"
+        tests:
+          - not_null
+      - name: supplier_id
+        description: "Supplier identifier"
+        tests:
+          - not_null
+      - name: manufacturing_date
+        description: "Manufacturing date"
+        tests:
+          - not_null
+      - name: weight_grams
+        description: "Product weight in grams"
+        tests:
+          - not_null
+      - name: discount_percentage
+        description: "Discount percentage"
+        tests:
+          - not_null
+
+  - name: stg_user_data
+    description: "Staging table for user data"
+    columns:
+      - name: user_id
+        description: "Unique identifier for user"
+        tests:
+          - unique
+          - not_null
+      - name: email
+        description: "User email"
+        tests:
+          - not_null
+      - name: first_name
+        description: "User's first name"
+        tests:
+          - not_null
+      - name: last_name
+        description: "User's last name"
+        tests:
+          - not_null
+      - name: signup_date
+        description: "User signup date"
+        tests:
+          - not_null
+      - name: account_status
+        description: "Account status"
+        tests:
+          - not_null
+
+  - name: stg_user_journey
+    description: "Staging table for user journey data"
+    columns:
+      - name: search_event_id
+        description: "Unique identifier for search event"
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        description: "User identifier"
+        tests:
+          - not_null
+      - name: timestamp
+        description: "Event timestamp"
+        tests:
+          - not_null
+      - name: has_qv
+        description: "Quick view flag"
+        tests:
+          - not_null
+      - name: has_pdp
+        description: "Product detail page view flag"
+        tests:
+          - not_null
+      - name: has_atc
+        description: "Add to cart flag"
+        tests:
+          - not_null
+      - name: has_purchase
+        description: "Purchase flag"
+        tests:
+          - not_null
+      - name: search_terms
+        description: "Search query terms"
+      - name: search_results_count
+        description: "Number of search results"
+      - name: session_id
+        description: "Session identifier"
+        tests:
+          - not_null
+      - name: cart_id
+        description: "Cart identifier"
+      - name: search_feature
+        description: "Search feature type"
+      - name: search_type
+        description: "Type of search"
+      - name: search_terms_type
+        description: "Type of search terms"

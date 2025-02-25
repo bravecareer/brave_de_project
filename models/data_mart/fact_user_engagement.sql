@@ -3,7 +3,7 @@
    unique_key= ['user_id', 'search_event_id', 'timestamp']
 ) }}
 
-
+-- Get user journey data with basic filtering
 WITH user_journey AS (
    SELECT
        uj.user_id,
@@ -14,28 +14,27 @@ WITH user_journey AS (
        uj.has_atc,
        uj.has_purchase,
        uj.session_id,
-       to_timestamp(replace(timestamp,' UTC','')) AS timestamp
-   FROM {{ source('de_project', 'user_journey') }} uj
-   WHERE timestamp >= CURRENT_DATE() - 5
-
+       uj.event_timestamp as timestamp
+   FROM {{ ref('stg_user_journey') }} uj
+   WHERE event_timestamp >= CURRENT_DATE() - 5
 ),
 
-
+-- Filter for active users only
 valid_users AS (
    SELECT
        u.user_id
-   FROM {{ source('de_project', 'user_data') }} u
+   FROM {{ ref('stg_user_data') }} u
    WHERE u.account_status = 'active'
 ),
 
-
+-- Get valid products
 valid_products AS (
    SELECT
        p.product_id
-   FROM {{ source('de_project', 'product_data') }} p
+   FROM {{ ref('stg_product_data') }} p
 ),
 
-
+-- Combine all data with validations
 final AS (
    SELECT
        uj.user_id,
@@ -51,6 +50,5 @@ final AS (
    LEFT JOIN valid_users vu ON uj.user_id = vu.user_id
    LEFT JOIN valid_products vp ON uj.product_id = vp.product_id
 )
-
 
 SELECT * FROM final

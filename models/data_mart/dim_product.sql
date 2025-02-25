@@ -3,7 +3,7 @@
    unique_key='product_id'
 ) }}
 
-
+-- Get product data with recent manufacturing dates
 WITH product_data AS (
    SELECT
        p.product_id,
@@ -17,10 +17,8 @@ WITH product_data AS (
        p.rating,
        p.weight_grams,
        p.discount_percentage
-   FROM {{ source('de_project', 'product_data') }} p
+   FROM {{ ref('stg_product_data') }} p
    WHERE manufacturing_date >= CURRENT_DATE() - 5
-
 )
-
 
 SELECT * FROM product_data

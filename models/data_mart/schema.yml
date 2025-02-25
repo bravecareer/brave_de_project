@@ -1,36 +1,181 @@
 version: 2
 
 models:
-  - name: fact_user_engagement  # Replace with your actual model name
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: dim_inventory
+    description: "Dimension table for inventory"
     columns:
-      - name: user_id
-        description: "Unique identifier for the user"
+      - name: inventory_id
+        description: "Primary key"
         tests:
-          - not_null:
-              config:
-                severity: warn
-      - name: product_id
-        description: "Unique identifier for the product"
+          - relationships:
+              to: ref('stg_inventory_data')
+              field: inventory_id
+      - name: quantity_in_stock
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: "quantity_in_stock >= 0"
+      - name: total_inventory_value
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "total_inventory_value >= 0"
+
+  - name: dim_product
+    description: "Dimension table for products"
+    columns:
+      - name: product_id
+        description: "Primary key"
+        tests:
+          - relationships:
+              to: ref('stg_product_data')
+              field: product_id
+
+  - name: dim_user
+    description: "Dimension table for users"
+    columns:
+      - name: user_id
+        description: "Primary key"
+        tests:
+          - relationships:
+              to: ref('stg_user_data')
+              field: user_id
+      - name: email
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "email LIKE '%@%.%'"
+
+  - name: dim_search_event
+    description: "Dimension table for search events"
+    columns:
+      - name: search_event_id
+        description: "Primary key"
+        tests:
+          - relationships:
+              to: ref('stg_user_journey')
+              field: search_event_id
+
+  - name: fact_user_engagement
+    description: "Fact table for user engagement"
+    columns:
+      - name: user_id
+        description: "Foreign key to dim_user"
+        tests:
+          - relationships:
+              to: ref('dim_user')
+              field: user_id
+      - name: timestamp
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "timestamp <= CURRENT_TIMESTAMP()"
+
+  - name: fact_user_transaction
+    description: "Fact table for user transactions"
+    columns:
+      - name: user_id
+        description: "Foreign key to dim_user"
+        tests:
+          - relationships:
+              to: ref('dim_user')
+              field: user_id
+      - name: product_id
+        description: "Foreign key to dim_product"
+        tests:
+          - relationships:
+              to: ref('dim_product')
+              field: product_id
+      - name: total_amount
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "total_amount >= 0"
+      - name: quantity_sold
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "quantity_sold > 0"
+
+  - name: fact_search_metrics
+    description: "Fact table for analyzing search effectiveness and conversion rates"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - search_event_id
+            - date_key
+    columns:
       - name: search_event_id
         description: "Unique identifier for the search event"
         tests:
           - not_null
-      - name: timestamp
-        description: "Timestamp of the event"
+          - relationships:
+              to: ref('stg_user_journey')
+              field: search_event_id
+      
+      - name: date_key
+        description: "Date of the search event"
         tests:
           - not_null
-      - name: has_qv
-        description: "Boolean flag indicating whether the user has viewed the product"
-      - name: has_pdp
-        description: "Boolean flag indicating whether the user has viewed the product detail page"
-      - name: has_atc
-        description: "Boolean flag indicating whether the user has added to cart"
-      - name: has_purchase
-        description: "Boolean flag indicating whether the user has made a purchase"
-      - name: session_id
-        description: "Session identifier for the user interaction"
+          - dbt_utils.expression_is_true:
+              expression: "date_key <= CURRENT_DATE()"
+      
+      - name: search_terms
+        description: "The search keywords used"
+        
+      - name: search_type
+        description: "Type of search performed"
+        
+      - name: search_terms_type
+        description: "Classification of search terms"
+        
+      - name: search_results_count
+        description: "Number of results returned by the search"
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: "search_results_count >= 0"
+      
+      - name: total_searches
+        description: "Total number of searches"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "total_searches > 0"
+      
+      - name: total_quick_views
+        description: "Number of quick views from search results"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "total_quick_views <= total_searches"
+      
+      - name: total_product_detail_views
+        description: "Number of product detail page views"
+        
+      - name: total_add_to_cart
+        description: "Number of add to cart events"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "total_add_to_cart <= total_quick_views"
+      
+      - name: total_purchases
+        description: "Number of purchases"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "total_purchases <= total_add_to_cart"
+        
+      - name: quick_view_rate
+        description: "Percentage of searches resulting in quick views"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "quick_view_rate >= 0 and quick_view_rate <= 100"
+              
+      - name: atc_rate
+        description: "Percentage of quick views resulting in add to cart"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "atc_rate >= 0 and atc_rate <= 100"
+              
+      - name: purchase_rate
+        description: "Percentage of add to carts resulting in purchase"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "purchase_rate >= 0 and purchase_rate <= 100"

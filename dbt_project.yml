@@ -29,7 +29,10 @@ seeds:
 models:
   brave_de_project:
     database: BRAVE_DATABASE
-    schema: DE_PROJECT
+    schema: PROJECT_TEST
+    staging:
+      +materialized: table
+      +schema: staging
     raw_data:
       +materialized: table
     data_mart:

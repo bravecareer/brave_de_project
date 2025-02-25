@@ -21,6 +21,3 @@ unit_tests:
         - {user_id: 1, product_id: 100, timestamp: '2024-02-17 18:41:07'}
         - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
         - {user_id: 999, product_id: 999, timestamp: null}
-
-
-
