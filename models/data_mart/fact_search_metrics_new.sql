@@ -40,7 +40,7 @@ daily_search_metrics AS (
         COUNT(CASE WHEN has_atc = TRUE THEN 1 END) as total_add_to_cart,
         COUNT(CASE WHEN has_purchase = TRUE THEN 1 END) as total_purchases,
         
-        -- Calculate conversion rates
+        -- Calculate conversion rates using SQL
         ROUND(COUNT(CASE WHEN has_qv = TRUE THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0), 2) as quick_view_rate,
         ROUND(COUNT(CASE WHEN has_atc = TRUE THEN 1 END) * 100.0 / NULLIF(COUNT(CASE WHEN has_qv = TRUE THEN 1 END), 0), 2) as atc_rate,
         ROUND(COUNT(CASE WHEN has_purchase = TRUE THEN 1 END) * 100.0 / NULLIF(COUNT(CASE WHEN has_atc = TRUE THEN 1 END), 0), 2) as purchase_rate

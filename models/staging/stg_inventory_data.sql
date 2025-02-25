@@ -14,54 +14,34 @@ with source as (
 staged as (
     select
         -- Identifiers
-        COALESCE(inventory_id, -1) as inventory_id,
-        COALESCE(product_id, -1) as product_id,
-        COALESCE(warehouse_id, -1) as warehouse_id,
-        COALESCE(supplier_id, -1) as supplier_id,
+        {{ safe_numeric('inventory_id', min_value=-1) }} as inventory_id,
+        {{ safe_numeric('product_id', min_value=-1) }} as product_id,
+        {{ safe_numeric('warehouse_id', min_value=-1) }} as warehouse_id,
+        {{ safe_numeric('supplier_id', min_value=-1) }} as supplier_id,
         
         -- Inventory metrics
-        case 
-            when stock_level is null then 0
-            when stock_level < 0 then 0 
-            else stock_level 
-        end as stock_level,
+        {{ safe_numeric('stock_level', min_value=0) }} as stock_level,
         
         -- Inventory thresholds
-        case 
-            when reorder_level is null then 0
-            when reorder_level < 0 then 0 
-            else reorder_level 
-        end as reorder_level,
-        case 
-            when safety_stock is null then 0
-            when safety_stock < 0 then 0 
-            else safety_stock 
-        end as safety_stock,
+        {{ safe_numeric('reorder_level', min_value=0) }} as reorder_level,
+        {{ safe_numeric('safety_stock', min_value=0) }} as safety_stock,
         
         -- Dates
-        COALESCE(restock_date, CURRENT_DATE()) as restock_date,
-        COALESCE(last_audit_date, CURRENT_DATE()) as last_audit_date,
-        COALESCE(last_restock_date, CURRENT_DATE()) as last_restock_date,
-        COALESCE(next_restock_date, CURRENT_DATE()) as next_restock_date,
+        {{ default_value('restock_date', 'CURRENT_DATE()') }} as restock_date,
+        {{ default_value('last_audit_date', 'CURRENT_DATE()') }} as last_audit_date,
+        {{ default_value('last_restock_date', 'CURRENT_DATE()') }} as last_restock_date,
+        {{ default_value('next_restock_date', 'CURRENT_DATE()') }} as next_restock_date,
         
         -- Status and conditions
-        COALESCE(storage_condition, 'UNKNOWN') as storage_condition,
-        COALESCE(inventory_status, 'UNKNOWN') as inventory_status,
+        {{ default_value('storage_condition', "'UNKNOWN'") }} as storage_condition,
+        {{ default_value('inventory_status', "'UNKNOWN'") }} as inventory_status,
         
         -- Additional metrics
-        COALESCE(rating, '0') as rating,
-        case 
-            when sales_volume is null then 0
-            when sales_volume < 0 then 0 
-            else sales_volume 
-        end as sales_volume,
-        COALESCE(weight, '0') as weight,
-        COALESCE(discounts, '0') as discounts,
-        case 
-            when average_monthly_demand is null then 0
-            when average_monthly_demand < 0 then 0 
-            else average_monthly_demand 
-        end as average_monthly_demand,
+        {{ default_value('rating', "'0'") }} as rating,
+        {{ safe_numeric('sales_volume', min_value=0) }} as sales_volume,
+        {{ default_value('weight', "'0'") }} as weight,
+        {{ default_value('discounts', "'0'") }} as discounts,
+        {{ safe_numeric('average_monthly_demand', min_value=0) }} as average_monthly_demand,
         
         -- Data quality checks
         case 
