@@ -12,6 +12,7 @@ WITH inventory_daily AS (
         i.current_stock_level,
         i.safety_stock_level,
         i.restock_point,
+        i.average_monthly_demand,  
         p.price as unit_price
     FROM {{ ref('dim_inventory') }} i
     LEFT JOIN {{ ref('dim_product') }} p ON i.product_id = p.product_id
@@ -38,10 +39,10 @@ inventory_metrics AS (
             WHEN current_stock_level <= restock_point THEN 'Below Restock Point'
             ELSE 'Adequate'
         END as stock_status,
-        -- Days of inventory calculation (assuming average daily demand)
+        -- Days of inventory calculation using average daily demand
         CASE 
-            WHEN safety_stock_level > 0 
-            THEN ROUND(current_stock_level::FLOAT / safety_stock_level * 30, 1)
+            WHEN average_monthly_demand > 0 
+            THEN ROUND(current_stock_level::FLOAT / (average_monthly_demand / 30), 1)
             ELSE NULL 
         END as estimated_days_of_inventory
     FROM inventory_daily

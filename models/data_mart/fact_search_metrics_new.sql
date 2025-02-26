@@ -6,12 +6,16 @@
     )
 }}
 
+-- Integrated search event dimensions and metrics in a single fact table
+-- This combines the previous dim_search_event and fact_search_metrics_new tables
 WITH search_events AS (
     SELECT
         search_event_id,
-        DATE(timestamp) as date_key,
+        DATE(event_timestamp) as date_key,
+        event_timestamp,      -- Added from dim_search_event
         search_terms,
         search_type,
+        search_feature,       -- Added from dim_search_event
         search_terms_type,
         search_results_count,
         has_qv,
@@ -21,7 +25,7 @@ WITH search_events AS (
         product_id
     FROM {{ ref('stg_user_journey') }}
     {% if is_incremental() %}
-    WHERE DATE(timestamp) >= CURRENT_DATE() - 5
+    WHERE DATE(event_timestamp) >= CURRENT_DATE() - 5
     {% endif %}
 ),
 
@@ -29,8 +33,10 @@ daily_search_metrics AS (
     SELECT
         search_event_id,
         date_key,
+        MAX(event_timestamp) as event_timestamp,  -- Keep the timestamp from source
         search_terms,
         search_type,
+        MAX(search_feature) as search_feature,    -- Include dimension attribute 
         search_terms_type,
         search_results_count,
         -- Calculate engagement metrics
@@ -51,7 +57,8 @@ daily_search_metrics AS (
         search_terms,
         search_type,
         search_terms_type,
-        search_results_count
+        search_results_count,
+        search_feature
 )
 
 SELECT * FROM daily_search_metrics

@@ -3,9 +3,11 @@ SELECT
   user_id,
   product_id,
   search_event_id,
-  timestamp
-FROM {{ ref('fact_user_engagement') }}
+  timestamp,
+  cart_id
+FROM {{ ref('fact_user_behavior') }}
 WHERE user_id IS NULL
    OR product_id IS NULL
    OR search_event_id IS NULL
    OR timestamp IS NULL
+   OR cart_id IS NULL

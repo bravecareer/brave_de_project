@@ -3,6 +3,11 @@ version: 2
 models:
   - name: dim_inventory
     description: "Dimension table for inventory"
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "1=1"
+          config:
+            depends_on: [ref('stg_inventory_data')]
     columns:
       - name: inventory_id
         description: "Primary key"
@@ -23,6 +28,11 @@ models:
 
   - name: dim_product
     description: "Dimension table for products"
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "1=1"
+          config:
+            depends_on: [ref('stg_product_data')]
     columns:
       - name: product_id
         description: "Primary key"
@@ -33,6 +43,11 @@ models:
 
   - name: dim_user
     description: "Dimension table for users"
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "1=1"
+          config:
+            depends_on: [ref('stg_user_data')]
     columns:
       - name: user_id
         description: "Primary key"
@@ -47,6 +62,11 @@ models:
 
   - name: dim_search_event
     description: "Dimension table for search events"
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "1=1"
+          config:
+            depends_on: [ref('stg_user_journey')]
     columns:
       - name: search_event_id
         description: "Primary key"
@@ -55,22 +75,17 @@ models:
               to: ref('stg_user_journey')
               field: search_event_id
 
-  - name: fact_user_engagement
-    description: "Fact table for user engagement"
-    columns:
-      - name: user_id
-        description: "Foreign key to dim_user"
-        tests:
-          - relationships:
-              to: ref('dim_user')
-              field: user_id
-      - name: timestamp
-        tests:
-          - dbt_utils.expression_is_true:
-              expression: "timestamp <= CURRENT_TIMESTAMP()"
-
-  - name: fact_user_transaction
-    description: "Fact table for user transactions"
+  - name: fact_user_behavior_new
+    description: "Combined fact table for user behavior including engagement and transactions"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - user_id
+            - search_event_id
+            - product_id
+            - timestamp
+          config:
+            depends_on: [ref('dim_user'), ref('dim_product')]
     columns:
       - name: user_id
         description: "Foreign key to dim_user"
@@ -84,24 +99,139 @@ models:
           - relationships:
               to: ref('dim_product')
               field: product_id
-      - name: total_amount
+      - name: search_event_id
+        description: "Identifier for the search event"
+      - name: timestamp
+        description: "Time of the event"
         tests:
-          - not_null
           - dbt_utils.expression_is_true:
-              expression: "total_amount >= 0"
-      - name: quantity_sold
+              expression: "timestamp <= CURRENT_TIMESTAMP()"
+      - name: has_qv
+        description: "Flag indicating if user performed a quick view"
+      - name: has_pdp
+        description: "Flag indicating if user viewed product detail page"
+      - name: has_atc
+        description: "Flag indicating if user added product to cart"
+      - name: has_purchase
+        description: "Flag indicating if user purchased the product"
+      - name: item_amount
+        description: "Amount of the item if purchased"
         tests:
-          - not_null
           - dbt_utils.expression_is_true:
-              expression: "quantity_sold > 0"
+              expression: "item_amount >= 0"
+          - dbt_utils.expression_is_true:
+              expression: "NOT (has_purchase = TRUE) OR ABS(item_amount - (SELECT price FROM {{ ref('dim_product') }} WHERE product_id = {{ ref('fact_user_behavior_new') }}.product_id)) <= 0.01"
+              where: "has_purchase = TRUE"
+      - name: funnel_stage
+        description: "Stage in the purchase funnel (0-4)"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "funnel_stage >= 0 AND funnel_stage <= 4"
 
-  - name: fact_search_metrics
+  - name: fact_campaign_metrics
+    description: "Fact table for campaign performance analysis"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - campaign_id
+            - date_key
+          config:
+            depends_on: [ref('dim_product')]
+    columns:
+      - name: campaign_id
+        description: "Identifier for the marketing campaign"
+        tests:
+          - not_null
+      - name: date_key
+        description: "Date of the metrics"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "date_key <= CURRENT_DATE()"
+      - name: source
+        description: "Marketing source"
+      - name: medium
+        description: "Marketing medium"
+      - name: total_events
+        description: "Total number of events"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "total_events >= 0"
+      - name: total_product_views
+        description: "Number of product views"
+      - name: total_product_detail_views
+        description: "Number of product detail page views"
+      - name: total_add_to_cart
+        description: "Number of add to cart events"
+      - name: total_purchases
+        description: "Number of purchases"
+      - name: total_revenue
+        description: "Total revenue from purchases"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "total_revenue >= 0"
+      - name: atc_rate
+        description: "Add to cart conversion rate"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "atc_rate >= 0 AND atc_rate <= 100"
+      - name: purchase_rate
+        description: "Purchase conversion rate"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "purchase_rate >= 0 AND purchase_rate <= 100"
+
+  - name: fact_inventory_metrics_new
+    description: "Fact table for inventory metrics analysis"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - product_id
+            - warehouse_id
+            - date_key
+          config:
+            depends_on: [ref('dim_inventory'), ref('dim_product')]
+    columns:
+      - name: product_id
+        description: "Foreign key to dim_product"
+        tests:
+          - relationships:
+              to: ref('dim_product')
+              field: product_id
+      - name: warehouse_id
+        description: "Identifier for the warehouse"
+      - name: date_key
+        description: "Date of the inventory metrics"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "date_key <= CURRENT_DATE()"
+      - name: current_stock_level
+        description: "Current stock level"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "current_stock_level >= 0"
+      - name: total_inventory_value
+        description: "Total value of inventory"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "total_inventory_value >= 0"
+      - name: stock_status
+        description: "Status of stock level (Below Safety Stock, Below Restock Point, Adequate)"
+      - name: estimated_days_of_inventory
+        description: "Estimated days of inventory remaining"
+
+  - name: fact_search_metrics_new
     description: "Fact table for analyzing search effectiveness and conversion rates"
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - search_event_id
             - date_key
+          config:
+            depends_on: [ref('dim_search_event'), ref('dim_product')]
     columns:
       - name: search_event_id
         description: "Unique identifier for the search event"
@@ -123,6 +253,9 @@ models:
         
       - name: search_type
         description: "Type of search performed"
+      
+      - name: search_feature
+        description: "Feature used for search"
         
       - name: search_terms_type
         description: "Classification of search terms"

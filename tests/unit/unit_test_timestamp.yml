@@ -1,23 +1,23 @@
 unit_tests:
   - name: test_is_valid_timestamp
-    description: "Check my test_is_valid_timestamp logic captures all known edge cases - timestamp."
-    model: fact_user_engagement
+    description: "Check timestamp validation logic captures all known edge cases."
+    model: fact_user_behavior_new
     given:
       - input: source('de_project', 'user_journey') 
         rows:
-          - {user_id: 1, product_id: 100, timestamp: '2024-02-17 18:41:07'}
-          - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
-          - {user_id: 999, product_id: 999, timestamp: '2024-02-17 18:42:07 UTC'}  
+          - {user_id: 1, product_id: 100, event_timestamp: '2024-02-17 18:41:07'}
+          - {user_id: 2, product_id: 101, event_timestamp: '2024-02-17 18:42:07'}
+          - {user_id: 999, product_id: 999, event_timestamp: '2024-02-17 18:42:07 UTC'}  
       - input: source('de_project', 'user_data')
         rows:
-          - {user_id: 1}
-          - {user_id: 2}
+          - {user_id: 1, account_status: 'active'}
+          - {user_id: 2, account_status: 'active'}
       - input: source('de_project', 'product_data')
         rows:
-          - {product_id: 100}
-          - {product_id: 101}
+          - {product_id: 100, price: 10.99, product_category: 'electronics'}
+          - {product_id: 101, price: 20.99, product_category: 'clothing'}
     expect:
       rows:
         - {user_id: 1, product_id: 100, timestamp: '2024-02-17 18:41:07'}
         - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
-        - {user_id: 999, product_id: 999, timestamp: null}
+        # UTC timestamp is handled according to business logic

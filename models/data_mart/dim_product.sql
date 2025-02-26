@@ -3,7 +3,7 @@
    unique_key='product_id'
 ) }}
 
--- Get product data with recent manufacturing dates
+-- Get all product data without date filtering
 WITH product_data AS (
    SELECT
        p.product_id,
@@ -18,7 +18,10 @@ WITH product_data AS (
        p.weight_grams,
        p.discount_percentage
    FROM {{ ref('stg_product_data') }} p
-   WHERE manufacturing_date >= CURRENT_DATE() - 5
+   {% if is_incremental() %}
+   -- Only process new or changed products in incremental runs
+   WHERE p.manufacturing_date >= CURRENT_DATE() - 5
+   {% endif %}
 )
 
 SELECT * FROM product_data

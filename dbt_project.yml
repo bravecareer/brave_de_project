@@ -40,4 +40,26 @@ models:
   +copy_grants: true
 
 tests:
-  +severity: warn  # all tests
+  +severity: warn  # Default severity level: warn
+  
+  # Classify tests by severity
+  brave_de_project:
+    # Critical data tests (error)
+    data-tests:
+      # Data integrity tests
+      test_no_nulls_in_columns: {+severity: error}
+      test_valid_user_ids: {+severity: error}
+      test_valid_product_ids: {+severity: error}
+      
+      # Data consistency tests
+      test_date_consistency_new: {+severity: error}
+      test_stock_level_consistency_new: {+severity: error}
+      
+      # Business metrics tests
+      test_inventory_metrics_calculation: {+severity: error}
+      test_campaign_metrics_consistency: {+severity: error}
+      test_conversion_rate_calculation: {+severity: error}
+      test_key_metrics_stability: {+severity: error}
+      
+      # Non-critical tests (warn)
+      test_valid_email: {+severity: warn}

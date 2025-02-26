@@ -10,7 +10,7 @@ WITH metrics_check AS (
             WHEN total_add_to_cart > total_quick_views THEN 'Add to cart cannot exceed quick views'
             WHEN total_purchases > total_add_to_cart THEN 'Purchases cannot exceed add to cart'
         END as validation_error
-    FROM {{ ref('fact_search_metrics') }}
+    FROM {{ ref('fact_search_metrics_new') }}  
     WHERE total_quick_views > total_searches
         OR total_add_to_cart > total_quick_views
         OR total_purchases > total_add_to_cart
