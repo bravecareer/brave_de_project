@@ -29,7 +29,7 @@ staged as (
         -- Account information
         {{ default_value('marketing_opt_in', "'NO'") }} as marketing_opt_in,
         {{ default_value('account_status', "'INACTIVE'") }} as account_status,
-        {{ safe_numeric('loyalty_points_balance') }} as loyalty_points_balance,
+        {{ default_value('loyalty_points_balance', "'0'") }} as loyalty_points_balance,
         
         -- Audit fields
         current_timestamp() as dbt_loaded_at,
@@ -38,4 +38,4 @@ staged as (
     from source
 )
 
-select * from staged 
+select * from staged

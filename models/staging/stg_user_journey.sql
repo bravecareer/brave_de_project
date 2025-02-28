@@ -35,7 +35,7 @@ staged as (
         {{ default_value('has_purchase', 'FALSE') }} as has_purchase,
         
         -- Search details
-        {{ safe_numeric('search_results_count') }} as search_results_count,
+        COALESCE(search_results_count, 0) as search_results_count,
         {{ default_value('search_terms', "'UNKNOWN'") }} as search_terms,
         {{ default_value('search_feature', "'UNKNOWN'") }} as search_feature,
         {{ default_value('search_terms_type', "'UNKNOWN'") }} as search_terms_type,
@@ -45,14 +45,18 @@ staged as (
         -- User metrics
         {{ default_value('date_last_login', "'UNKNOWN'") }} as date_last_login,
         {{ default_value('date_last_purchase', 'CURRENT_DATE()') }} as date_last_purchase,
-        {{ safe_numeric('lifetime_offline_orders_count') }} as lifetime_offline_orders_count,
-        {{ safe_numeric('lifetime_online_orders_count') }} as lifetime_online_orders_count,
+        COALESCE(lifetime_offline_orders_count, 0) as lifetime_offline_orders_count,
+        COALESCE(lifetime_online_orders_count, 0) as lifetime_online_orders_count,
         
         -- Store information
         {{ default_value('grocery_home_store_id', "'UNKNOWN'") }} as grocery_home_store_id,
         {{ default_value('rx_home_store_id', "'UNKNOWN'") }} as rx_home_store_id,
         {{ default_value('auto_localized_store_id', "'UNKNOWN'") }} as auto_localized_store_id,
-        {{ safe_numeric('selected_store_id', min_value=-1) }} as selected_store_id,
+        CASE 
+            WHEN selected_store_id IS NULL THEN -1
+            WHEN selected_store_id < -1 THEN -1
+            ELSE selected_store_id
+        END as selected_store_id,
         
         -- Fulfillment details
         {{ default_value('fulfillment_type', "'UNKNOWN'") }} as fulfillment_type,
@@ -63,12 +67,12 @@ staged as (
         
         -- Device information
         {{ default_value('device_class', "'UNKNOWN'") }} as device_class,
-        {{ safe_numeric('br_viewwidth') }} as br_viewwidth,
-        {{ safe_numeric('br_viewheight') }} as br_viewheight,
-        {{ safe_numeric('dvce_screenwidth') }} as dvce_screenwidth,
-        {{ safe_numeric('dvce_screenheight') }} as dvce_screenheight,
-        {{ safe_numeric('doc_width') }} as doc_width,
-        {{ safe_numeric('doc_height') }} as doc_height,
+        COALESCE(br_viewwidth, 0) as br_viewwidth,
+        COALESCE(br_viewheight, 0) as br_viewheight,
+        COALESCE(dvce_screenwidth, 0) as dvce_screenwidth,
+        COALESCE(dvce_screenheight, 0) as dvce_screenheight,
+        COALESCE(doc_width, 0) as doc_width,
+        COALESCE(doc_height, 0) as doc_height,
         
         -- Marketing information
         {{ default_value('mkt_medium', "'UNKNOWN'") }} as mkt_medium,
@@ -85,8 +89,8 @@ staged as (
         {{ default_value('geo_region', "'UNKNOWN'") }} as geo_region,
         {{ default_value('geo_city', "'UNKNOWN'") }} as geo_city,
         {{ default_value('geo_zipcode', "'UNKNOWN'") }} as geo_zipcode,
-        {{ safe_numeric('geo_latitude') }} as geo_latitude,
-        {{ safe_numeric('geo_longitude') }} as geo_longitude,
+        COALESCE(geo_latitude, 0) as geo_latitude,
+        COALESCE(geo_longitude, 0) as geo_longitude,
         {{ default_value('geo_timezone', "'UNKNOWN'") }} as geo_timezone,
         
         -- Product information

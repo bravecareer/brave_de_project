@@ -13,9 +13,8 @@ WITH inventory_daily AS (
         i.safety_stock_level,
         i.restock_point,
         i.average_monthly_demand,  
-        p.price as unit_price
+        i.unit_price
     FROM {{ ref('dim_inventory') }} i
-    LEFT JOIN {{ ref('dim_product') }} p ON i.product_id = p.product_id
     {% if is_incremental() %}
     WHERE DATE(i.last_updated) >= CURRENT_DATE() - 5
     {% endif %}

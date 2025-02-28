@@ -14,17 +14,41 @@ with source as (
 staged as (
     select
         -- Identifiers
-        {{ safe_numeric('inventory_id', min_value=-1) }} as inventory_id,
-        {{ safe_numeric('product_id', min_value=-1) }} as product_id,
-        {{ safe_numeric('warehouse_id', min_value=-1) }} as warehouse_id,
-        {{ safe_numeric('supplier_id', min_value=-1) }} as supplier_id,
+        CASE 
+            WHEN inventory_id IS NULL THEN -1
+            WHEN inventory_id < -1 THEN -1
+            ELSE inventory_id
+        END as inventory_id,
+        {{ default_value('product_id', "'UNKNOWN'") }} as product_id,
+        CASE 
+            WHEN warehouse_id IS NULL THEN -1
+            WHEN warehouse_id < -1 THEN -1
+            ELSE warehouse_id
+        END as warehouse_id,
+        CASE 
+            WHEN supplier_id IS NULL THEN -1
+            WHEN supplier_id < -1 THEN -1
+            ELSE supplier_id
+        END as supplier_id,
         
         -- Inventory metrics
-        {{ safe_numeric('stock_level', min_value=0) }} as stock_level,
+        CASE 
+            WHEN stock_level IS NULL THEN 0
+            WHEN stock_level < 0 THEN 0
+            ELSE stock_level
+        END as stock_level,
         
         -- Inventory thresholds
-        {{ safe_numeric('reorder_level', min_value=0) }} as reorder_level,
-        {{ safe_numeric('safety_stock', min_value=0) }} as safety_stock,
+        CASE 
+            WHEN reorder_level IS NULL THEN 0
+            WHEN reorder_level < 0 THEN 0
+            ELSE reorder_level
+        END as reorder_level,
+        CASE 
+            WHEN safety_stock IS NULL THEN 0
+            WHEN safety_stock < 0 THEN 0
+            ELSE safety_stock
+        END as safety_stock,
         
         -- Dates
         {{ default_value('restock_date', 'CURRENT_DATE()') }} as restock_date,
@@ -38,10 +62,18 @@ staged as (
         
         -- Additional metrics
         {{ default_value('rating', "'0'") }} as rating,
-        {{ safe_numeric('sales_volume', min_value=0) }} as sales_volume,
+        CASE 
+            WHEN sales_volume IS NULL THEN 0
+            WHEN sales_volume < 0 THEN 0
+            ELSE sales_volume
+        END as sales_volume,
         {{ default_value('weight', "'0'") }} as weight,
         {{ default_value('discounts', "'0'") }} as discounts,
-        {{ safe_numeric('average_monthly_demand', min_value=0) }} as average_monthly_demand,
+        CASE 
+            WHEN average_monthly_demand IS NULL THEN 0
+            WHEN average_monthly_demand < 0 THEN 0
+            ELSE average_monthly_demand
+        END as average_monthly_demand,
         
         -- Data quality checks
         case 
@@ -59,4 +91,4 @@ staged as (
     from source
 )
 
-select * from staged 
+select * from staged
