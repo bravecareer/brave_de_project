@@ -1,6 +1,7 @@
 /*
     Test Name: Valid User IDs Test
     Description: Validates that all user_ids in fact tables exist in the user dimension table
+    Note: This test ignores 'UNKNOWN' user_ids as they are handled in the staging layer
 */
 
 -- Ensure all user_ids in the model exist in the valid_users source
@@ -11,3 +12,4 @@ LEFT JOIN {{ source('de_project', 'user_data') }} u
 ON f.user_id = u.user_id
 WHERE u.user_id IS NULL
   AND f.user_id IS NOT NULL
+  AND f.user_id != 'UNKNOWN'

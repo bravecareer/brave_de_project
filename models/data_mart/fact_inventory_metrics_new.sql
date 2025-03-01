@@ -39,6 +39,7 @@ inventory_metrics AS (
             ELSE 'Adequate'
         END as stock_status,
         -- Days of inventory calculation using average daily demand
+        -- Only retain business logic checks, no longer checking for non-negative values
         CASE 
             WHEN average_monthly_demand > 0 
             THEN ROUND(current_stock_level::FLOAT / (average_monthly_demand / 30), 1)
