@@ -1,0 +1,32 @@
+unit_tests:
+  - name: test_incremental_product_data
+    description: "Test incremental logic for product data in dim_product_data_gs."
+    model: dim_product_data_gs
+    overrides:
+      macros:
+        # Force unit test to run in "full refresh" mode
+        is_incremental: true 
+    given:
+      # New incoming data from the transformed table
+      - input: ref('product_data_transformed_gs') 
+        rows:
+          - {product_id: 1, product_name: 'Product A', product_category: 'Category 1', price: 10.99, supplier_id: 1, product_color: 'Red', manufacturing_date: '2022-01-01', expiration_date: '2023-01-01', warranty_period: '1 Year', quantity_in_stock: 100, rating: 4.5, sales_volume: 1000, weight_grams: 500, discount_percentage: 10, updated_at: '2024-02-20 12:00:00'}
+          - {product_id: 2, product_name: 'Product B', product_category: 'Category 2', price: 5.99, supplier_id: 2, product_color: 'Blue', manufacturing_date: '2022-02-01', expiration_date: '2023-02-01', warranty_period: '6 Months', quantity_in_stock: 50, rating: 4.0, sales_volume: 500, weight_grams: 200, discount_percentage: 5, updated_at: '2024-02-21 13:15:30'}
+          - {product_id: 3, product_name: 'Product C', product_category: 'Category 3', price: 7.99, supplier_id: 3, product_color: 'Green', manufacturing_date: '2022-03-01', expiration_date: '2023-03-01', warranty_period: '2 Years', quantity_in_stock: 200, rating: 4.8, sales_volume: 800, weight_grams: 300, discount_percentage: 8, updated_at: '2024-02-22 09:45:10'}
+      
+      # Current state of the `dim_product_data_gs` table before the incremental run
+      - input: this  
+        rows:
+          - {product_id: 1, product_name: 'Product A', product_category: 'Category 1', price: 10.99, supplier_id: 1, product_color: 'Red', manufacturing_date: '2022-01-01', expiration_date: '2023-01-01', warranty_period: '1 Year', quantity_in_stock: 100, rating: 4.5, sales_volume: 1000, weight_grams: 500, discount_percentage: 10, updated_at: '2024-02-18 10:00:00'}
+          - {product_id: 2, product_name: 'Product B', product_category: 'Category 2', price: 5.99, supplier_id: 2, product_color: 'Blue', manufacturing_date: '2022-02-01', expiration_date: '2023-02-01', warranty_period: '6 Months', quantity_in_stock: 50, rating: 4.0, sales_volume: 500, weight_grams: 200, discount_percentage: 5, updated_at: '2024-02-19 15:45:00'}
+    
+    expect:
+      rows:
+        # Product 1: Updated record (new `updated_at` timestamp)
+        - {product_id: 1, product_name: 'Product A', product_category: 'Category 1', price: 10.99, supplier_id: 1, product_color: 'Red', manufacturing_date: '2022-01-01', expiration_date: '2023-01-01', warranty_period: '1 Year', quantity_in_stock: 100, rating: 4.5, sales_volume: 1000, weight_grams: 500, discount_percentage: 10, updated_at: '2024-02-20 12:00:00'}
+        
+        # Product 2: Updated record (new `updated_at` timestamp)
+        - {product_id: 2, product_name: 'Product B', product_category: 'Category 2', price: 5.99, supplier_id: 2, product_color: 'Blue', manufacturing_date: '2022-02-01', expiration_date: '2023-02-01', warranty_period: '6 Months', quantity_in_stock: 50, rating: 4.0, sales_volume: 500, weight_grams: 200, discount_percentage: 5, updated_at: '2024-02-21 13:15:30'}
+        
+        # Product 3: New record (no matching `product_id` in current table)
+        - {product_id: 3, product_name: 'Product C', product_category: 'Category 3', price: 7.99, supplier_id: 3, product_color: 'Green', manufacturing_date: '2022-03-01', expiration_date: '2023-03-01', warranty_period: '2 Years', quantity_in_stock: 200, rating: 4.8, sales_volume: 800, weight_grams: 300, discount_percentage: 8, updated_at: '2024-02-22 09:45:10'}
