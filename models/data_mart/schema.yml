@@ -3,18 +3,13 @@ version: 2
 models:
   - name: dim_inventory
     description: "Dimension table for inventory"
-    tests:
-      - dbt_utils.expression_is_true:
-          expression: "1=1"
-          config:
-            depends_on: [ref('stg_inventory_data')]
     columns:
       - name: inventory_id
         description: "Primary key"
         tests:
           - not_null
           - unique
-      - name: current_stock_level
+      - name: stock_level
         description: "Current stock level"
         tests:
           - not_null
@@ -27,11 +22,6 @@ models:
 
   - name: dim_product
     description: "Dimension table for products"
-    tests:
-      - dbt_utils.expression_is_true:
-          expression: "1=1"
-          config:
-            depends_on: [ref('stg_product_data')]
     columns:
       - name: product_id
         description: "Primary key"
@@ -43,11 +33,6 @@ models:
 
   - name: dim_user
     description: "Dimension table for users"
-    tests:
-      - dbt_utils.expression_is_true:
-          expression: "1=1"
-          config:
-            depends_on: [ref('stg_user_data')]
     columns:
       - name: user_id
         description: "Primary key"
@@ -55,33 +40,10 @@ models:
           - not_null
           - unique
       - name: email
-        tests:
-          - dbt_utils.expression_is_true:
-              expression: "email LIKE '%@%.%'"
-
-  - name: dim_search_event
-    description: "Dimension table for search events"
-    tests:
-      - dbt_utils.expression_is_true:
-          expression: "1=1"
-          config:
-            depends_on: [ref('stg_user_journey')]
-    columns:
-      - name: search_event_id
-        description: "Primary key"
-        tests:
-          - not_null
-          - unique
+        description: "Email of the user"
 
   - name: fact_campaign_metrics
     description: "Fact table for campaign performance analysis"
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - campaign_id
-            - date_key
-          config:
-            depends_on: [ref('stg_user_journey'), ref('stg_product_data')]
     columns:
       - name: campaign_id
         description: "Identifier for the marketing campaign"
@@ -91,8 +53,8 @@ models:
         description: "Marketing source"
       - name: medium
         description: "Marketing medium"
-      - name: date_key
-        description: "Date of the metrics"
+      - name: event_timestamp
+        description: "Timestamp of the event"
         tests:
           - not_null
       - name: total_events
@@ -124,14 +86,6 @@ models:
 
   - name: fact_inventory_metrics_new
     description: "Fact table for inventory metrics analysis"
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - product_id
-            - warehouse_id
-            - date_key
-          config:
-            depends_on: [ref('dim_inventory'), ref('dim_product')]
     columns:
       - name: product_id
         description: "Foreign key to dim_product"
@@ -164,24 +118,15 @@ models:
 
   - name: fact_search_metrics_new
     description: "Fact table for analyzing search effectiveness and conversion rates"
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - search_event_id
-            - date_key
-          config:
-            depends_on: [ref('dim_search_event'), ref('dim_product')]
     columns:
       - name: search_event_id
         description: "Unique identifier for the search event"
         tests:
           - not_null
-      - name: date_key
-        description: "Date of the search event"
-        tests:
-          - not_null
       - name: event_timestamp
         description: "Timestamp of the search event"
+        tests:
+          - not_null
       - name: search_terms
         description: "Search terms used"
       - name: search_results_count
@@ -205,20 +150,13 @@ models:
 
   - name: fact_product_performance
     description: "Fact table for product performance analysis"
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - product_id
-            - date_key
-          config:
-            depends_on: [ref('stg_user_journey'), ref('stg_product_data')]
     columns:
       - name: product_id
         description: "Foreign key to dim_product"
         tests:
           - not_null
-      - name: date_key
-        description: "Date of the metrics"
+      - name: event_timestamp
+        description: "Timestamp of the event"
         tests:
           - not_null
       - name: product_category

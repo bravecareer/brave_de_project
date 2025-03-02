@@ -1,10 +1,8 @@
-{{
-    config(
-        materialized='incremental',
-        unique_key=['search_event_id', 'date_key'],
-        incremental_strategy='delete+insert'
-    )
-}}
+{{ config(
+    materialized='incremental',
+    unique_key=['search_event_id', 'date_key'],
+    incremental_strategy='delete+insert'
+) }}
 
 -- Integrated search event dimensions and metrics in a single fact table
 -- This combines the previous dim_search_event and fact_search_metrics_new tables
@@ -14,6 +12,7 @@ WITH search_events AS (
         DATE(event_timestamp) as date_key,
         event_timestamp,
         search_terms,
+        search_type,
         search_results_count,
         has_qv,
         has_pdp,
@@ -32,21 +31,58 @@ daily_search_metrics AS (
         date_key,
         MAX(event_timestamp) as event_timestamp,
         search_terms,
+        search_type,
         search_results_count,
         -- Calculate engagement metrics
         COUNT(*) as total_searches,
-        COUNT(CASE WHEN has_qv = TRUE THEN 1 END) as total_quick_views,
-        COUNT(CASE WHEN has_pdp = TRUE THEN 1 END) as total_product_detail_views,
-        COUNT(CASE WHEN has_atc = TRUE THEN 1 END) as total_add_to_cart,
-        COUNT(CASE WHEN has_purchase = TRUE THEN 1 END) as total_purchases,
+        SUM(
+            CASE 
+                WHEN has_qv THEN 1 
+                ELSE 0 
+            END
+        ) as total_quick_views,
+        SUM(
+            CASE 
+                WHEN has_pdp THEN 1 
+                ELSE 0 
+            END
+        ) as total_product_detail_views,
+        SUM(
+            CASE 
+                WHEN has_atc THEN 1 
+                ELSE 0 
+            END
+        ) as total_add_to_cart,
+        SUM(
+            CASE 
+                WHEN has_purchase THEN 1 
+                ELSE 0 
+            END
+        ) as total_purchases,
         
         -- Calculate ATC rate (key metric from screenshot)
-        ROUND(COUNT(CASE WHEN has_atc = TRUE THEN 1 END) * 100.0 / NULLIF(COUNT(CASE WHEN has_qv = TRUE THEN 1 END), 0), 2) as atc_rate
+        ROUND(
+            SUM(
+                CASE 
+                    WHEN has_atc THEN 1 
+                    ELSE 0 
+                END
+            ) * 100.0 / 
+            NULLIF(
+                SUM(
+                    CASE 
+                        WHEN has_qv THEN 1 
+                        ELSE 0 
+                    END
+                ), 0
+            ), 2
+        ) as atc_rate
     FROM search_events
     GROUP BY 
         search_event_id,
         date_key,
         search_terms,
+        search_type,
         search_results_count
 )
 

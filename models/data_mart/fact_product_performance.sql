@@ -1,6 +1,6 @@
 {{ config(
     materialized='incremental',
-    unique_key=['product_id', 'date_key'],
+    unique_key='product_id',
     incremental_strategy='delete+insert'
 ) }}
 
@@ -12,7 +12,7 @@ WITH product_events AS (
     -- Get all user events with product information
     SELECT
         uj.product_id,
-        DATE(uj.timestamp) as date_key,
+        DATE(uj.event_timestamp) as date_key,
         p.product_category,
         p.price as unit_price,
         uj.has_qv,
@@ -23,7 +23,7 @@ WITH product_events AS (
     FROM {{ ref('stg_user_journey') }} uj
     LEFT JOIN {{ ref('stg_product_data') }} p ON uj.product_id = p.product_id
     {% if is_incremental() %}
-    WHERE DATE(uj.timestamp) >= CURRENT_DATE() - 5
+    WHERE DATE(uj.event_timestamp) >= CURRENT_DATE() - 5
     {% endif %}
 ),
 

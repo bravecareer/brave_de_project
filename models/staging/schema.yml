@@ -24,6 +24,8 @@ models:
         description: "Current stock level"
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: "stock_level >= 0"
           
       - name: restock_date
         description: "Date when inventory was restocked"
@@ -58,13 +60,6 @@ models:
         description: "Level at which reorder should be triggered"
         tests:
           - not_null
-          
-      - name: quantity_in_stock
-        description: "Current quantity in stock"
-        tests:
-          - not_null
-          - dbt_utils.expression_is_true:
-              expression: "quantity_in_stock >= 0"
           
       - name: rating
         description: "Product rating"
@@ -188,7 +183,7 @@ models:
         description: "User identifier"
         tests:
           - not_null
-      - name: timestamp
+      - name: event_timestamp
         description: "Event timestamp"
         tests:
           - not_null

@@ -8,14 +8,16 @@ WITH inventory_daily AS (
     SELECT
         i.product_id,
         i.warehouse_id,
-        DATE(i.last_updated) as date_key,
-        i.current_stock_level,
-        i.safety_stock_level,
-        i.restock_point,
-        i.unit_price
-    FROM {{ ref('dim_inventory') }} i
+        DATE(i.dbt_loaded_at) as date_key,
+        i.stock_level as current_stock_level,
+        i.safety_stock as safety_stock_level,
+        i.reorder_level as restock_point,
+        p.price as unit_price,
+        i.average_monthly_demand
+    FROM {{ ref('stg_inventory_data') }} i
+    LEFT JOIN {{ ref('stg_product_data') }} p ON i.product_id = p.product_id
     {% if is_incremental() %}
-    WHERE DATE(i.last_updated) >= CURRENT_DATE() - 5
+    WHERE DATE(i.dbt_loaded_at) >= CURRENT_DATE() - 5
     {% endif %}
 ),
 
@@ -29,6 +31,7 @@ inventory_metrics AS (
         safety_stock_level,
         restock_point,
         unit_price,
+        average_monthly_demand,
         -- Inventory value
         current_stock_level * unit_price as total_inventory_value,
         -- Stock status indicators
@@ -41,7 +44,7 @@ inventory_metrics AS (
         -- Only retain business logic checks, no longer checking for non-negative values
         CASE 
             WHEN average_monthly_demand > 0 
-            THEN ROUND(current_stock_level::FLOAT / (average_monthly_demand / 30), 1)
+            THEN ROUND(current_stock_level / (average_monthly_demand / 30), 1)
             ELSE NULL 
         END as estimated_days_of_inventory
     FROM inventory_daily
