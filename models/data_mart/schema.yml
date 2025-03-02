@@ -14,12 +14,16 @@ models:
         tests:
           - not_null
           - unique
-      - name: quantity_in_stock
+      - name: current_stock_level
+        description: "Current stock level"
         tests:
           - not_null
-      - name: total_inventory_value
-        tests:
-          - not_null
+      - name: safety_stock_level
+        description: "Safety stock threshold"
+      - name: restock_point
+        description: "Reorder point threshold"
+      - name: unit_price
+        description: "Unit price of the product"
 
   - name: dim_product
     description: "Dimension table for products"
@@ -34,6 +38,8 @@ models:
         tests:
           - not_null
           - unique
+      - name: product_category
+        description: "Category of the product"
 
   - name: dim_user
     description: "Dimension table for users"
@@ -67,48 +73,6 @@ models:
           - not_null
           - unique
 
-  - name: fact_user_behavior_new
-    description: "Combined fact table for user behavior including engagement and transactions"
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - user_id
-            - search_event_id
-            - product_id
-            - timestamp
-          config:
-            depends_on: [ref('dim_user'), ref('dim_product')]
-    columns:
-      - name: user_id
-        description: "Foreign key to dim_user"
-        tests:
-          - not_null
-      - name: product_id
-        description: "Foreign key to dim_product"
-        tests:
-          - not_null
-      - name: search_event_id
-        description: "Identifier for the search event"
-      - name: timestamp
-        description: "Time of the event"
-        tests:
-          - not_null
-      - name: has_qv
-        description: "Flag indicating if user performed a quick view"
-      - name: has_pdp
-        description: "Flag indicating if user viewed product detail page"
-      - name: has_atc
-        description: "Flag indicating if user added product to cart"
-      - name: has_purchase
-        description: "Flag indicating if user purchased the product"
-      - name: item_amount
-        description: "Amount of the item if purchased"
-      - name: funnel_stage
-        description: "Stage in the purchase funnel (0-4)"
-        tests:
-          - dbt_utils.expression_is_true:
-              expression: "funnel_stage >= 0 AND funnel_stage <= 4"
-
   - name: fact_campaign_metrics
     description: "Fact table for campaign performance analysis"
     tests:
@@ -117,12 +81,16 @@ models:
             - campaign_id
             - date_key
           config:
-            depends_on: [ref('dim_product')]
+            depends_on: [ref('stg_user_journey'), ref('stg_product_data')]
     columns:
       - name: campaign_id
         description: "Identifier for the marketing campaign"
         tests:
           - not_null
+      - name: source
+        description: "Marketing source"
+      - name: medium
+        description: "Marketing medium"
       - name: date_key
         description: "Date of the metrics"
         tests:
@@ -131,8 +99,28 @@ models:
         description: "Total number of events"
         tests:
           - not_null
+      - name: unique_categories_viewed
+        description: "Number of unique product categories viewed"
+      - name: total_product_views
+        description: "Total number of product views"
+      - name: total_product_detail_views
+        description: "Total number of product detail page views"
+      - name: total_add_to_cart
+        description: "Total number of add to cart events"
+      - name: total_purchases
+        description: "Total number of purchases"
       - name: total_revenue
         description: "Total revenue from purchases"
+      - name: atc_rate
+        description: "Add to cart conversion rate"
+      - name: purchase_rate
+        description: "Purchase conversion rate"
+      - name: avg_funnel_depth
+        description: "Average funnel stage reached"
+      - name: revenue_per_event
+        description: "Average revenue per event"
+      - name: campaign_value
+        description: "Total campaign value (proxy for ROI)"
 
   - name: fact_inventory_metrics_new
     description: "Fact table for inventory metrics analysis"
@@ -161,8 +149,18 @@ models:
         description: "Current stock level"
         tests:
           - not_null
+      - name: safety_stock_level
+        description: "Safety stock threshold"
+      - name: restock_point
+        description: "Reorder point threshold"
+      - name: unit_price
+        description: "Unit price of the product"
       - name: total_inventory_value
         description: "Total value of inventory"
+      - name: stock_status
+        description: "Status of stock level (Adequate, Below Restock Point, Below Safety Stock)"
+      - name: estimated_days_of_inventory
+        description: "Estimated days of inventory based on average monthly demand"
 
   - name: fact_search_metrics_new
     description: "Fact table for analyzing search effectiveness and conversion rates"
@@ -182,6 +180,10 @@ models:
         description: "Date of the search event"
         tests:
           - not_null
+      - name: event_timestamp
+        description: "Timestamp of the search event"
+      - name: search_terms
+        description: "Search terms used"
       - name: search_results_count
         description: "Number of results returned by the search"
         tests:
@@ -190,3 +192,46 @@ models:
         description: "Total number of searches"
         tests:
           - not_null
+      - name: total_quick_views
+        description: "Total number of quick views"
+      - name: total_product_detail_views
+        description: "Total number of product detail page views"
+      - name: total_add_to_cart
+        description: "Total number of add to cart events"
+      - name: total_purchases
+        description: "Total number of purchases"
+      - name: atc_rate
+        description: "Add to cart conversion rate"
+
+  - name: fact_product_performance
+    description: "Fact table for product performance analysis"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - product_id
+            - date_key
+          config:
+            depends_on: [ref('stg_user_journey'), ref('stg_product_data')]
+    columns:
+      - name: product_id
+        description: "Foreign key to dim_product"
+        tests:
+          - not_null
+      - name: date_key
+        description: "Date of the metrics"
+        tests:
+          - not_null
+      - name: product_category
+        description: "Category of the product"
+      - name: unit_price
+        description: "Unit price of the product"
+      - name: total_views
+        description: "Total number of product views (QV or PDP)"
+      - name: total_atc
+        description: "Total number of add-to-cart events"
+      - name: total_purchases
+        description: "Total number of purchases"
+      - name: total_revenue
+        description: "Total revenue from purchases"
+      - name: view_to_atc_rate
+        description: "Conversion rate from view to add-to-cart"

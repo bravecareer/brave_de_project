@@ -9,18 +9,17 @@ WITH inventory_data AS (
        i.inventory_id,
        i.product_id,
        i.warehouse_id,
-       i.supplier_id,
        
        -- Stock levels and thresholds (needed by fact_inventory_metrics_new)
        i.stock_level as current_stock_level,
        i.safety_stock as safety_stock_level,
        i.reorder_level as restock_point,
        
-       -- Metrics
+       -- Metrics (needed for estimated_days_of_inventory calculation)
        i.average_monthly_demand,
        
        -- Dates
-       i.last_audit_date,
+       DATE(CURRENT_TIMESTAMP()) as date_key,
        CURRENT_TIMESTAMP() as last_updated,
        
        -- Add calculated fields

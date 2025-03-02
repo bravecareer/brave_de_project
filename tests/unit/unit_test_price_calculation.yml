@@ -1,26 +1,19 @@
 unit_tests:
   - name: test_price_calculation
     description: "Check that price calculation logic correctly handles discounts and edge cases"
-    model: fact_product_pricing
+    model: stg_product_data
     given:
       - input: source('de_project', 'product_data') 
         rows:
-          - {product_id: 101, base_price: 100.00, discount_percentage: 20}
-          - {product_id: 102, base_price: 50.00, discount_percentage: 0}
-          - {product_id: 103, base_price: 75.50, discount_percentage: null}
-          - {product_id: 104, base_price: null, discount_percentage: 10}
-          - {product_id: 105, base_price: 200.00, discount_percentage: 110}
-      - input: source('de_project', 'inventory_data')
-        rows:
-          - {product_id: 101, stock_status: 'in_stock'}
-          - {product_id: 102, stock_status: 'in_stock'}
-          - {product_id: 103, stock_status: 'low_stock'}
-          - {product_id: 104, stock_status: 'out_of_stock'}
-          - {product_id: 105, stock_status: 'in_stock'}
+          - {product_id: 101, product_name: 'Test Product 1', product_category: 'electronics', price: 100.00, supplier_id: 'S001'}
+          - {product_id: 102, product_name: 'Test Product 2', product_category: 'clothing', price: 50.00, supplier_id: 'S002'}
+          - {product_id: 103, product_name: 'Test Product 3', product_category: 'home', price: null, supplier_id: 'S003'}
+          - {product_id: 104, product_name: 'Test Product 4', product_category: 'electronics', price: -10.00, supplier_id: 'S001'}
+          - {product_id: 105, product_name: 'Test Product 5', product_category: 'clothing', price: 200.00, supplier_id: 'S002'}
     expect:
       rows:
-        - {product_id: 101, base_price: 100.00, discount_percentage: 20, final_price: 80.00, price_status: 'discounted'}
-        - {product_id: 102, base_price: 50.00, discount_percentage: 0, final_price: 50.00, price_status: 'regular'}
-        - {product_id: 103, base_price: 75.50, discount_percentage: 0, final_price: 75.50, price_status: 'regular'}
-        - {product_id: 104, base_price: null, discount_percentage: 10, final_price: null, price_status: 'invalid'}
-        - {product_id: 105, base_price: 200.00, discount_percentage: 100, final_price: 0.00, price_status: 'clearance'}
+        - {product_id: 101, price: 100.00}
+        - {product_id: 102, price: 50.00}
+        - {product_id: 103, price: 0.00}  # NULL price should be converted to 0
+        - {product_id: 104, price: 0.00}  # Negative price should be converted to 0
+        - {product_id: 105, price: 200.00}

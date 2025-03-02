@@ -12,7 +12,6 @@ WITH inventory_daily AS (
         i.current_stock_level,
         i.safety_stock_level,
         i.restock_point,
-        i.average_monthly_demand,  
         i.unit_price
     FROM {{ ref('dim_inventory') }} i
     {% if is_incremental() %}

@@ -14,17 +14,26 @@ WITH campaign_events AS (
         COALESCE(uj.mkt_campaign, 'Unknown') as campaign_id,
         COALESCE(uj.mkt_source, 'Unknown') as source,
         COALESCE(uj.mkt_medium, 'Unknown') as medium,
-        DATE(uj.timestamp) as date_key,
-        uj.product_category,
+        DATE(uj.event_timestamp) as date_key,
+        uj.product_id,
+        p.product_category,
         uj.has_qv,
         uj.has_pdp,
         uj.has_atc,
         uj.has_purchase,
-        uj.item_amount,
-        uj.funnel_stage
-    FROM {{ ref('fact_user_behavior_new') }} uj
+        CASE WHEN uj.has_purchase = TRUE THEN p.price ELSE 0 END AS item_amount,
+        -- Calculate funnel stage (1=view, 2=pdp, 3=atc, 4=purchase)
+        CASE 
+            WHEN uj.has_purchase THEN 4
+            WHEN uj.has_atc THEN 3
+            WHEN uj.has_pdp THEN 2
+            WHEN uj.has_qv THEN 1
+            ELSE 0
+        END as funnel_stage
+    FROM {{ ref('stg_user_journey') }} uj
+    LEFT JOIN {{ ref('stg_product_data') }} p ON uj.product_id = p.product_id
     {% if is_incremental() %}
-    WHERE DATE(uj.timestamp) >= CURRENT_DATE() - 5
+    WHERE DATE(uj.event_timestamp) >= CURRENT_DATE() - 5
     {% endif %}
 ),
 

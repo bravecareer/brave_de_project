@@ -1,23 +1,23 @@
 unit_tests:
   - name: test_is_valid_timestamp
     description: "Check timestamp validation logic captures all known edge cases."
-    model: fact_user_behavior_new
+    model: fact_product_performance
     given:
       - input: source('de_project', 'user_journey') 
         rows:
-          - {user_id: 1, product_id: 100, event_timestamp: '2024-02-17 18:41:07'}
-          - {user_id: 2, product_id: 101, event_timestamp: '2024-02-17 18:42:07'}
-          - {user_id: 999, product_id: 999, event_timestamp: '2024-02-17 18:42:07 UTC'}  
-      - input: source('de_project', 'user_data')
-        rows:
-          - {user_id: 1, account_status: 'active'}
-          - {user_id: 2, account_status: 'active'}
+          - {product_id: 100, event_timestamp: '2024-02-17 18:41:07', has_qv: true, has_pdp: false, has_atc: false, has_purchase: false}
+          - {product_id: 101, event_timestamp: '2024-02-17 18:42:07', has_qv: false, has_pdp: true, has_atc: true, has_purchase: false}
+          - {product_id: 102, event_timestamp: '2024-02-17 18:43:07', has_qv: true, has_pdp: true, has_atc: true, has_purchase: true}
+          - {product_id: 999, event_timestamp: '2024-02-17 18:44:07 UTC', has_qv: true, has_pdp: false, has_atc: false, has_purchase: false}
       - input: source('de_project', 'product_data')
         rows:
           - {product_id: 100, price: 10.99, product_category: 'electronics'}
           - {product_id: 101, price: 20.99, product_category: 'clothing'}
+          - {product_id: 102, price: 30.99, product_category: 'home'}
+          - {product_id: 999, price: 99.99, product_category: 'other'}
     expect:
       rows:
-        - {user_id: 1, product_id: 100, timestamp: '2024-02-17 18:41:07'}
-        - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
-        # UTC timestamp is handled according to business logic
+        - {product_id: 100, date_key: '2024-02-17', total_views: 1, total_atc: 0, total_purchases: 0}
+        - {product_id: 101, date_key: '2024-02-17', total_views: 1, total_atc: 1, total_purchases: 0}
+        - {product_id: 102, date_key: '2024-02-17', total_views: 1, total_atc: 1, total_purchases: 1}
+        - {product_id: 999, date_key: '2024-02-17', total_views: 1, total_atc: 0, total_purchases: 0}

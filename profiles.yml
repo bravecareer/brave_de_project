@@ -12,6 +12,7 @@ brave_de_project:
       schema: PROJECT_TEST
       threads: 1
       client_session_keep_alive: False
+      persist_connections: True
       insecure_mode: True
       query_tag: dbt
       connect_retries: 1

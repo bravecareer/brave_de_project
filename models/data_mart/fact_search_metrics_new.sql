@@ -12,11 +12,8 @@ WITH search_events AS (
     SELECT
         search_event_id,
         DATE(event_timestamp) as date_key,
-        event_timestamp,      -- Added from dim_search_event
+        event_timestamp,
         search_terms,
-        search_type,
-        search_feature,       -- Added from dim_search_event
-        search_terms_type,
         search_results_count,
         has_qv,
         has_pdp,
@@ -33,11 +30,8 @@ daily_search_metrics AS (
     SELECT
         search_event_id,
         date_key,
-        MAX(event_timestamp) as event_timestamp,  -- Keep the timestamp from source
+        MAX(event_timestamp) as event_timestamp,
         search_terms,
-        search_type,
-        MAX(search_feature) as search_feature,    -- Include dimension attribute 
-        search_terms_type,
         search_results_count,
         -- Calculate engagement metrics
         COUNT(*) as total_searches,
@@ -46,19 +40,14 @@ daily_search_metrics AS (
         COUNT(CASE WHEN has_atc = TRUE THEN 1 END) as total_add_to_cart,
         COUNT(CASE WHEN has_purchase = TRUE THEN 1 END) as total_purchases,
         
-        -- Calculate conversion rates using SQL
-        ROUND(COUNT(CASE WHEN has_qv = TRUE THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0), 2) as quick_view_rate,
-        ROUND(COUNT(CASE WHEN has_atc = TRUE THEN 1 END) * 100.0 / NULLIF(COUNT(CASE WHEN has_qv = TRUE THEN 1 END), 0), 2) as atc_rate,
-        ROUND(COUNT(CASE WHEN has_purchase = TRUE THEN 1 END) * 100.0 / NULLIF(COUNT(CASE WHEN has_atc = TRUE THEN 1 END), 0), 2) as purchase_rate
+        -- Calculate ATC rate (key metric from screenshot)
+        ROUND(COUNT(CASE WHEN has_atc = TRUE THEN 1 END) * 100.0 / NULLIF(COUNT(CASE WHEN has_qv = TRUE THEN 1 END), 0), 2) as atc_rate
     FROM search_events
     GROUP BY 
         search_event_id,
         date_key,
         search_terms,
-        search_type,
-        search_terms_type,
-        search_results_count,
-        search_feature
+        search_results_count
 )
 
 SELECT * FROM daily_search_metrics
