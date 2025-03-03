@@ -22,7 +22,7 @@ WITH search_metrics_check AS (
             WHEN total_purchases > total_add_to_cart * 1.05 THEN 'Purchases exceed add to cart by more than 5%'
             ELSE NULL
         END as validation_error
-    FROM {{ ref('fact_search_metrics_new') }}
+    FROM {{ ref('fact_search_metrics_tf') }}
     -- Only check data from the last 90 days to focus on recent quality issues
     WHERE date_key >= DATEADD(day, -90, CURRENT_DATE())
     AND (

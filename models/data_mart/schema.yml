@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: dim_inventory
+  - name: dim_inventory_tf
     description: "Dimension table for inventory"
     columns:
       - name: inventory_id
@@ -20,7 +20,7 @@ models:
       - name: unit_price
         description: "Unit price of the product"
 
-  - name: dim_product
+  - name: dim_product_tf
     description: "Dimension table for products"
     columns:
       - name: product_id
@@ -31,7 +31,7 @@ models:
       - name: product_category
         description: "Category of the product"
 
-  - name: dim_user
+  - name: dim_user_tf
     description: "Dimension table for users"
     columns:
       - name: user_id
@@ -42,7 +42,7 @@ models:
       - name: email
         description: "Email of the user"
 
-  - name: fact_campaign_metrics
+  - name: fact_campaign_metrics_tf
     description: "Fact table for campaign performance analysis"
     columns:
       - name: campaign_id
@@ -84,7 +84,7 @@ models:
       - name: campaign_value
         description: "Total campaign value (proxy for ROI)"
 
-  - name: fact_inventory_metrics_new
+  - name: fact_inventory_metrics_tf
     description: "Fact table for inventory metrics analysis"
     columns:
       - name: product_id
@@ -116,7 +116,7 @@ models:
       - name: estimated_days_of_inventory
         description: "Estimated days of inventory based on average monthly demand"
 
-  - name: fact_search_metrics_new
+  - name: fact_search_metrics_tf
     description: "Fact table for analyzing search effectiveness and conversion rates"
     columns:
       - name: search_event_id
@@ -148,28 +148,22 @@ models:
       - name: atc_rate
         description: "Add to cart conversion rate"
 
-  - name: fact_product_performance
+  - name: fact_product_performance_tf
     description: "Fact table for product performance analysis"
     columns:
       - name: product_id
         description: "Foreign key to dim_product"
         tests:
           - not_null
-      - name: event_timestamp
-        description: "Timestamp of the event"
+      - name: date_key
+        description: "Date of the event"
         tests:
           - not_null
       - name: product_category
         description: "Category of the product"
-      - name: unit_price
-        description: "Unit price of the product"
       - name: total_views
         description: "Total number of product views (QV or PDP)"
       - name: total_atc
         description: "Total number of add-to-cart events"
       - name: total_purchases
         description: "Total number of purchases"
-      - name: total_revenue
-        description: "Total revenue from purchases"
-      - name: view_to_atc_rate
-        description: "Conversion rate from view to add-to-cart"

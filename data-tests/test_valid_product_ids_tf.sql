@@ -8,8 +8,8 @@
 WITH product_performance_ids AS (
     SELECT DISTINCT
       f.product_id as invalid_product_id,
-      'fact_product_performance' as source_table
-    FROM {{ ref('fact_product_performance') }} f
+      'fact_product_performance_tf' as source_table
+    FROM {{ ref('fact_product_performance_tf') }} f
     LEFT JOIN {{ source('de_project', 'product_data') }} p
     ON f.product_id = p.product_id
     WHERE p.product_id IS NULL
@@ -21,8 +21,8 @@ WITH product_performance_ids AS (
 inventory_metrics_ids AS (
     SELECT DISTINCT
       f.product_id as invalid_product_id,
-      'fact_inventory_metrics_new' as source_table
-    FROM {{ ref('fact_inventory_metrics_new') }} f
+      'fact_inventory_metrics_tf' as source_table
+    FROM {{ ref('fact_inventory_metrics_tf') }} f
     LEFT JOIN {{ source('de_project', 'product_data') }} p
     ON f.product_id = p.product_id
     WHERE p.product_id IS NULL
