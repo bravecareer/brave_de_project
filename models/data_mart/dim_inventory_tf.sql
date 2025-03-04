@@ -16,8 +16,8 @@ WITH inventory_data AS (
        i.average_monthly_demand,
        -- Add calculated fields
        p.price as unit_price
-   FROM {{ ref('stg_inventory_data') }} i
-   LEFT JOIN {{ ref('stg_product_data') }} p ON i.product_id = p.product_id
+   FROM {{ ref('stg_inventory_data_tf') }} i
+   LEFT JOIN {{ ref('stg_product_data_tf') }} p ON i.product_id = p.product_id
    WHERE i.last_audit_date >= CURRENT_DATE() - 5 
 )
 

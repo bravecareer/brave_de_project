@@ -17,7 +17,7 @@ WITH product_data AS (
        p.rating,
        p.weight_grams,
        p.discount_percentage
-   FROM {{ ref('stg_product_data') }} p
+   FROM {{ ref('stg_product_data_tf') }} p
    {% if is_incremental() %}
    -- Only process new or changed products in incremental runs
    WHERE p.manufacturing_date >= CURRENT_DATE() - 5

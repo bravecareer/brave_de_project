@@ -1,7 +1,8 @@
 {{
     config(
-        materialized='view',
-        unique_key='search_event_id'
+        materialized='incremental',
+        unique_key='search_event_id',
+        incremental_strategy='delete+insert'
     )
 }}
 

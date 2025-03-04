@@ -1,36 +1,29 @@
 /*
-    Test Name: Search Funnel Metrics Consistency Test
+    Test Name: Search Metrics Consistency Test
     Description: Validates that search metrics follow logical rules:
-    - Funnel stages follow the expected pattern (upstream >= downstream)
+    - All search events have valid search request IDs
+    - All search events have non-negative search results counts
     
-    Note: This test includes tolerance thresholds to account for data tracking issues
-    and only checks data from the last 90 days to focus on recent quality issues.
+    Note: This test focuses on data quality for the search metrics fact table
+    after the restructuring to a more normalized model.
 */
 
 WITH search_metrics_check AS (
     SELECT 
         search_event_id,
-        date_key,
-        total_searches,
-        total_quick_views,
-        total_add_to_cart,
-        total_purchases,
+        search_request_id,
+        search_results_count,
         CASE 
-            -- Allow for a 5% tolerance in the funnel metrics to account for tracking issues
-            WHEN total_quick_views > total_searches * 1.05 THEN 'Quick views exceed total searches by more than 5%'
-            WHEN total_add_to_cart > total_quick_views * 1.05 THEN 'Add to cart exceed quick views by more than 5%'
-            WHEN total_purchases > total_add_to_cart * 1.05 THEN 'Purchases exceed add to cart by more than 5%'
+            WHEN search_request_id IS NULL OR search_request_id = 'UNKNOWN' THEN 'Search request ID is missing or unknown'
+            WHEN search_results_count < 0 THEN 'Search results count cannot be negative'
             ELSE NULL
         END as validation_error
     FROM {{ ref('fact_search_metrics_tf') }}
-    -- Only check data from the last 90 days to focus on recent quality issues
-    WHERE date_key >= DATEADD(day, -90, CURRENT_DATE())
-    AND (
-        total_quick_views > total_searches * 1.05
-        OR total_add_to_cart > total_quick_views * 1.05
-        OR total_purchases > total_add_to_cart * 1.05
-    )
+    WHERE search_request_id IS NULL 
+       OR search_request_id = 'UNKNOWN'
+       OR search_results_count < 0
 )
 
+-- Combine all results
 SELECT * FROM search_metrics_check
 WHERE validation_error IS NOT NULL

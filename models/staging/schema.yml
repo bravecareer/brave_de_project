@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stg_inventory_data
+  - name: stg_inventory_data_tf
     description: "Staging table for inventory data"
     columns:
       - name: inventory_id
@@ -105,7 +105,7 @@ models:
         tests:
           - not_null
 
-  - name: stg_product_data
+  - name: stg_product_data_tf
     description: "Staging table for product data"
     columns:
       - name: product_id
@@ -142,7 +142,7 @@ models:
         tests:
           - not_null
 
-  - name: stg_user_data
+  - name: stg_user_data_tf
     description: "Staging table for user data"
     columns:
       - name: user_id
@@ -171,7 +171,7 @@ models:
         tests:
           - not_null
 
-  - name: stg_user_journey
+  - name: stg_user_journey_tf
     description: "Staging table for user journey data"
     columns:
       - name: search_event_id

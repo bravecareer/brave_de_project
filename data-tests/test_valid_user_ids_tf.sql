@@ -7,7 +7,7 @@
 -- Test user_ids in user journey data that are related to campaigns
 WITH user_journey_campaign_data AS (
     SELECT DISTINCT uj.user_id
-    FROM {{ ref('stg_user_journey') }} uj
+    FROM {{ ref('stg_user_journey_tf') }} uj
     WHERE uj.mkt_campaign IS NOT NULL
     AND uj.mkt_campaign != 'UNKNOWN'
     AND uj.user_id IS NOT NULL

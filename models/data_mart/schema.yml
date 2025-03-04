@@ -42,6 +42,72 @@ models:
       - name: email
         description: "Email of the user"
 
+  - name: dim_campaign_tf
+    description: "Dimension table for marketing campaigns"
+    columns:
+      - name: campaign_id
+        description: "Primary key - Identifier for the marketing campaign"
+        tests:
+          - not_null
+          - unique
+      - name: campaign_source
+        description: "Source of the marketing campaign"
+      - name: campaign_medium
+        description: "Medium of the marketing campaign"
+      - name: campaign_content
+        description: "Content of the marketing campaign"
+      - name: target_country
+        description: "Country targeted by the campaign"
+      - name: target_region
+        description: "Region targeted by the campaign"
+      - name: target_device
+        description: "Device type targeted by the campaign"
+      - name: campaign_language
+        description: "Language of the campaign"
+      - name: campaign_name
+        description: "Name of the campaign"
+      - name: budget
+        description: "Budget allocated for the campaign"
+      - name: start_date
+        description: "Start date of the campaign"
+      - name: end_date
+        description: "End date of the campaign"
+      - name: campaign_objective
+        description: "Objective of the campaign"
+      - name: target_audience
+        description: "Target audience of the campaign"
+      - name: campaign_type
+        description: "Type of campaign"
+      - name: campaign_status
+        description: "Current status of the campaign"
+      - name: last_updated
+        description: "Timestamp when the campaign data was last updated"
+
+  - name: dim_search_terms_tf
+    description: "Dimension table for search terms"
+    columns:
+      - name: search_request_id
+        description: "Primary key - Unique identifier for the search request"
+        tests:
+          - not_null
+          - unique
+      - name: search_terms
+        description: "The search terms used in the request"
+        tests:
+          - not_null
+      - name: search_terms_type
+        description: "Type of search terms (e.g., product, category)"
+      - name: search_type
+        description: "Type of search (e.g., text, voice, image)"
+      - name: search_feature
+        description: "Feature used for search (e.g., search bar, recommendation)"
+      - name: search_model
+        description: "Search model or algorithm used"
+      - name: first_seen_at
+        description: "Timestamp when this search term was first seen"
+      - name: last_updated_at
+        description: "Timestamp when this search term was last updated"
+
   - name: fact_campaign_metrics_tf
     description: "Fact table for campaign performance analysis"
     columns:
@@ -49,12 +115,11 @@ models:
         description: "Identifier for the marketing campaign"
         tests:
           - not_null
-      - name: source
-        description: "Marketing source"
-      - name: medium
-        description: "Marketing medium"
-      - name: event_timestamp
-        description: "Timestamp of the event"
+          - relationships:
+              to: ref('dim_campaign_tf')
+              field: campaign_id
+      - name: date_key
+        description: "Date of the campaign metrics"
         tests:
           - not_null
       - name: total_events
@@ -71,18 +136,10 @@ models:
         description: "Total number of add to cart events"
       - name: total_purchases
         description: "Total number of purchases"
-      - name: total_revenue
-        description: "Total revenue from purchases"
-      - name: atc_rate
-        description: "Add to cart conversion rate"
-      - name: purchase_rate
-        description: "Purchase conversion rate"
-      - name: avg_funnel_depth
-        description: "Average funnel stage reached"
-      - name: revenue_per_event
-        description: "Average revenue per event"
-      - name: campaign_value
-        description: "Total campaign value (proxy for ROI)"
+      - name: impressions
+        description: "Number of ad impressions"
+      - name: clicks
+        description: "Number of ad clicks"
 
   - name: fact_inventory_metrics_tf
     description: "Fact table for inventory metrics analysis"
@@ -91,6 +148,9 @@ models:
         description: "Foreign key to dim_product"
         tests:
           - not_null
+          - relationships:
+              to: ref('dim_product_tf')
+              field: product_id
       - name: warehouse_id
         description: "Identifier for the warehouse"
         tests:
@@ -103,18 +163,6 @@ models:
         description: "Current stock level"
         tests:
           - not_null
-      - name: safety_stock_level
-        description: "Safety stock threshold"
-      - name: restock_point
-        description: "Reorder point threshold"
-      - name: unit_price
-        description: "Unit price of the product"
-      - name: total_inventory_value
-        description: "Total value of inventory"
-      - name: stock_status
-        description: "Status of stock level (Adequate, Below Restock Point, Below Safety Stock)"
-      - name: estimated_days_of_inventory
-        description: "Estimated days of inventory based on average monthly demand"
 
   - name: fact_search_metrics_tf
     description: "Fact table for analyzing search effectiveness and conversion rates"
@@ -123,30 +171,42 @@ models:
         description: "Unique identifier for the search event"
         tests:
           - not_null
+          - unique
+      - name: user_id
+        description: "Foreign key to dim_user"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_user_tf')
+              field: user_id
+      - name: product_id
+        description: "Foreign key to dim_product"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_product_tf')
+              field: product_id
       - name: event_timestamp
         description: "Timestamp of the search event"
         tests:
           - not_null
-      - name: search_terms
-        description: "Search terms used"
+      - name: search_request_id
+        description: "Foreign key to dim_search_terms"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_search_terms_tf')
+              field: search_request_id
       - name: search_results_count
         description: "Number of results returned by the search"
         tests:
           - not_null
-      - name: total_searches
-        description: "Total number of searches"
+      - name: campaign_id
+        description: "Foreign key to dim_campaign - Identifies which campaign influenced the search behavior"
         tests:
-          - not_null
-      - name: total_quick_views
-        description: "Total number of quick views"
-      - name: total_product_detail_views
-        description: "Total number of product detail page views"
-      - name: total_add_to_cart
-        description: "Total number of add to cart events"
-      - name: total_purchases
-        description: "Total number of purchases"
-      - name: atc_rate
-        description: "Add to cart conversion rate"
+          - relationships:
+              to: ref('dim_campaign_tf')
+              field: campaign_id
 
   - name: fact_product_performance_tf
     description: "Fact table for product performance analysis"
@@ -155,15 +215,24 @@ models:
         description: "Foreign key to dim_product"
         tests:
           - not_null
+          - relationships:
+              to: ref('dim_product_tf')
+              field: product_id
       - name: date_key
         description: "Date of the event"
         tests:
           - not_null
-      - name: product_category
-        description: "Category of the product"
+      - name: campaign_id
+        description: "Foreign key to dim_campaign - Identifies which campaign influenced the product performance"
+        tests:
+          - relationships:
+              to: ref('dim_campaign_tf')
+              field: campaign_id
       - name: total_views
         description: "Total number of product views (QV or PDP)"
       - name: total_atc
         description: "Total number of add-to-cart events"
       - name: total_purchases
         description: "Total number of purchases"
+      - name: total_revenue
+        description: "Total revenue generated from purchases"
