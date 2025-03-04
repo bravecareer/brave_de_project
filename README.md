@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## Project Overview
 
 This project is focused on designing and implementing data pipelines using dbt Core to aggregate and store key metrics for an e-commerce platform. The goal is to enable efficient analysis and reporting across several critical areas:
@@ -9,3 +10,6 @@ Inventory Management: Monitor inventory levels, stock turnover, and supply chain
 By leveraging dbt, this project aims to provide a scalable and maintainable data infrastructure that supports data-driven decision-making across the organization.
 
 Setup information can be found [Brave Data Engineering Project Setup - Week 3 & 4](https://docs.google.com/document/d/1DFNScaTC8S_AXgw0ffgOOm7rlzkycdTRpRIZtF_qtrw)
+=======
+# Brave DE Project
+>>>>>>> 54ab876 (Initial commit on main)
