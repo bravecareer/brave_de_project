@@ -8,12 +8,12 @@ brave_de_project:
 
       # User/password auth
       user: YOURNAME
-      password: YOURPASSWORD
+      password: YOUR PASSWORD
 
-      role: YOURROLE
+      role: PROJECT_LEARNER_DE_WRITE
       database: BRAVE_DATABASE
       warehouse: BRAVE_WAREHOUSE
-      schema: DE_PROJECT
+      schema: project_test
       threads: 1
       client_session_keep_alive: False
       query_tag: dbt
