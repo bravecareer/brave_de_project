@@ -1,0 +1,67 @@
+unit_tests:
+  - name: test_search_effectiveness_incremental
+    description: "Test search effectiveness metrics with timezone handling and incremental processing"
+    model: fact_search_effectiveness_gs
+    overrides:
+      macros:
+        is_incremental: true
+    given:
+      # Test data for user_journey_transformed_gs
+      - input: ref('user_journey_transformed_gs')
+        rows:
+          # Regular timestamp (removing UTC notation)
+          - {search_event_id: 'SE001', user_id: 'U1', product_id: 'P1',
+             search_terms: 'gaming laptop', search_results_count: 15,
+             has_qv: true, has_pdp: true, has_atc: true, has_purchase: true,
+             search_type: 'keyword', search_model: 'v2', session_id: 'SS1',
+             timestamp: '2024-02-01 10:00:00', 
+             updated_at: '2024-02-01 10:00:00'}
+
+          # Regular timestamp
+          - {search_event_id: 'SE002', user_id: 'U2', product_id: 'P2',
+             search_terms: 'wireless mouse', search_results_count: 8,
+             has_qv: true, has_pdp: true, has_atc: false, has_purchase: false,
+             search_type: 'category', search_model: 'v2', session_id: 'SS2',
+             timestamp: '2024-02-01 11:30:00',
+             updated_at: '2024-02-01 11:30:00'}
+
+          # Regular timestamp
+          - {search_event_id: 'SE003', user_id: 'U3', product_id: 'P3',
+             search_terms: 'keyboard', search_results_count: 12,
+             has_qv: false, has_pdp: false, has_atc: false, has_purchase: false,
+             search_type: 'text', search_model: 'v2', session_id: 'SS3',
+             timestamp: '2024-02-01 13:45:00',
+             updated_at: '2024-02-01 13:45:00'}
+
+      # Existing data in the incremental table
+      - input: this
+        rows:
+          - {search_event_id: 'SE000', user_id: 'U0', 
+             search_terms: 'old search', search_results_count: 5,
+             has_qv: true, has_pdp: false, has_atc: false, has_purchase: false,
+             search_type: 'keyword', search_model: 'v1', session_id: 'SS0',
+             timestamp: '2024-01-31 15:00:00',
+             updated_at: '2024-01-31 15:00:00'}
+
+    expect:
+      rows:
+        # Regular timestamp (no timezone conversion needed)
+        - {search_event_id: 'SE001', user_id: 'U1',
+           search_terms: 'gaming laptop', search_results_count: 15,
+           has_qv: true, has_pdp: true, has_atc: true, has_purchase: true,
+           search_type: 'keyword', search_model: 'v2', session_id: 'SS1',
+           timestamp: '2024-02-01 10:00:00'}
+
+        # Regular timestamp
+        - {search_event_id: 'SE002', user_id: 'U2',
+           search_terms: 'wireless mouse', search_results_count: 8,
+           has_qv: true, has_pdp: true, has_atc: false, has_purchase: false,
+           search_type: 'category', search_model: 'v2', session_id: 'SS2',
+           timestamp: '2024-02-01 11:30:00'}
+
+        # Regular timestamp
+        - {search_event_id: 'SE003', user_id: 'U3',
+           search_terms: 'keyboard', search_results_count: 12,
+           has_qv: false, has_pdp: false, has_atc: false, has_purchase: false,
+           search_type: 'text', search_model: 'v2', session_id: 'SS3',
+           timestamp: '2024-02-01 13:45:00'}

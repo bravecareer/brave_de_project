@@ -12,7 +12,7 @@ SELECT
     p.PRODUCT_NAME AS PRODUCT_NAME,  
     u.QUANTITY_IN_STOCK AS QUANTITY_IN_STOCK,  
     u.NEXT_RESTOCK_DATE AS NEXT_RESTOCK_DATE,
-    CURRENT_TIMESTAMP AS UPDATED_AT  -- Use CURRENT_TIMESTAMP here instead
+    u.updated_at AS UPDATED_AT  -- Pull the updated_at from transformed table
 
 FROM 
     {{ ref('inventory_data_transformed_gs') }} u

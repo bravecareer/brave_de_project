@@ -1,0 +1,26 @@
+unit_tests:
+  - name: test_product_performance_calculations
+    description: "Test product performance aggregations and joins"
+    model: fact_product_performance_gs
+    given:
+      # Test data for fact_user_transactions_gs
+      - input: ref('fact_user_transactions_gs')
+        rows:
+          - {user_id: 1, product_id: 'P001', search_event_id: 'S1', session_id: 'SS1', cart_id: 'C1', timestamp: '2024-02-01 10:00:00', has_purchase: true, updated_at: '2024-02-01 10:00:00'}
+          - {user_id: 2, product_id: 'P001', search_event_id: 'S2', session_id: 'SS2', cart_id: 'C2', timestamp: '2024-02-01 11:00:00', has_purchase: true, updated_at: '2024-02-01 11:00:00'}
+          - {user_id: 3, product_id: 'P002', search_event_id: 'S3', session_id: 'SS3', cart_id: 'C3', timestamp: '2024-02-01 12:00:00', has_purchase: true, updated_at: '2024-02-01 12:00:00'}
+          - {user_id: 4, product_id: 'P003', search_event_id: 'S4', session_id: 'SS4', cart_id: 'C4', timestamp: '2024-02-01 13:00:00', has_purchase: true, updated_at: '2024-02-01 13:00:00'}
+          - {user_id: 5, product_id: 'P003', search_event_id: 'S5', session_id: 'SS5', cart_id: 'C5', timestamp: '2024-02-01 14:00:00', has_purchase: true, updated_at: '2024-02-01 14:00:00'}
+
+      # Test data for dim_product_data_gs
+      - input: ref('dim_product_data_gs')
+        rows:
+          - {product_id: 'P001', product_name: 'Laptop Pro', rating: 4.5, product_category: 'Electronics', price: 1200.00, supplier_id: 'S1', product_color: 'Silver', manufacturing_date: '2024-01-01', expiration_date: null, warranty_period: '12 months', quantity_in_stock: 50, sales_volume: 100, weight_grams: 2000, discount_percentage: 0, updated_at: '2024-02-01 09:00:00'}
+          - {product_id: 'P002', product_name: 'Wireless Mouse', rating: 4.0, product_category: 'Electronics', price: 29.99, supplier_id: 'S2', product_color: 'Black', manufacturing_date: '2024-01-02', expiration_date: null, warranty_period: '6 months', quantity_in_stock: 100, sales_volume: 200, weight_grams: 150, discount_percentage: 10, updated_at: '2024-02-01 09:00:00'}
+          - {product_id: 'P003', product_name: 'Keyboard', rating: 4.8, product_category: 'Electronics', price: 49.99, supplier_id: 'S3', product_color: 'White', manufacturing_date: '2024-01-03', expiration_date: null, warranty_period: '6 months', quantity_in_stock: 75, sales_volume: 150, weight_grams: 800, discount_percentage: 5, updated_at: '2024-02-01 09:00:00'}
+
+    expect:
+      rows:
+        - {product_id: 'P001', rating: 4.5, product_name: 'Laptop Pro', total_transactions: 2}
+        - {product_id: 'P002', rating: 4.0, product_name: 'Wireless Mouse', total_transactions: 1}
+        - {product_id: 'P003', rating: 4.8, product_name: 'Keyboard', total_transactions: 2}

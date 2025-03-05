@@ -69,7 +69,7 @@ SELECT
     END AS RESTOCK_PRIORITY,
 
     -- Add updated_at column for incremental logic
-    CURRENT_TIMESTAMP() AS updated_at   -- Assuming the current timestamp for new records
+    CURRENT_TIMESTAMP AS updated_at   -- Assuming the current timestamp for new records
 
 FROM 
     {{ source('de_project', 'inventory_data') }} u

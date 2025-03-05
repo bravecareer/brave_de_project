@@ -57,7 +57,7 @@ WITH user_journey_clean AS (
         search_model::VARCHAR AS search_model,
         
         -- Other columns like updated_at
-        CURRENT_TIMESTAMP::TIMESTAMP_NTZ AS updated_at
+        CURRENT_TIMESTAMP AS updated_at
     FROM {{ source('de_project', 'user_journey') }}
     WHERE 
         search_event_id IS NOT NULL

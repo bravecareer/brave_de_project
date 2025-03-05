@@ -14,12 +14,12 @@ WITH user_journey AS (
        uj.has_pdp,
        uj.has_atc,
        uj.has_purchase,
-       CURRENT_TIMESTAMP AS updated_at
+       uj.updated_at AS UPDATED_AT  -- Pull the updated_at from transformed table
    FROM {{ ref('user_journey_transformed_gs') }} uj
    {% if is_incremental() %}
    WHERE uj.updated_at > COALESCE(
        (SELECT MAX(updated_at) FROM {{ this }}), 
-       '1990-01-01'::TIMESTAMP_NTZ
+       '1990-01-01'
    )
    {% endif %}
 )

@@ -23,7 +23,7 @@ WITH search_effectiveness AS (
    {% if is_incremental() %}
    AND uj.updated_at > COALESCE(
        (SELECT MAX(updated_at) FROM {{ this }}), 
-       '1990-01-01'::TIMESTAMP_NTZ
+       '1990-01-01'
    )
    {% endif %}
 )
