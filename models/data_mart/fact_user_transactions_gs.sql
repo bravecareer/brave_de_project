@@ -19,8 +19,8 @@ WITH user_journey AS (
    AND uj.updated_at > COALESCE(
        (SELECT MAX(updated_at) FROM {{ this }}), 
        '1990-01-01'
+   )
    {% endif %}
-)
 )
 SELECT 
     uj.user_id,
@@ -31,4 +31,4 @@ SELECT
     uj.timestamp,
     uj.has_purchase,
     CURRENT_TIMESTAMP AS updated_at
-FROM user_journey as uj
+FROM user_journey AS uj
