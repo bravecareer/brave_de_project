@@ -8,6 +8,7 @@ WITH inventory_daily AS (
     SELECT
         i.product_id,
         i.warehouse_id,
+        i.inventory_id,
         DATE(i.dbt_loaded_at) as date_key,
         i.stock_level as current_stock_level,
         i.average_monthly_demand
@@ -23,5 +24,6 @@ SELECT
     warehouse_id,
     date_key,
     current_stock_level,
+    inventory_id,
     average_monthly_demand
 FROM inventory_daily

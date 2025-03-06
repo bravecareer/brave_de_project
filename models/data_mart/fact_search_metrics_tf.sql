@@ -1,7 +1,6 @@
 {{ config(
     materialized='incremental',
     unique_key='search_event_id',
-    incremental_strategy='merge'
 ) }}
 
 -- Simplified search metrics fact table
@@ -38,7 +37,11 @@ SELECT
     event_timestamp,
     search_request_id,
     search_results_count,
-    campaign_id  -- Added campaign_id to enable campaign influence analysis
+    campaign_id,  
+    has_atc,
+    has_pdp,
+    has_qv,
+    has_purchase
 FROM search_events
 GROUP BY
     search_event_id,

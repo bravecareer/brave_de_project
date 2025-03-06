@@ -1,4 +1,13 @@
 erDiagram
+    dim_user_tf ||--o{ fact_search_metrics_tf : "user_id"
+    dim_product_tf ||--o{ fact_product_performance_tf : "product_id"
+    dim_product_tf ||--o{ fact_search_metrics_tf : "product_id"
+    dim_product_tf ||--o{ fact_inventory_metrics_tf : "product_id"
+    dim_campaign_tf ||--o{ fact_campaign_metrics_tf : "campaign_id"
+    dim_campaign_tf ||--o{ fact_product_performance_tf : "campaign_id"
+    dim_search_terms_tf ||--o{ fact_search_metrics_tf : "search_request_id"
+    dim_inventory_tf ||--o{ fact_inventory_metrics_tf : "inventory_id"
+
     dim_user_tf {
         string user_id PK
         string first_name
@@ -27,14 +36,14 @@ erDiagram
     }
 
     dim_inventory_tf {
-        int inventory_id PK
+        string inventory_id PK
         string product_id FK
-        int warehouse_id
-        int supplier_id
+        string warehouse_id
+        string supplier_id
         string storage_condition
         int safety_stock_level
         int restock_point
-        decimal average_monthly_demand
+        int average_monthly_demand
         decimal unit_price
     }
 
@@ -65,14 +74,22 @@ erDiagram
         string search_type
         string search_feature
         string search_model
-        int term_length
-        int word_count
         timestamp first_seen_at
         timestamp last_updated_at
     }
 
+    fact_product_performance_tf {
+        string product_id PK
+        date date_key PK
+        string campaign_id FK
+        int total_views
+        int total_atc
+        int total_purchases
+        decimal total_revenue
+    }
+
     fact_campaign_metrics_tf {
-        string campaign_id PK, FK
+        string campaign_id PK
         date date_key PK
         int total_events
         int unique_categories_viewed
@@ -85,21 +102,12 @@ erDiagram
     }
 
     fact_inventory_metrics_tf {
-        string product_id PK, FK
-        int warehouse_id PK
+        string product_id PK,FK
+        string warehouse_id PK
+        string inventory_id FK
         date date_key PK
         int current_stock_level
-        decimal average_monthly_demand
-    }
-
-    fact_product_performance_tf {
-        string product_id PK, FK
-        date date_key PK
-        string campaign_id PK, FK
-        int total_views
-        int total_atc
-        int total_purchases
-        decimal total_revenue
+        int average_monthly_demand
     }
 
     fact_search_metrics_tf {
@@ -110,102 +118,77 @@ erDiagram
         string search_request_id FK
         int search_results_count
         string campaign_id FK
+        boolean has_atc
+        boolean has_pdp
+        boolean has_qv
+        boolean has_purchase
     }
 
-    dim_user_tf ||--o{ fact_search_metrics_tf : has
-    dim_product_tf ||--o{ fact_product_performance_tf : has_performance
-    dim_product_tf ||--o{ fact_search_metrics_tf : appears_in
-    dim_product_tf ||--o{ fact_inventory_metrics_tf : has_inventory
-    dim_inventory_tf ||--o{ fact_inventory_metrics_tf : provides_inventory_details
-    dim_campaign_tf ||--o{ fact_campaign_metrics_tf : has_metrics
-    dim_campaign_tf ||--o{ fact_product_performance_tf : influences_product_performance
-    dim_campaign_tf ||--o{ fact_search_metrics_tf : influences_search_behavior
-    dim_search_terms_tf ||--o{ fact_search_metrics_tf : has_search_details
-
-## Key Relationships
+## Data Model Description (Updated Version)
 
 ### Dimension Tables
-1. `dim_user_tf`: User dimension table
-   - Primary Key: user_id
-   - Contains user profile information including signup date, preferences, and loyalty status
 
-2. `dim_product_tf`: Product dimension table
-   - Primary Key: product_id
-   - Contains comprehensive product information including category, price, and attributes
+1. **dim_user_tf**
+   - User dimension table, stores basic user information
+   - Primary Key: `user_id`
 
-3. `dim_inventory_tf`: Inventory dimension table
-   - Primary Key: inventory_id
-   - Foreign Key: product_id -> dim_product_tf
-   - Contains inventory configuration information like safety stock levels and storage conditions
-   - Relates to fact_inventory_metrics_tf for detailed inventory analysis
+2. **dim_product_tf**
+   - Product dimension table, stores detailed product information
+   - Primary Key: `product_id`
 
-4. `dim_campaign_tf`: Campaign dimension table
-   - Primary Key: campaign_id
-   - Contains campaign details including source, medium, content, and targeting information
-   - Enables detailed analysis of campaign attributes and configurations
+3. **dim_inventory_tf**
+   - Inventory dimension table, stores inventory-related information
+   - Primary Key: `inventory_id`
+   - Foreign Key: `product_id` relates to `dim_product_tf`
 
-5. `dim_search_terms_tf`: Search terms dimension table
-   - Primary Key: search_request_id
-   - Contains standardized search terms and related metadata
-   - Reduces storage of duplicate search term data and enhances search analysis capabilities
+4. **dim_campaign_tf**
+   - Campaign dimension table, stores detailed campaign information
+   - Primary Key: `campaign_id`
+
+5. **dim_search_terms_tf**
+   - Search terms dimension table, stores search-related information
+   - Primary Key: `search_request_id`
 
 ### Fact Tables
-1. `fact_campaign_metrics_tf`: Campaign performance fact table
-   - Composite Key: [campaign_id, date_key]
-   - Foreign Key: campaign_id -> dim_campaign_tf
-   - Contains campaign performance metrics including impressions, clicks, and conversion events
-   - Enables marketing specialists to evaluate campaign effectiveness and ROI
 
-2. `fact_inventory_metrics_tf`: Inventory metrics fact table
-   - Composite Key: [product_id, warehouse_id, date_key]
-   - Foreign Keys: 
-     - product_id -> dim_product_tf
-     - [product_id, warehouse_id] -> dim_inventory_tf
-   - Contains daily inventory levels and demand forecasts
-   - Helps supply chain managers forecast demand and manage stock levels
+1. **fact_product_performance_tf**
+   - Product performance fact table, records metrics for product views, add-to-cart, and purchases
+   - Composite Primary Key: `product_id`, `date_key`
+   - Foreign Key: `product_id` relates to `dim_product_tf`
+   - Foreign Key: `campaign_id` relates to `dim_campaign_tf`
 
-3. `fact_product_performance_tf`: Product performance fact table
-   - Composite Key: [product_id, date_key, campaign_id]
-   - Foreign Keys: 
-     - product_id -> dim_product_tf
-     - campaign_id -> dim_campaign_tf
-   - Contains key product performance metrics including views, add-to-cart events, purchases, and revenue
-   - Enables product managers to analyze product performance over time
-   - Now includes campaign_id to evaluate campaign impact on product performance
+2. **fact_campaign_metrics_tf**
+   - Campaign metrics fact table, records campaign effectiveness metrics
+   - Composite Primary Key: `campaign_id`, `date_key`
+   - Foreign Key: `campaign_id` relates to `dim_campaign_tf`
 
-4. `fact_search_metrics_tf`: Search metrics fact table
-   - Primary Key: search_event_id
-   - Foreign Keys:
-     - user_id -> dim_user_tf
-     - product_id -> dim_product_tf
-     - search_request_id -> dim_search_terms_tf
-     - campaign_id -> dim_campaign_tf
-   - Contains search event details and results
-   - Now includes campaign_id to analyze which campaigns influence user search behavior
-   - Helps marketing analysts evaluate search effectiveness and campaign impact
+3. **fact_inventory_metrics_tf**
+   - Inventory metrics fact table, records inventory levels and demand
+   - Composite Primary Key: `product_id`, `warehouse_id`, `date_key`
+   - Foreign Key: `product_id` relates to `dim_product_tf` (direct relation to product dimension)
+   - Foreign Key: `inventory_id` relates to `dim_inventory_tf` (relation to inventory dimension)
 
-## Business Requirements Supported
+4. **fact_search_metrics_tf** (Updated)
+   - Search metrics fact table, records search events and results
+   - Primary Key: `search_event_id`
+   - Foreign Key: `user_id` relates to `dim_user_tf`
+   - Foreign Key: `product_id` relates to `dim_product_tf`
+   - Foreign Key: `search_request_id` relates to `dim_search_terms_tf`
+   - Foreign Key: `campaign_id` relates to `dim_campaign_tf`
+   - New fields: `has_atc`, `has_pdp`, `has_qv`, `has_purchase` for tracking user behavior
 
-1. **Search Effectiveness (ATC Rate)**
-   - `fact_search_metrics_tf` combined with `dim_search_terms_tf` and `fact_product_performance_tf` allows marketing analysts to evaluate the effectiveness of product search by analyzing the "Add to Cart" (ATC) rate.
-   - The standardized search terms in `dim_search_terms_tf` enable more efficient storage and better analysis of search patterns.
-   - With the addition of campaign_id, analysts can now determine which marketing campaigns drive more effective search behavior.
+### Relationship Description
 
-2. **Product Performance**
-   - `fact_product_performance_tf` provides product managers with key metrics (views, ATC events, purchases, revenue) to analyze product performance.
-   - The addition of campaign_id enables analysis of how different marketing campaigns impact product performance.
+Key changes in this updated model include:
 
-3. **Campaign Effectiveness**
-   - `fact_campaign_metrics_tf` combined with `dim_campaign_tf` allows marketing specialists to evaluate campaign success and ROI with metrics like impressions, clicks, and conversion events.
-   - The detailed campaign attributes in `dim_campaign_tf` enable more granular analysis of campaign performance by source, medium, and targeting parameters.
-   - The new connections to `fact_search_metrics_tf` and `fact_product_performance_tf` provide deeper insights into how campaigns influence user behavior and product performance.
+1. The `fact_inventory_metrics_tf` table is now associated with two dimension tables:
+   - Through `product_id` it directly relates to `dim_product_tf`, providing access to detailed product information
+   - Through `inventory_id` it relates to `dim_inventory_tf`, providing access to detailed inventory information
 
-4. **Inventory Management**
-   - `fact_inventory_metrics_tf` combined with `dim_inventory_tf` and `dim_product_tf` helps supply chain managers forecast demand accurately and manage stock levels efficiently.
-   - The inventory configuration details in `dim_inventory_tf` provide context for the metrics in `fact_inventory_metrics_tf`, enabling more informed inventory decisions.
+2. The `fact_search_metrics_tf` table has new user behavior tracking fields:
+   - `has_atc`: Whether the item was added to cart
+   - `has_pdp`: Whether the product detail page was viewed
+   - `has_qv`: Whether a quick view was performed
+   - `has_purchase`: Whether a purchase was completed
 
-5. **Cross-Domain Analysis**
-   - The addition of campaign_id to multiple fact tables enables cross-domain analysis:
-     - Marketing teams can analyze how campaigns affect both search behavior and product performance
-     - Product managers can understand which campaigns drive the most engagement with their products
-     - Business analysts can trace the full customer journey from campaign exposure to search to purchase
+These updates make the data model more comprehensive, enabling multi-dimensional analysis of user behavior, product performance, and inventory status, providing more complete data support for business decisions.

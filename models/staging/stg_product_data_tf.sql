@@ -1,4 +1,4 @@
--- 原 stg_product.sql 的内容 
+
 
 {{
     config(

@@ -1,6 +1,6 @@
 {{ config(
     materialized='incremental',
-    unique_key=['product_id', 'date_key', 'campaign_id']
+    unique_key=['product_id', 'date_key']
 ) }}
 
 -- Simplified product performance analysis table

@@ -1,5 +1,5 @@
 {{ config(
-   materialized='incremental',
+   materialized='view',
    unique_key='search_request_id'
 ) }}
 
@@ -18,20 +18,14 @@ WITH search_terms_raw AS (
     AND search_terms != 'UNKNOWN'
     AND search_request_id IS NOT NULL
     AND search_request_id != 'UNKNOWN'
-    {% if is_incremental() %}
-    -- Only process new search requests in incremental runs
-    AND search_request_id NOT IN (SELECT search_request_id FROM {{ this }})
-    {% endif %}
 )
 
 -- Process search terms with additional metadata
-SELECT
+SELECT 
     search_request_id,
     search_terms,
     search_terms_type,
     search_type,
     search_feature,
-    search_model,
-    CURRENT_TIMESTAMP() as first_seen_at,
-    CURRENT_TIMESTAMP() as last_updated_at
+    search_model
 FROM search_terms_raw

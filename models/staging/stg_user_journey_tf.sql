@@ -1,9 +1,7 @@
 {{
     config(
         materialized='incremental',
-        unique_key='search_event_id',
-        incremental_strategy='delete+insert'
-    )
+        unique_key='search_event_id',    )
 }}
 
 -- Staging layer for user journey data
