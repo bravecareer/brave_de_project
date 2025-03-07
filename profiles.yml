@@ -7,13 +7,13 @@ brave_de_project:
       account: QDLMHKH-FM67721
 
       # User/password auth
-      user: YOURNAME
-      password: YOURPASSWORD
+      user: PROJECT_LEARNER_BIBHU_R
+      password: Sonu@007
 
-      role: YOURROLE
+      role: PROJECT_LEARNER_DE_WRITE
       database: BRAVE_DATABASE
       warehouse: BRAVE_WAREHOUSE
-      schema: DE_PROJECT
+      schema: PROJECT_TEST
       threads: 1
       client_session_keep_alive: False
       query_tag: dbt
