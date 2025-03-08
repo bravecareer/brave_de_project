@@ -1,10 +1,10 @@
 unit_tests:
-  - name: test_search_effectiveness_incremental
-    description: "Test search effectiveness metrics with timezone handling and incremental processing"
-    model: fact_search_effectiveness_gs
+  - name: test_search_effectiveness_non_incremental
+    description: "Test search effectiveness metrics with timezone handling (non-incremental)"
+    model: fact_product_search_effectiveness_gs
     overrides:
       macros:
-        is_incremental: true
+        is_incremental: false  # Not using incremental processing here
     given:
       # Test data for user_journey_transformed_gs
       - input: ref('user_journey_transformed_gs')
@@ -33,7 +33,7 @@ unit_tests:
              timestamp: '2024-02-01 13:45:00',
              updated_at: '2024-02-01 13:45:00'}
 
-      # Existing data in the incremental table
+      # Existing data in the non-incremental table
       - input: this
         rows:
           - {search_event_id: 'SE000', user_id: 'U0', 

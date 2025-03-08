@@ -11,7 +11,9 @@ WITH product_performance AS (
    FROM {{ ref('fact_user_transactions_gs') }} f
    LEFT JOIN {{ ref('dim_product_data_gs') }} p 
      ON f.product_id = p.product_id
-   GROUP BY f.product_id, p.product_name,p.rating
+   WHERE p.rating IS NOT NULL -- Move WHERE clause before GROUP BY
+   GROUP BY f.product_id, p.product_name, p.rating
 )
 
-SELECT * FROM product_performance
+SELECT * 
+FROM product_performance

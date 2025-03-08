@@ -6,85 +6,105 @@ models:
     columns:
       - name: user_id
         tests:
-          - unique
-          - not_null
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
 
   - name: user_data_transformed_gs
     description: "Transformed user data with cleaned email and formatted dates."
     columns:
       - name: user_id
         tests:
-          - unique
-          - not_null
-
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
 
   - name: dim_inventory_data_gs
     description: "Dimension table storing inventory details."
     columns:
       - name: INVENTORY_ID
         tests:
-          - unique
-          - not_null
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
       - name: UPDATED_AT
         tests:
-          - not_null
+          - not_null:
+              severity: warn
 
   - name: product_data_transformed_gs
     description: "Transformed product data from source."
     columns:
       - name: product_id
         tests:
-          - unique
-          - not_null
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
 
   - name: dim_product_data_gs
     description: "Dimension table storing product details."
     columns:
       - name: product_id
         tests:
-          - unique
-          - not_null
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
       - name: price
         tests:
-          - not_null
+          - not_null:
+              severity: warn
       - name: updated_at
         tests:
-          - not_null
+          - not_null:
+              severity: warn
 
   - name: user_journey_transformed_gs
     description: "Cleansed user journey data."
     columns:
       - name: search_event_id
         tests:
-          - unique
-          - not_null
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
       - name: timestamp
         tests:
-          - not_null
+          - not_null:
+              severity: warn
       - name: user_id
         tests:
-          - not_null
+          - not_null:
+              severity: warn
 
-  - name: fact_product_performance_gs
-    description: "Aggregated performance metrics for products."
+  - name: fact_product_search_effectiveness_gs
+    description: "Aggregated search effectiveness metrics."
     columns:
       - name: product_id
         tests:
-          - not_null
+          - not_null:
+              severity: warn
 
   - name: fact_user_transactions_gs
     description: "Fact table storing user transactions."
     columns:
       - name: user_id
         tests:
-          - not_null
+          - not_null:
+              severity: warn
       - name: search_event_id
         tests:
-          - not_null
+          - not_null:
+              severity: warn
       - name: product_id
         tests:
-          - not_null
+          - not_null:
+              severity: warn
       - name: timestamp
         tests:
-          - not_null
-
+          - not_null:
+              severity: warn

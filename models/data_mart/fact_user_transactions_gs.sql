@@ -7,13 +7,16 @@ WITH user_journey AS (
    SELECT
        uj.user_id,
        uj.product_id,
+       dp.product_name,  -- Added product_name from dim_product_data_gs
        uj.has_purchase,
        uj.search_event_id,
        uj.session_id,
        uj.cart_id,
        uj.timestamp,
-       uj.updated_at
+       uj.updated_at  -- Keeping updated_at from source
    FROM {{ ref('user_journey_transformed_gs') }} uj
+   LEFT JOIN {{ ref('dim_product_data_gs') }} dp
+   ON uj.product_id = dp.product_id
    WHERE uj.has_purchase = TRUE
    {% if is_incremental() %}
    AND uj.updated_at > COALESCE(
@@ -22,13 +25,9 @@ WITH user_journey AS (
    )
    {% endif %}
 )
-SELECT 
-    uj.user_id,
-    uj.product_id,
-    uj.search_event_id,
-    uj.session_id,
-    uj.cart_id,
-    uj.timestamp,
-    uj.has_purchase,
-    CURRENT_TIMESTAMP AS updated_at
-FROM user_journey AS uj
+
+SELECT * FROM user_journey
+
+{% if is_incremental() %}
+WHERE updated_at > (SELECT COALESCE(MAX(updated_at), '1900-01-01') FROM {{ this }})
+{% endif %}

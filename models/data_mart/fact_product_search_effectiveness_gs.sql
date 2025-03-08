@@ -1,12 +1,13 @@
 {{ config(
    materialized='incremental',
-   unique_key=['search_event_id', 'user_id', 'timestamp']
+   unique_key=['search_event_id', 'user_id', 'product_id', 'timestamp']
 ) }}
 
 WITH search_effectiveness AS (
    SELECT
        uj.search_event_id,
        uj.user_id,
+       uj.product_id,  -- Added product_id
        uj.search_terms,
        uj.search_results_count,
        uj.has_qv,
@@ -17,7 +18,7 @@ WITH search_effectiveness AS (
        uj.search_model,
        uj.session_id,
        uj.timestamp,
-       uj.updated_at
+       uj.updated_at  -- Keeping updated_at from source
    FROM {{ ref('user_journey_transformed_gs') }} uj
    WHERE uj.search_event_id IS NOT NULL
    {% if is_incremental() %}
@@ -28,18 +29,8 @@ WITH search_effectiveness AS (
    {% endif %}
 )
 
-SELECT 
-    se.search_event_id,
-    se.user_id,
-    se.search_terms,
-    se.search_results_count,
-    se.has_qv,
-    se.has_pdp,
-    se.has_atc,
-    se.has_purchase,
-    se.search_type,
-    se.search_model,
-    se.session_id,
-    se.timestamp,
-    CURRENT_TIMESTAMP AS updated_at
-FROM search_effectiveness se
+SELECT * FROM search_effectiveness
+
+{% if is_incremental() %}
+WHERE updated_at > (SELECT COALESCE(MAX(updated_at), '1900-01-01') FROM {{ this }})
+{% endif %}

@@ -7,12 +7,12 @@
 }}
 
 SELECT 
-    INVENTORY_ID,
-    PRODUCT_ID,
+    INVENTORY_ID,  
+    PRODUCT_ID,  
     WAREHOUSE_ID,
     SUPPLIER_ID,
-    STORAGE_CONDITION,
-    NORMALIZED_INVENTORY_STATUS,
+    STORAGE_CONDITION,  
+    INVENTORY_STATUS,
     REORDER_LEVEL,
     SAFETY_STOCK,
     AVERAGE_MONTHLY_DEMAND,
@@ -22,10 +22,20 @@ SELECT
     SALES_VOLUME,
     STOCK_STATUS,
     RESTOCK_PRIORITY,
+    
+    -- Already transformed fields from the inventory_data_transformed_gs view
+    LAST_RESTOCK_DATE,
+    NEXT_RESTOCK_DATE,
+    DAYS_SINCE_RESTOCK, 
+    ESTIMATED_STOCK_OUT_DATE,
+
+    -- Incremental update tracking
     UPDATED_AT
+
 FROM 
     {{ ref('inventory_data_transformed_gs') }}  
 
 {% if is_incremental() %}
-WHERE updated_at > (SELECT COALESCE(MAX(updated_at), '1900-01-01') FROM {{ this }})
+-- Only load records that have been updated since the last successful run
+WHERE UPDATED_AT > (SELECT COALESCE(MAX(UPDATED_AT), '1900-01-01') FROM {{ this }})
 {% endif %}
