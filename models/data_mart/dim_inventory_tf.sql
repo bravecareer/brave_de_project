@@ -1,5 +1,5 @@
 {{ config(
-   materialized='view',
+   materialized='incremental',
    unique_key='inventory_id'
 ) }}
 
@@ -13,12 +13,16 @@ WITH inventory_data AS (
        i.storage_condition,
        i.safety_stock as safety_stock_level,
        i.reorder_level as restock_point,
-       i.average_monthly_demand,
        -- Add calculated fields
-       p.price as unit_price
+       p.price as unit_price,
+       i.last_audit_date
    FROM {{ ref('stg_inventory_data_tf') }} i
    LEFT JOIN {{ ref('stg_product_data_tf') }} p ON i.product_id = p.product_id
-   WHERE i.last_audit_date >= CURRENT_DATE() - 5 
+   {% if is_incremental() %}
+   -- Only process new or updated inventory in incremental runs
+   WHERE i.last_audit_date >= CURRENT_DATE() - 5
+      OR i.last_restock_date >= CURRENT_DATE() - 2
+   {% endif %}
 )
 
 SELECT * FROM inventory_data

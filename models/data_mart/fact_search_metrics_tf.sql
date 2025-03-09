@@ -1,53 +1,72 @@
 {{ config(
     materialized='incremental',
     unique_key='search_event_id',
+    incremental_strategy='merge'
 ) }}
 
--- Simplified search metrics fact table
-WITH search_events AS (
+-- Filter and prepare search events data
+WITH filtered_search_events AS (
     SELECT
-        uj.search_event_id,
-        uj.user_id,
-        uj.product_id,
-        uj.event_timestamp,
-        DATE(uj.event_timestamp) as date_key,
-        -- Use search_request_id as foreign key to dim_search_terms_tf
-        uj.search_request_id,
-        uj.search_results_count,
-        uj.has_qv,
-        uj.has_pdp,
-        uj.has_atc,
-        uj.has_purchase,
-        -- Add campaign_id to track which campaign influenced the search behavior
-        COALESCE(uj.mkt_campaign, 'Unknown') as campaign_id
+        search_event_id,
+        user_id,
+        product_id,
+        session_id,
+        event_timestamp,
+        search_request_id,
+        has_qv,
+        has_pdp,
+        has_atc,
+        has_purchase,
+        mkt_campaign as campaign_id
     FROM {{ ref('stg_user_journey_tf') }} uj
     WHERE uj.search_event_id IS NOT NULL
+    AND uj.mkt_campaign != 'UNKNOWN'
     AND uj.search_request_id IS NOT NULL
     AND uj.search_request_id != 'UNKNOWN'
     {% if is_incremental() %}
     AND DATE(uj.event_timestamp) >= CURRENT_DATE() - 5
     {% endif %}
+),
+
+-- Add derived metrics and transformations
+search_metrics AS (
+    SELECT
+        search_event_id,
+        user_id,
+        product_id,
+        session_id,
+        DATE(event_timestamp) AS date_key,
+        search_request_id,
+        has_qv,
+        has_pdp,
+        has_atc,
+        has_purchase,
+        campaign_id,
+        -- Add derived metrics for easier analysis
+        CASE 
+            WHEN has_purchase THEN 1 
+            ELSE 0 
+        END as conversion_flag,
+        CASE
+            WHEN has_pdp OR has_qv THEN 1
+            ELSE 0
+        END as engagement_flag
+    FROM filtered_search_events
 )
 
--- Only include raw metrics, move calculations to BI layer
+-- Final selection
 SELECT
     search_event_id,
     user_id,
     product_id,
-    event_timestamp,
+    session_id,
+    date_key,
     search_request_id,
-    search_results_count,
-    campaign_id,  
-    has_atc,
-    has_pdp,
     has_qv,
-    has_purchase
-FROM search_events
-GROUP BY
-    search_event_id,
-    user_id,
-    product_id,
-    event_timestamp,
-    search_request_id,
-    search_results_count,
-    campaign_id
+    has_pdp,
+    has_atc,
+    has_purchase,
+    campaign_id,
+    conversion_flag,
+    engagement_flag
+FROM search_metrics

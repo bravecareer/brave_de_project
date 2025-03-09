@@ -1,44 +1,51 @@
-{{ config(
-    materialized='incremental',
-    unique_key=['product_id', 'date_key']
-) }}
+{{
+    config(
+        materialized='incremental',
+        unique_key=['product_id', 'date_key', 'user_id'],
+        incremental_strategy='merge'
+    )
+}}
 
--- Simplified product performance analysis table
--- Aggregates key metrics: views, ATC events, and purchases
-WITH product_events AS (
-    -- Get product-related user events
+-- Filter and prepare purchase data
+WITH purchase_events AS (
     SELECT
         uj.product_id,
-        DATE(uj.event_timestamp) as date_key,
-        -- Add campaign_id to track product performance by marketing campaign
-        COALESCE(uj.mkt_campaign, 'Unknown') as campaign_id,
-        uj.has_qv,
-        uj.has_pdp,
-        uj.has_atc,
-        uj.has_purchase,
-        CASE WHEN uj.has_purchase THEN p.price ELSE 0 END AS item_amount
+        uj.user_id,
+        uj.event_timestamp,
+        p.price
     FROM {{ ref('stg_user_journey_tf') }} uj
     LEFT JOIN {{ ref('stg_product_data_tf') }} p ON uj.product_id = p.product_id
+    WHERE uj.has_purchase = TRUE  -- Only include actual purchases
+    AND uj.user_id IS NOT NULL
+    AND uj.user_id != 'UNKNOWN'
     {% if is_incremental() %}
-    WHERE DATE(uj.event_timestamp) >= CURRENT_DATE() - 5
+    AND DATE(uj.event_timestamp) >= CURRENT_DATE() - 5
     {% endif %}
 ),
 
--- Aggregate metrics by product, campaign and date
-product_metrics AS (
+-- Aggregate metrics by product, user and date
+product_performance AS (
     SELECT
         product_id,
-        date_key,
-        campaign_id,
-        -- Removed product_category as it can be referenced from dim_product_tf
-        
-        -- Key metrics: views, ATC events, and purchases
-        SUM(CASE WHEN has_qv = TRUE OR has_pdp = TRUE THEN 1 ELSE 0 END) as total_views,
-        SUM(CASE WHEN has_atc = TRUE THEN 1 ELSE 0 END) as total_atc,
-        SUM(CASE WHEN has_purchase = TRUE THEN 1 ELSE 0 END) as total_purchases,
-        SUM(item_amount) as total_revenue
-    FROM product_events
-    GROUP BY product_id, date_key, campaign_id
+        user_id,
+        DATE(event_timestamp) as date_key,
+        TRUE as has_purchase,  -- Always true since we filter for purchases
+        COUNT(*) as purchase_count,  -- Count all rows in each group
+        SUM(price) AS revenue  -- Sum the price directly since all rows are purchases
+    FROM purchase_events
+    GROUP BY
+        product_id,
+        user_id,
+        date_key
 )
 
-SELECT * FROM product_metrics
+-- Final selection
+SELECT
+    product_id,
+    user_id,
+    date_key,
+    has_purchase,
+    purchase_count,
+    revenue
+FROM product_performance
+

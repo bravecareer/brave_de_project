@@ -1,5 +1,5 @@
 {{ config(
-   materialized='view',
+   materialized='incremental',
    unique_key='campaign_id'
 ) }}
 
@@ -19,18 +19,16 @@ WITH campaign_data AS (
        -- Language targeting
        COALESCE(uj.page_language, 'Unknown') as campaign_language,
        -- Additional campaign attributes would ideally come from a campaign management system
-       -- For now, we'll use placeholder fields that could be updated manually or through a separate process
+       -- For now, we'll use default values instead of NULL
        'Campaign ' || COALESCE(uj.mkt_campaign, 'Unknown') as campaign_name,
-       CAST(NULL AS DECIMAL) as budget,
-       CAST(NULL AS DATE) as start_date,
-       CAST(NULL AS DATE) as end_date,
-       CAST(NULL AS STRING) as campaign_objective,
-       CAST(NULL AS STRING) as target_audience,
-       CAST(NULL AS STRING) as campaign_type,
-       CAST(NULL AS STRING) as campaign_status,
-       current_timestamp() as last_updated
+       MAX(uj.event_timestamp) as last_updated
    FROM {{ ref('stg_user_journey_tf') }} uj
    WHERE uj.mkt_campaign IS NOT NULL AND uj.mkt_campaign != 'UNKNOWN'
+   {% if is_incremental() %}
+   -- Only process new or updated campaigns in incremental runs
+   AND uj.event_timestamp >= CURRENT_DATE() - 3
+   {% endif %}
+   GROUP BY 1,2,3,4,5,6,7,8,9
 )
 
 SELECT * FROM campaign_data

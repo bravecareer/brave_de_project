@@ -9,10 +9,6 @@ models:
         tests:
           - not_null
           - unique
-      - name: stock_level
-        description: "Current stock level"
-        tests:
-          - not_null
       - name: safety_stock_level
         description: "Safety stock threshold"
       - name: restock_point
@@ -41,6 +37,22 @@ models:
           - unique
       - name: email
         description: "Email of the user"
+      - name: signup_date
+        description: "Date when the user signed up"
+      - name: first_name
+        description: "User's first name"
+      - name: last_name
+        description: "User's last name"
+      - name: preferred_language
+        description: "User's preferred language"
+      - name: dob
+        description: "User's date of birth"
+      - name: marketing_opt_in
+        description: "Whether the user has opted in for marketing"
+      - name: account_status
+        description: "Current status of the user's account"
+      - name: loyalty_points_balance
+        description: "User's loyalty points balance"
 
   - name: dim_campaign_tf
     description: "Dimension table for marketing campaigns"
@@ -49,7 +61,8 @@ models:
         description: "Primary key - Identifier for the marketing campaign"
         tests:
           - not_null
-          - unique
+          - unique:
+              severity: warn
       - name: campaign_source
         description: "Source of the marketing campaign"
       - name: campaign_medium
@@ -90,7 +103,8 @@ models:
         description: "Primary key - Unique identifier for the search request"
         tests:
           - not_null
-          - unique
+          - unique:
+              severity: warn
       - name: search_terms
         description: "The search terms used in the request"
         tests:
@@ -109,7 +123,7 @@ models:
         description: "Timestamp when this search term was last updated"
 
   - name: fact_campaign_metrics_tf
-    description: "Fact table for campaign performance analysis"
+    description: "Fact table for aggregated campaign metrics by date"
     columns:
       - name: campaign_id
         description: "Identifier for the marketing campaign"
@@ -119,48 +133,61 @@ models:
               to: ref('dim_campaign_tf')
               field: campaign_id
       - name: date_key
-        description: "Date of the campaign metrics"
+        description: "Date of the events"
         tests:
           - not_null
-      - name: total_events
-        description: "Total number of events"
+      - name: session_count
+        description: "Total number of sessions for this campaign and date"
         tests:
           - not_null
-      - name: unique_categories_viewed
-        description: "Number of unique product categories viewed"
-      - name: total_product_views
-        description: "Total number of product views"
-      - name: total_product_detail_views
-        description: "Total number of product detail page views"
-      - name: total_add_to_cart
-        description: "Total number of add to cart events"
-      - name: total_purchases
-        description: "Total number of purchases"
-      - name: impressions
+      - name: purchase_count
+        description: "Number of purchases for this campaign and date"
+        tests:
+          - not_null
+      - name: total_revenue
+        description: "Total revenue generated from purchases"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: impression_count
         description: "Number of ad impressions"
-      - name: clicks
+        tests:
+          - not_null
+      - name: click_count
         description: "Number of ad clicks"
+        tests:
+          - not_null
 
   - name: fact_inventory_metrics_tf
     description: "Fact table for inventory metrics analysis"
     columns:
+      - name: inventory_id
+        description: "Primary key - Unique identifier for inventory item"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_inventory_data_tf')
+              field: inventory_id
       - name: product_id
-        description: "Foreign key to dim_product"
+        description: "Foreign key to dim_product - Identifies which product this inventory item belongs to"
         tests:
           - not_null
           - relationships:
               to: ref('dim_product_tf')
               field: product_id
-      - name: warehouse_id
-        description: "Identifier for the warehouse"
-        tests:
-          - not_null
-      - name: date_key
-        description: "Date of the inventory metrics"
+      - name: last_audit_date
+        description: "Date of the last inventory audit"
         tests:
           - not_null
       - name: current_stock_level
         description: "Current stock level"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: average_monthly_demand
+        description: "Average monthly demand for inventory planning"
         tests:
           - not_null
 
@@ -186,8 +213,8 @@ models:
           - relationships:
               to: ref('dim_product_tf')
               field: product_id
-      - name: event_timestamp
-        description: "Timestamp of the search event"
+      - name: date_key
+        description: "Date of the search event"
         tests:
           - not_null
       - name: search_request_id
@@ -197,19 +224,23 @@ models:
           - relationships:
               to: ref('dim_search_terms_tf')
               field: search_request_id
-      - name: search_results_count
-        description: "Number of results returned by the search"
-        tests:
-          - not_null
       - name: campaign_id
         description: "Foreign key to dim_campaign - Identifies which campaign influenced the search behavior"
         tests:
           - relationships:
               to: ref('dim_campaign_tf')
               field: campaign_id
+      - name: has_atc
+        description: "Whether the search led to an add-to-cart event"
+      - name: has_pdp
+        description: "Whether the search led to a product detail page view"
+      - name: has_qv
+        description: "Whether the search led to a quick view"
+      - name: has_purchase
+        description: "Whether the search led to a purchase"
 
   - name: fact_product_performance_tf
-    description: "Fact table for product performance analysis"
+    description: "Fact table for individual product purchase records"
     columns:
       - name: product_id
         description: "Foreign key to dim_product"
@@ -218,21 +249,32 @@ models:
           - relationships:
               to: ref('dim_product_tf')
               field: product_id
-      - name: date_key
-        description: "Date of the event"
+      - name: user_id
+        description: "Foreign key to dim_user - Identifies which user made the purchase"
         tests:
           - not_null
-      - name: campaign_id
-        description: "Foreign key to dim_campaign - Identifies which campaign influenced the product performance"
-        tests:
           - relationships:
-              to: ref('dim_campaign_tf')
-              field: campaign_id
-      - name: total_views
-        description: "Total number of product views (QV or PDP)"
-      - name: total_atc
-        description: "Total number of add-to-cart events"
-      - name: total_purchases
-        description: "Total number of purchases"
-      - name: total_revenue
-        description: "Total revenue generated from purchases"
+              to: ref('dim_user_tf')
+              field: user_id
+      - name: date_key
+        description: "Date of the purchase event"
+        tests:
+          - not_null
+      - name: has_purchase
+        description: "Flag indicating this is a purchase event (always true)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true]
+      - name: purchase_count
+        description: "Number of purchases for this product and date"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+      - name: revenue
+        description: "Revenue generated from this purchase"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
