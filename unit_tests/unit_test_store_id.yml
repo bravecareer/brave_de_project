@@ -1,0 +1,19 @@
+unit_tests:
+  - name: test_selected_store_id
+    description: "Ensure selected_store_id follows the transformation rules"
+    model: stg_user_journey_tf
+    given:
+      - input: source('de_project', 'user_journey') 
+        rows:
+          - selected_store_id: null  # NULL should be converted to -1
+          - selected_store_id: -5    # Values less than -1 should be set to -1
+          - selected_store_id: -1    # -1 should remain unchanged
+          - selected_store_id: 0     # 0 should remain unchanged
+          - selected_store_id: 5     # Positive values should remain unchanged
+    expect:
+      rows:
+          - selected_store_id: -1   # NULL -> -1
+          - selected_store_id: -1   # -5 -> -1
+          - selected_store_id: -1   # -1 remains unchanged
+          - selected_store_id: 0    # 0 remains unchanged
+          - selected_store_id: 5    # 5 remains unchanged

@@ -9,7 +9,7 @@ profile: "brave_de_project" # Put your profile here
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
-test-paths: ["data-tests"]
+test-paths: ["data-tests", "unit_tests"]
 seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]

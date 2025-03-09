@@ -25,14 +25,14 @@ models:
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "stock_level >= 0"
+              expression: ">= 0"
           
       - name: restock_date
         description: "Date when inventory was restocked"
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "restock_date <= CURRENT_DATE()"
+              expression: "<= CURRENT_DATE()"
           
       - name: supplier_id
         description: "Supplier identifier"
@@ -54,7 +54,7 @@ models:
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "last_audit_date <= CURRENT_DATE()"
+              expression: "<= CURRENT_DATE()"
           
       - name: reorder_level
         description: "Level at which reorder should be triggered"
@@ -86,14 +86,14 @@ models:
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "safety_stock >= 0"
+              expression: ">= 0"
           
       - name: average_monthly_demand
         description: "Average monthly demand"
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "average_monthly_demand >= 0"
+              expression: ">= 0"
           
       - name: last_restock_date
         description: "Date of last restock"
