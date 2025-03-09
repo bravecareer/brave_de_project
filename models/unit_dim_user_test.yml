@@ -8,7 +8,7 @@ unit_tests:
         is_incremental: false  
     given:
       # New incoming data from the transformed table
-      - input: ref('user_data_transformed_gs') 
+      - input: ref('view_user_data_transformed_gs') 
         rows:
           - {user_id: 1, first_name: 'John', last_name: 'Doe', email: 'john.doe@example.com', signup_date: '2024-01-01', preferred_language: 'en', date_of_birth: '1990-01-01', marketing_opt_in: true, account_status: 'active', loyalty_points_balance: 100, updated_at: '2024-02-20 12:00:00'}
           - {user_id: 2, first_name: 'Jane', last_name: 'Smith', email: 'jane.smith@unknown', signup_date: '2024-01-10', preferred_language: 'en', date_of_birth: '1988-05-10', marketing_opt_in: false, account_status: 'inactive', loyalty_points_balance: 50, updated_at: '2024-02-21 13:15:30'}

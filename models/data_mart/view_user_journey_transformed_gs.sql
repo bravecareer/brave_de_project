@@ -1,6 +1,8 @@
 {{ config(
     materialized='view',
-    unique_keys = ['user_id', 'search_event_id', 'product_id', 'timestamp']
+    unique_keys = ['user_id', 'search_event_id', 'product_id', 'timestamp'],
+    alias='view_user_journey_transformed_gs',
+
 ) }}
 
 WITH user_journey_clean AS (

@@ -1,36 +1,29 @@
 {{ config(
-   materialized='incremental',
-   unique_key=['search_event_id', 'user_id', 'product_id', 'timestamp']
+    materialized='table',
+    unique_keys=['product_id']
 ) }}
 
-WITH search_effectiveness AS (
-   SELECT
-       uj.search_event_id,
-       uj.user_id,
-       uj.product_id,  -- Added product_id
-       uj.search_terms,
-       uj.search_results_count,
-       uj.has_qv,
-       uj.has_pdp,
-       uj.has_atc,
-       uj.has_purchase,
-       uj.search_type,
-       uj.search_model,
-       uj.session_id,
-       uj.timestamp,
-       uj.updated_at  -- Keeping updated_at from source
-   FROM {{ ref('user_journey_transformed_gs') }} uj
-   WHERE uj.search_event_id IS NOT NULL
-   {% if is_incremental() %}
-   AND uj.updated_at > COALESCE(
-       (SELECT MAX(updated_at) FROM {{ this }}), 
-       '1990-01-01'
-   )
-   {% endif %}
+WITH user_journey_clean AS (
+    SELECT 
+        search_event_id,
+        product_id,
+        COALESCE(has_atc, FALSE) AS has_atc  
+    FROM {{ ref('view_user_journey_transformed_gs') }}  -- Corrected reference
+    WHERE 
+        product_id IS NOT NULL
+        AND search_event_id IS NOT NULL
 )
 
-SELECT * FROM search_effectiveness
-
-{% if is_incremental() %}
-WHERE updated_at > (SELECT COALESCE(MAX(updated_at), '1900-01-01') FROM {{ this }})
-{% endif %}
+SELECT 
+    ujc.product_id,
+    dpd.product_name,
+    COUNT(DISTINCT ujc.search_event_id) AS total_searches,  
+    SUM(CASE WHEN ujc.has_atc THEN 1 ELSE 0 END) AS total_atc_events,  
+    CASE 
+        WHEN COUNT(DISTINCT ujc.search_event_id) = 0 THEN 0
+        ELSE SUM(CASE WHEN ujc.has_atc THEN 1 ELSE 0 END) / COUNT(DISTINCT ujc.search_event_id)::FLOAT
+    END AS atc_rate
+FROM user_journey_clean ujc
+JOIN {{ ref('dim_product_data_gs') }} dpd  -- Using the incremental dimension table
+ON ujc.product_id = dpd.product_id
+GROUP BY ujc.product_id, dpd.product_name

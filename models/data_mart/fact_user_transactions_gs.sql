@@ -14,7 +14,7 @@ WITH user_journey AS (
        uj.cart_id,
        uj.timestamp,
        uj.updated_at  -- Keeping updated_at from source
-   FROM {{ ref('user_journey_transformed_gs') }} uj
+   FROM {{ ref('view_user_journey_transformed_gs') }} uj
    LEFT JOIN {{ ref('dim_product_data_gs') }} dp
    ON uj.product_id = dp.product_id
    WHERE uj.has_purchase = TRUE

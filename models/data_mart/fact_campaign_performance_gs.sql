@@ -1,6 +1,6 @@
 {{
   config(
-    materialized = 'view',
+    materialized = 'table',
     unique_key = ['MKT_CAMPAIGN', 'MKT_MEDIUM', 'MKT_SOURCE', 'MKT_CONTENT']
   )
 }}
@@ -17,7 +17,7 @@ SELECT
   COUNT(CASE WHEN HAS_PDP THEN 1 END) AS TOTAL_PRODUCT_DETAIL_PAGES,
   COUNT(CASE WHEN HAS_PURCHASE THEN 1 END) * 1.0 / NULLIF(COUNT(DISTINCT SEARCH_EVENT_ID), 0) AS CONVERSION_RATE
 FROM 
-  {{ ref('user_journey_transformed_gs') }}
+  {{ ref('view_user_journey_transformed_gs') }}
 WHERE 
   MKT_CAMPAIGN IS NOT NULL
   AND MKT_MEDIUM IS NOT NULL

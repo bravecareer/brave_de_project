@@ -33,7 +33,7 @@ SELECT
     UPDATED_AT
 
 FROM 
-    {{ ref('inventory_data_transformed_gs') }}  
+    {{ ref('view_inventory_data_transformed_gs') }}  
 
 {% if is_incremental() %}
 -- Only load records that have been updated since the last successful run

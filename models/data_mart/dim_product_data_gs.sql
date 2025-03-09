@@ -20,7 +20,7 @@ SELECT
     weight_grams,
     discount_percentage,
     updated_at
-FROM {{ ref('product_data_transformed_gs') }}
+FROM {{ ref('view_product_data_transformed_gs') }}
 
 {% if is_incremental() %}
 WHERE updated_at > (SELECT COALESCE(MAX(updated_at), '1900-01-01') FROM {{ this }})

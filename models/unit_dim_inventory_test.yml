@@ -7,7 +7,7 @@ unit_tests:
         is_incremental: True  # Force full refresh mode for the test
     given:
       # New incoming data from the transformed table
-      - input: ref('inventory_data_transformed_gs')
+      - input: ref('view_inventory_data_transformed_gs')
         rows:
           - {INVENTORY_ID: 1, PRODUCT_ID: 'P001', WAREHOUSE_ID: 'W01', SUPPLIER_ID: 'S001', STORAGE_CONDITION: 'Cold', Inventory_status: 'In Stock', REORDER_LEVEL: 10, SAFETY_STOCK: 5, AVERAGE_MONTHLY_DEMAND: 50, RATING: 4.5, WEIGHT_KG: 2.5, DISCOUNT_PERCENTAGE: 10, SALES_VOLUME: 100, STOCK_STATUS: 'Available', RESTOCK_PRIORITY: 'Medium', UPDATED_AT: '2024-02-20 12:00:00'}
           - {INVENTORY_ID: 2, PRODUCT_ID: 'P002', WAREHOUSE_ID: 'W02', SUPPLIER_ID: 'S002', STORAGE_CONDITION: 'Ambient', Inventory_status: 'Low Stock', REORDER_LEVEL: 5, SAFETY_STOCK: 2, AVERAGE_MONTHLY_DEMAND: 20, RATING: 3.8, WEIGHT_KG: 1.2, DISCOUNT_PERCENTAGE: 5, SALES_VOLUME: 30, STOCK_STATUS: 'Low', RESTOCK_PRIORITY: 'High', UPDATED_AT: '2024-02-21 14:30:00'}

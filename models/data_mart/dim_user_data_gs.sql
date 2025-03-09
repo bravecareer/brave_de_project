@@ -18,7 +18,7 @@ SELECT
     account_status,
     loyalty_points_balance,
     updated_at
-FROM {{ ref('user_data_transformed_gs') }}
+FROM {{ ref('view_user_data_transformed_gs') }}
 
 {% if is_incremental() %}
 WHERE updated_at > (SELECT COALESCE(MAX(updated_at), '1900-01-01') FROM {{ this }})

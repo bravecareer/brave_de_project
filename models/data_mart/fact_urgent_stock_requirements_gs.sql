@@ -15,7 +15,7 @@ SELECT
     u.updated_at AS UPDATED_AT  -- Pull the updated_at from transformed table
 
 FROM 
-    {{ ref('inventory_data_transformed_gs') }} u
+    {{ ref('view_inventory_data_transformed_gs') }} u
 LEFT JOIN 
     {{ ref('dim_product_data_gs') }} p
     ON u.PRODUCT_ID = p.PRODUCT_ID  -- LEFT JOIN to avoid dropping unmatched inventory records

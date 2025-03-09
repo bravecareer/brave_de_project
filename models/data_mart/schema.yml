@@ -11,7 +11,7 @@ models:
           - not_null:
               severity: warn
 
-  - name: user_data_transformed_gs
+  - name: view_user_data_transformed_gs
     description: "Transformed user data with cleaned email and formatted dates."
     columns:
       - name: user_id
@@ -35,7 +35,7 @@ models:
           - not_null:
               severity: warn
 
-  - name: product_data_transformed_gs
+  - name: view_product_data_transformed_gs
     description: "Transformed product data from source."
     columns:
       - name: product_id
@@ -63,7 +63,7 @@ models:
           - not_null:
               severity: warn
 
-  - name: user_journey_transformed_gs
+  - name: view_user_journey_transformed_gs
     description: "Cleansed user journey data."
     columns:
       - name: search_event_id
