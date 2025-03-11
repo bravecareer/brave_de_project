@@ -1,13 +1,3 @@
-/*
-    Test Name: Campaign Funnel Metrics Consistency Test
-    Description: Validates that campaign metrics follow logical rules:
-    - Metrics are non-negative
-    - Click-through rate and conversion rate follow logical patterns
-    
-    Note: This test includes tolerance thresholds to account for data tracking issues
-    and only checks data from the last 90 days to focus on recent quality issues.
-*/
-
 WITH campaign_metrics_check AS (
     SELECT 
         campaign_id,

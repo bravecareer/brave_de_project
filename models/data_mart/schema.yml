@@ -190,6 +190,10 @@ models:
         description: "Average monthly demand for inventory planning"
         tests:
           - not_null
+      - name: stock_level_status
+        description: "Status of stock level (e.g., 'Valid', 'Warning: Below Safety Stock', 'Warning: Below Reorder Level')"
+        tests:
+          - not_null
 
   - name: fact_search_metrics_tf
     description: "Fact table for analyzing search effectiveness and conversion rates"
