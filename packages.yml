@@ -1,6 +1,6 @@
 packages:
   - package: dbt-labs/dbt_utils
-    version: 1.1.1
+    version: 1.1.1s
   - package: calogica/dbt_date
     version: 0.10.0
   - git: "https://github.com/dbt-labs/dbt-audit-helper.git"
@@ -11,4 +11,3 @@ packages:
     version: 0.12.1
   - package: data-mie/dbt_profiler
     version: 0.8.1
-

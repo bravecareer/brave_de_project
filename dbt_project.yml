@@ -24,7 +24,7 @@ vars:
 
 seeds:
   brave_de_project:
-    +schema: raw
+    +schema: BRAVE_DATABASE
 
 models:
   brave_de_project:
