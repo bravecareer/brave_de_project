@@ -1,36 +1,201 @@
 version: 2
 
 models:
-  - name: fact_user_engagement  # Replace with your actual model name
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  # Dimension Tables
+  - name: DIM_CAMPAIGN_JC
+    description: "Dimension table containing marketing campaign details."
+    columns:
+      - name: mkt_campaign
+        description: "Unique identifier for the marketing campaign."
+        tests:
+          - not_null
+      - name: mkt_medium
+        description: "Medium used in the marketing campaign (e.g., social media, email, search ads)."
+      - name: mkt_source
+        description: "Source from where the campaign originated (e.g., Google, Facebook)."
+      - name: mkt_content
+        description: "Content description for the marketing campaign."
+
+  - name: DIM_SEARCH_JC
+    description: "Dimension table containing search events data."
+    columns:
+      - name: search_event_id
+        description: "Unique identifier for the search event."
+        tests:
+          - unique
+          - not_null
+      - name: session_id
+        description: "Session identifier associated with the search event."
+      - name: search_request_id
+        description: "Unique ID of the search request."
+      - name: search_terms
+        description: "Search terms used in the event."
+      - name: search_feature
+        description: "Feature of the search (e.g., autocomplete, filter)."
+      - name: search_terms_type
+        description: "Type of search terms used (e.g., product name, category)."
+      - name: search_type
+        description: "Type of search performed (e.g., voice search, text search)."
+      - name: search_results_count
+        description: "Number of results returned for the search."
+
+  - name: DIM_USER_JC
+    description: "Dimension table containing user details."
     columns:
       - name: user_id
-        description: "Unique identifier for the user"
+        description: "Unique identifier for the user."
         tests:
-          - not_null:
-              config:
-                severity: warn
+          - unique
+          - not_null
+      - name: first_name
+        description: "First name of the user."
+      - name: last_name
+        description: "Last name of the user."
+      - name: email
+        description: "Email of the user (validated)."
+      - name: signup_date
+        description: "Date when the user signed up."
+      - name: preferred_language
+        description: "Preferred language of the user."
+      - name: dob
+        description: "Date of birth of the user."
+      - name: marketing_opt_in
+        description: "Indicates if the user opted in for marketing emails."
+      - name: account_status
+        description: "Status of the user account (e.g., active, inactive)."
+      - name: loyalty_points_balance
+        description: "Loyalty points accumulated by the user."
+
+  - name: DIM_PRODUCT_JC
+    description: "Dimension table containing product data."
+    columns:
       - name: product_id
-        description: "Unique identifier for the product"
+        description: "Primary key of the product dimension table."
+        tests:
+          - unique
+          - not_null
+      - name: product_name
+        description: "Name of the product."
+      - name: product_category
+        description: "Product category."
+      - name: price
+        description: "Price of the product."
+      - name: supplier_id
+        description: "ID of the product's supplier."
+      - name: product_color
+        description: "Color of the product."
+      - name: manufacturing_date
+        description: "Date when the product was manufactured."
+      - name: expiration_date
+        description: "Expiration date of the product."
+      - name: warranty_period
+        description: "Warranty period of the product."
+      - name: weight_grams
+        description: "Weight of the product in grams."
+      - name: discount_percentage
+        description: "Discount percentage applied to the product."
+
+  - name: DIM_INVENTORY_JC
+    description: "Dimension table containing inventory details."
+    columns:
+      - name: inventory_id
+        description: "Unique identifier for the inventory item."
         tests:
           - not_null
+      - name: product_id
+        description: "Unique identifier for the product in inventory."
+      - name: warehouse_id
+        description: "Identifier of the warehouse where the product is stored."
+      - name: inventory_status
+        description: "Current status of inventory (e.g., In Stock, Out of Stock, Reserved)."
+      - name: restock_date
+        description: "Expected restock date for out-of-stock items."
+
+  # Fact Tables
+  - name: FACT_CAMPAIGN_EFFECTIVENESS_JC
+    description: "Fact table containing marketing campaign effectiveness metrics."
+    columns:
+      - name: mkt_campaign
+        description: "Marketing campaign identifier."
+      - name: user_id
+        description: "Identifier of the user interacting with the campaign."
+      - name: product_id
+        description: "Product associated with the campaign."
+      - name: impressions_with_attribution
+        description: "Number of times the campaign was seen with attribution."
+      - name: atc_count
+        description: "Number of times users added products to cart after seeing the campaign."
+      - name: purchase_count
+        description: "Number of purchases attributed to the campaign."
+
+  - name: FACT_INVENTORY_MANAGEMENT_JC
+    description: "Fact table containing inventory management metrics."
+    columns:
+      - name: inventory_id
+        description: "Unique identifier for the inventory record."
+        tests:
+          - unique
+          - not_null
+      - name: product_id
+        description: "Unique identifier for the product."
+      - name: warehouse_id
+        description: "Warehouse storing the inventory."
+      - name: stock_level
+        description: "Current stock level of the product."
+      - name: quantity_in_stock
+        description: "Quantity of the product currently in stock."
+      - name: sales_volume
+        description: "Total sales volume of the product."
+      - name: reorder_level
+        description: "Threshold quantity for reordering."
+      - name: safety_stock
+        description: "Minimum required stock to prevent stockouts."
+      - name: average_monthly_demand
+        description: "Estimated monthly demand for the product."
+
+  - name: FACT_PRODUCT_PERFORMANCE_JC
+    description: "Fact table tracking product performance metrics."
+    columns:
+      - name: inventory_id
+        description: "Unique identifier for the inventory record."
+        tests:
+          - not_null
+      - name: product_id
+        description: "Unique identifier for the product."
+      - name: warehouse_id
+        description: "Warehouse storing the product."
+      - name: stock_level
+        description: "Stock level of the product."
+      - name: quantity_in_stock
+        description: "Quantity of the product currently available."
+      - name: sales_volume
+        description: "Total sales volume of the product."
+      - name: reorder_level
+        description: "Reorder threshold for the product."
+      - name: safety_stock
+        description: "Minimum required stock to prevent stockouts."
+      - name: average_monthly_demand
+        description: "Estimated monthly demand for the product."
+
+  - name: FACT_SEARCH_EFFECTIVENESS_JC
+    description: "Fact table containing search effectiveness metrics."
+    columns:
       - name: search_event_id
-        description: "Unique identifier for the search event"
+        description: "Unique identifier for the search event."
         tests:
+          - unique
           - not_null
-      - name: timestamp
-        description: "Timestamp of the event"
-        tests:
-          - not_null
+      - name: user_id
+        description: "Identifier of the user who performed the search."
+      - name: product_id
+        description: "Product associated with the search."
       - name: has_qv
-        description: "Boolean flag indicating whether the user has viewed the product"
+        description: "Indicates if the user engaged with a Quick View."
       - name: has_pdp
-        description: "Boolean flag indicating whether the user has viewed the product detail page"
+        description: "Indicates if the user visited the Product Detail Page."
       - name: has_atc
-        description: "Boolean flag indicating whether the user has added to cart"
+        description: "Indicates if the user added the product to the cart."
       - name: has_purchase
-        description: "Boolean flag indicating whether the user has made a purchase"
-      - name: session_id
-        description: "Session identifier for the user interaction"
-        tests:
-          - not_null
+        description: "Indicates if the user completed a purchase."
+      - name: search_results_count
+        description: "Number of results returned for the search query."

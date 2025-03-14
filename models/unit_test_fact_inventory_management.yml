@@ -1,0 +1,15 @@
+unit_tests:
+  - name: test_inventory_management_aggregation
+    description: "Ensure inventory data is correctly retrieved and structured."
+    model: FACT_INVENTORY_MANAGEMENT_JC
+    given:
+      - input: source('de_project', 'inventory_data')
+        rows:
+          - {inventory_id: 1, product_id: 100, warehouse_id: 10, stock_level: 'High', quantity_in_stock: 500, sales_volume: 200, reorder_level: 100, safety_stock: 50, average_monthly_demand: 150}
+          - {inventory_id: 2, product_id: 101, warehouse_id: 11, stock_level: 'Low', quantity_in_stock: 50, sales_volume: 300, reorder_level: 200, safety_stock: 100, average_monthly_demand: 250}
+          - {inventory_id: 3, product_id: 102, warehouse_id: 12, stock_level: 'Medium', quantity_in_stock: 250, sales_volume: 150, reorder_level: 100, safety_stock: 50, average_monthly_demand: 200}
+    expect:
+      rows:
+        - {inventory_id: 1, product_id: 100, warehouse_id: 10, stock_level: 'High', quantity_in_stock: 500, sales_volume: 200, reorder_level: 100, safety_stock: 50, average_monthly_demand: 150}
+        - {inventory_id: 2, product_id: 101, warehouse_id: 11, stock_level: 'Low', quantity_in_stock: 50, sales_volume: 300, reorder_level: 200, safety_stock: 100, average_monthly_demand: 250}
+        - {inventory_id: 3, product_id: 102, warehouse_id: 12, stock_level: 'Medium', quantity_in_stock: 250, sales_volume: 150, reorder_level: 100, safety_stock: 50, average_monthly_demand: 200}

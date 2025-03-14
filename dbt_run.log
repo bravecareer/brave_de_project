@@ -1,0 +1,80 @@
+[0m18:23:16  Running with dbt=1.8.7
+[0m18:23:17  Registered adapter: snowflake=1.8.4
+[0m18:23:17  [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models.brave_de_project.raw_data
+[0m18:23:17  Found 9 models, 20 data tests, 4 sources, 848 macros
+[0m18:23:17  
+[0m18:24:59  
+[0m18:24:59  Finished running  in 0 hours 1 minutes and 41.43 seconds (101.43s).
+[0m18:24:59  Encountered an error:
+Runtime Error
+  Database error while listing schemas in database "BRAVE_DATABASE"
+  Database Error
+    250001: Could not connect to Snowflake backend after 2 attempt(s).Aborting
+[0m18:30:02  Running with dbt=1.8.7
+[0m18:30:02  Registered adapter: snowflake=1.8.4
+[0m18:30:02  [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models.brave_de_project.raw_data
+[0m18:30:03  Found 9 models, 20 data tests, 4 sources, 848 macros
+[0m18:30:03  
+[0m18:30:20  Concurrency: 1 threads (target='dev')
+[0m18:30:20  
+[0m18:30:20  1 of 9 START sql table model PROJECT_TEST.DIM_CAMPAIGN_JC ...................... [RUN]
+[0m18:30:26  1 of 9 OK created sql table model PROJECT_TEST.DIM_CAMPAIGN_JC ................. [[32mSUCCESS 1[0m in 5.57s]
+[0m18:30:26  2 of 9 START sql table model PROJECT_TEST.DIM_INVENTORY_JC ..................... [RUN]
+[0m18:30:30  2 of 9 OK created sql table model PROJECT_TEST.DIM_INVENTORY_JC ................ [[32mSUCCESS 1[0m in 4.28s]
+[0m18:30:30  3 of 9 START sql table model PROJECT_TEST.DIM_PRODUCT_JC ....................... [RUN]
+[0m18:30:34  3 of 9 OK created sql table model PROJECT_TEST.DIM_PRODUCT_JC .................. [[32mSUCCESS 1[0m in 4.11s]
+[0m18:30:34  4 of 9 START sql table model PROJECT_TEST.DIM_SEARCH_JC ........................ [RUN]
+[0m18:30:43  4 of 9 OK created sql table model PROJECT_TEST.DIM_SEARCH_JC ................... [[32mSUCCESS 1[0m in 8.16s]
+[0m18:30:43  5 of 9 START sql table model PROJECT_TEST.DIM_USER_JC .......................... [RUN]
+[0m18:30:47  5 of 9 OK created sql table model PROJECT_TEST.DIM_USER_JC ..................... [[32mSUCCESS 1[0m in 4.37s]
+[0m18:30:47  6 of 9 START sql table model PROJECT_TEST.FACT_CAMPAIGN_EFFECTIVENESS_JC ....... [RUN]
+[0m18:30:52  6 of 9 OK created sql table model PROJECT_TEST.FACT_CAMPAIGN_EFFECTIVENESS_JC .. [[32mSUCCESS 1[0m in 5.06s]
+[0m18:30:52  7 of 9 START sql table model PROJECT_TEST.FACT_INVENTORY_MANAGEMENT_JC ......... [RUN]
+[0m18:30:58  7 of 9 OK created sql table model PROJECT_TEST.FACT_INVENTORY_MANAGEMENT_JC .... [[32mSUCCESS 1[0m in 5.78s]
+[0m18:30:58  8 of 9 START sql table model PROJECT_TEST.FACT_PRODUCT_PERFORMANCE_JC .......... [RUN]
+[0m18:31:03  8 of 9 OK created sql table model PROJECT_TEST.FACT_PRODUCT_PERFORMANCE_JC ..... [[32mSUCCESS 1[0m in 5.58s]
+[0m18:31:03  9 of 9 START sql table model PROJECT_TEST.FACT_SEARCH_EFFECTIVENESS_JC ......... [RUN]
+[0m18:31:09  9 of 9 OK created sql table model PROJECT_TEST.FACT_SEARCH_EFFECTIVENESS_JC .... [[32mSUCCESS 1[0m in 5.18s]
+[0m18:31:09  
+[0m18:31:09  Finished running 9 table models in 0 hours 1 minutes and 5.99 seconds (65.99s).
+[0m18:31:09  
+[0m18:31:09  [32mCompleted successfully[0m
+[0m18:31:09  
+[0m18:31:09  Done. PASS=9 WARN=0 ERROR=0 SKIP=0 TOTAL=9
+[0m18:43:54  Running with dbt=1.8.7
+[0m18:43:55  Registered adapter: snowflake=1.8.4
+[0m18:43:55  [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models.brave_de_project.raw_data
+[0m18:43:55  Found 9 models, 20 data tests, 4 sources, 848 macros
+[0m18:43:55  
+[0m18:44:11  Concurrency: 1 threads (target='dev')
+[0m18:44:11  
+[0m18:44:11  1 of 9 START sql table model PROJECT_TEST.DIM_CAMPAIGN_JC ...................... [RUN]
+[0m18:44:18  1 of 9 OK created sql table model PROJECT_TEST.DIM_CAMPAIGN_JC ................. [[32mSUCCESS 1[0m in 7.14s]
+[0m18:44:18  2 of 9 START sql table model PROJECT_TEST.DIM_INVENTORY_JC ..................... [RUN]
+[0m18:44:25  2 of 9 OK created sql table model PROJECT_TEST.DIM_INVENTORY_JC ................ [[32mSUCCESS 1[0m in 7.17s]
+[0m18:44:25  3 of 9 START sql table model PROJECT_TEST.DIM_PRODUCT_JC ....................... [RUN]
+[0m18:44:30  3 of 9 OK created sql table model PROJECT_TEST.DIM_PRODUCT_JC .................. [[32mSUCCESS 1[0m in 4.30s]
+[0m18:44:30  4 of 9 START sql table model PROJECT_TEST.DIM_SEARCH_JC ........................ [RUN]
+[0m18:44:36  4 of 9 OK created sql table model PROJECT_TEST.DIM_SEARCH_JC ................... [[32mSUCCESS 1[0m in 5.94s]
+[0m18:44:36  5 of 9 START sql table model PROJECT_TEST.DIM_USER_JC .......................... [RUN]
+[0m18:44:40  5 of 9 OK created sql table model PROJECT_TEST.DIM_USER_JC ..................... [[32mSUCCESS 1[0m in 4.21s]
+[0m18:44:40  6 of 9 START sql table model PROJECT_TEST.FACT_CAMPAIGN_EFFECTIVENESS_JC ....... [RUN]
+[0m18:44:45  6 of 9 OK created sql table model PROJECT_TEST.FACT_CAMPAIGN_EFFECTIVENESS_JC .. [[32mSUCCESS 1[0m in 5.01s]
+[0m18:44:45  7 of 9 START sql table model PROJECT_TEST.FACT_INVENTORY_MANAGEMENT_JC ......... [RUN]
+[0m18:44:49  7 of 9 OK created sql table model PROJECT_TEST.FACT_INVENTORY_MANAGEMENT_JC .... [[32mSUCCESS 1[0m in 4.50s]
+[0m18:44:49  8 of 9 START sql table model PROJECT_TEST.FACT_PRODUCT_PERFORMANCE_JC .......... [RUN]
+[0m18:44:54  8 of 9 OK created sql table model PROJECT_TEST.FACT_PRODUCT_PERFORMANCE_JC ..... [[32mSUCCESS 1[0m in 4.57s]
+[0m18:44:54  9 of 9 START sql table model PROJECT_TEST.FACT_SEARCH_EFFECTIVENESS_JC ......... [RUN]
+[0m18:44:59  9 of 9 OK created sql table model PROJECT_TEST.FACT_SEARCH_EFFECTIVENESS_JC .... [[32mSUCCESS 1[0m in 4.82s]
+[0m18:44:59  
+[0m18:44:59  Finished running 9 table models in 0 hours 1 minutes and 3.73 seconds (63.73s).
+[0m18:44:59  
+[0m18:44:59  [32mCompleted successfully[0m
+[0m18:44:59  
+[0m18:44:59  Done. PASS=9 WARN=0 ERROR=0 SKIP=0 TOTAL=9

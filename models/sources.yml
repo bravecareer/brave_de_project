@@ -1,0 +1,9 @@
+#version: 2
+#sources:
+#  - name: PROJECT_TEST
+#    schema: PROJECT_TEST
+#    tables:
+#      - name: view_product_performance_JC
+#      - name: view_atc_rate_JC
+#      - name: view_campaign_performance_JC
+#      - name: view_inventory_management_JC

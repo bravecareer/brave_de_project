@@ -5,12 +5,12 @@ version: "1.0.0"
 require-dbt-version: ">=1.5.0"
 
 
-profile: "brave_de_project" # Put your profile here
+profile: "my_dbt_project" # Put your profile here
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
 test-paths: ["data-tests"]
-seed-paths: ["seeds"]
+#seed-paths: [ "seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
 
@@ -22,19 +22,19 @@ clean-targets:
 vars:
   "dbt_date:time_zone": "America/Los_Angeles"
 
-seeds:
-  brave_de_project:
-    +schema: raw
+#seeds:
+#  brave_de_project:
+#    +schema: raw
 
 models:
   brave_de_project:
     database: BRAVE_DATABASE
-    schema: DE_PROJECT
+    schema: PROJECT_TEST
     raw_data:
       +materialized: table
     data_mart:
       +materialized: table
   +copy_grants: true
-
-tests:
-  +severity: warn  # all tests
+#
+#tests:
+#  +severity: warn  # all tests

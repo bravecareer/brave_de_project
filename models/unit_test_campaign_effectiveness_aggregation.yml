@@ -1,0 +1,16 @@
+unit_tests:
+  - name: test_campaign_effectiveness_aggregation
+    description: "Ensure impressions, ATC counts, and purchase counts are aggregated correctly."
+    model: FACT_CAMPAIGN_EFFECTIVENESS_JC
+    given:
+      - input: source('de_project', 'user_journey')
+        rows:
+          - {mkt_campaign: 'SpringSale', user_id: 1, product_id: 100, search_event_id: 1, has_atc: true, has_purchase: false}
+          - {mkt_campaign: 'SpringSale', user_id: 1, product_id: 100, search_event_id: 2, has_atc: false, has_purchase: true}
+          - {mkt_campaign: 'SpringSale', user_id: 2, product_id: 101, search_event_id: 3, has_atc: false, has_purchase: false}
+          - {mkt_campaign: 'WinterDeal', user_id: 3, product_id: 102, search_event_id: 4, has_atc: true, has_purchase: true}
+    expect:
+      rows:
+        - {mkt_campaign: 'SpringSale', user_id: 1, product_id: 100, impressions_with_attribution: 2, atc_count: 1, purchase_count: 1}
+        - {mkt_campaign: 'SpringSale', user_id: 2, product_id: 101, impressions_with_attribution: 1, atc_count: 0, purchase_count: 0}
+        - {mkt_campaign: 'WinterDeal', user_id: 3, product_id: 102, impressions_with_attribution: 1, atc_count: 1, purchase_count: 1}
