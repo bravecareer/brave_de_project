@@ -29,10 +29,12 @@ seeds:
 models:
   brave_de_project:
     database: BRAVE_DATABASE
-    schema: PROJECT_TEST
+    schema: project_test
     raw_data:
       +materialized: table
     data_mart:
       +materialized: table
   +copy_grants: true
 
+tests:
+  +severity: warn  # all tests

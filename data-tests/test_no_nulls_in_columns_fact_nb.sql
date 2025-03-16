@@ -1,3 +1,3 @@
-SELECT * FROM {{ ref('fact_user_engagement') }}  
+SELECT * FROM {{ ref('fact_campaign_performance_nb') }}  
 WHERE user_id IS NULL OR product_id IS NULL OR search_event_id IS NULL OR timestamp IS NULL;
 
