@@ -1,0 +1,267 @@
+version: 2
+
+models:
+  - name: stg_inventory_data_sae
+    description: "Staging table for inventory data with standardization and cleaning applied."
+    columns:
+      - name: inventory_id
+        description: "Unique inventory identifier."
+        tests:
+          - not_null
+          - unique
+      - name: product_id
+        tests:
+          - not_null
+      - name: warehouse_id
+        tests:
+          - not_null
+      - name: stock_level
+        tests:
+          - not_null
+          - expression_is_true:
+              expression: "stock_level >= 0"
+      - name: restock_date
+        tests:
+          - not_null
+      - name: rating
+        tests:
+          - expression_is_true:
+              expression: "rating >= 0"
+
+  - name: stg_product_data_sae
+    description: "Staging table for cleaned product data, with calculated fields for discounted price, product age, and expiration flags."
+    columns:
+      - name: product_id
+        description: "Unique identifier for the product."
+        tests:
+          - not_null
+          - unique
+      - name: product_name
+        description: "Cleaned and standardized product name."
+        tests:
+          - not_null
+      - name: product_category
+        description: "Standardized product category."
+        tests:
+          - not_null
+      - name: price
+        description: "Product price in the original currency (e.g., dollars), must be positive."
+        tests:
+          - not_null
+          - expression_is_true:
+              expression: "price > 0"
+      - name: supplier_id
+        description: "Identifier for the product's supplier."
+      - name: product_color
+        description: "Cleaned and standardized product color."
+      - name: manufacturing_date
+        description: "Date the product was manufactured."
+        tests:
+          - not_null
+      - name: expiration_date
+        description: "Expiration date of the product."
+        tests:
+          - not_null
+          - expression_is_true:
+              expression: "manufacturing_date < expiration_date"
+      - name: warranty_period
+        description: "Original warranty period string."
+      - name: warranty_months
+        description: "Parsed numeric warranty period in months."
+        tests:
+          - expression_is_true:
+              expression: "warranty_months IS NULL OR warranty_months > 0"
+      - name: quantity_in_stock
+        description: "Quantity of product currently in stock."
+        tests:
+          - not_null
+          - expression_is_true:
+              expression: "quantity_in_stock >= 0"
+      - name: rating
+        description: "Product rating on a scale of 0 to 5."
+        tests:
+          - expression_is_true:
+              expression: "rating >= 0 AND rating <= 5"
+      - name: sales_volume
+        description: "Total sales volume for the product."
+        tests:
+          - not_null
+          - expression_is_true:
+              expression: "sales_volume >= 0"
+      - name: weight_grams
+        description: "Product weight in grams. Should be non-negative."
+        tests:
+          - expression_is_true:
+              expression: "weight_grams >= 0"
+      - name: discount_percentage
+        description: "Discount percentage applied to the product."
+        tests:
+          - expression_is_true:
+              expression: "discount_percentage >= 0 AND discount_percentage <= 100"
+      - name: discounted_price
+        description: "Calculated discounted price after applying the discount percentage."
+        tests:
+          - expression_is_true:
+              expression: "discounted_price > 0"
+      - name: product_age_days
+        description: "Number of days since the product was manufactured."
+      - name: days_to_expiration
+        description: "Number of days from today until the product expires."
+      - name: is_expired
+        description: "Flag indicating if the product has expired."
+        tests:
+          - expression_is_true:
+              expression: "is_expired IN (TRUE, FALSE)"
+      - name: load_timestamp
+        description: "Timestamp when the row was loaded into the staging table."
+
+  - name: staging_user_journey
+    description: "Staging model for user journey data that has been cleaned, enriched, and deduplicated for analysis."
+    columns:
+      - name: search_event_id
+        description: "Unique identifier for the search event."
+        tests:
+          - not_null
+          - unique
+      - name: event_timestamp
+        description: "Primary event timestamp."
+        tests:
+          - not_null
+      - name: collector_timestamp
+        description: "Timestamp when the event was collected."
+        tests:
+          - not_null
+      - name: app_id
+        description: "Application identifier."
+        tests:
+          - not_null
+      - name: has_qv
+        description: "Flag indicating if QV is present."
+      - name: has_pdp
+        description: "Flag indicating if PDP is present."
+      - name: has_atc
+        description: "Flag indicating an add-to-cart event."
+      - name: has_purchase
+        description: "Flag indicating a purchase event."
+      - name: impressions_with_attributions
+        description: "Raw data for product impressions with attribution details."
+      - name: cart_id
+        description: "Shopping cart identifier."
+      - name: session_id
+        description: "User session identifier."
+      - name: search_request_id
+        description: "Search request identifier."
+      - name: search_results_count
+        description: "Count of search results returned."
+        tests:
+          - not_null
+          - expression_is_true:
+              expression: "search_results_count >= 0"
+      - name: search_terms
+        description: "Search query terms used, standardized to INITCAP(LOWER())."
+      - name: search_feature
+        description: "Search feature applied, standardized to INITCAP(LOWER())."
+      - name: search_terms_type
+        description: "Type of search terms, standardized to INITCAP(LOWER())."
+      - name: search_type
+        description: "Type of search executed, standardized to INITCAP(LOWER())."
+      - name: aes_hash
+        description: "AES hash for secure identification."
+      - name: date_last_login
+        description: "Date of the user's last login."
+      - name: date_last_purchase
+        description: "Date of the user's last purchase."
+      - name: grocery_home_store_id
+        description: "Identifier for the grocery home store."
+      - name: lifetime_offline_orders_count
+        description: "Total count of offline orders."
+      - name: lifetime_online_orders_count
+        description: "Total count of online orders."
+      - name: login_status
+        description: "User login status, standardized to INITCAP(LOWER())."
+      - name: user_id
+        description: "Unique user identifier."
+        tests:
+          - not_null
+      - name: registration_status
+        description: "User registration status, standardized to INITCAP(LOWER())."
+      - name: rx_home_store_id
+        description: "Identifier for Rx home store."
+      - name: sha256_hash
+        description: "SHA256 hash for secure identification."
+      - name: banner
+        description: "Banner information."
+      - name: auto_localized_store_id
+        description: "Automatically localized store identifier."
+      - name: fulfillment_type
+        description: "Type of fulfillment."
+      - name: selected_store_id
+        description: "Identifier for the selected store."
+      - name: selected_timeslot_date
+        description: "Date for the selected timeslot."
+      - name: selected_timeslot_time
+        description: "Time for the selected timeslot."
+      - name: selected_timeslot_type
+        description: "Type of the selected timeslot, standardized to INITCAP(LOWER())."
+      - name: shopping_mode
+        description: "User shopping mode, standardized to INITCAP(LOWER())."
+      - name: device_class
+        description: "Class of device used, standardized to INITCAP(LOWER())."
+      - name: br_viewwidth
+        description: "Browser view width."
+      - name: br_viewheight
+        description: "Browser view height."
+      - name: dvce_screenwidth
+        description: "Device screen width."
+      - name: dvce_screenheight
+        description: "Device screen height."
+      - name: doc_width
+        description: "Document width."
+      - name: doc_height
+        description: "Document height."
+      - name: mkt_medium
+        description: "Marketing medium, standardized to INITCAP(LOWER())."
+      - name: mkt_source
+        description: "Marketing source, standardized to INITCAP(LOWER())."
+      - name: mkt_content
+        description: "Marketing content."
+      - name: mkt_campaign
+        description: "Marketing campaign."
+      - name: br_lang
+        description: "Browser language, standardized to INITCAP(LOWER())."
+      - name: page_language
+        description: "Page language, standardized to INITCAP(LOWER())."
+      - name: geo_country
+        description: "Geographical country, standardized to INITCAP(LOWER())."
+      - name: geo_region
+        description: "Geographical region, standardized to INITCAP(LOWER())."
+      - name: geo_city
+        description: "Geographical city, standardized to INITCAP(LOWER())."
+      - name: geo_zipcode
+        description: "Geographical zip code."
+      - name: geo_latitude
+        description: "Geographical latitude."
+      - name: geo_longitude
+        description: "Geographical longitude."
+      - name: geo_timezone
+        description: "Geographical timezone."
+      - name: search_model
+        description: "Search model used, standardized to INITCAP(LOWER())."
+      - name: product_id
+        description: "Identifier for the product."
+      - name: load_timestamp
+        description: "Timestamp when the record was loaded."
+        tests:
+          - not_null
+      - name: search_date
+        description: "Derived search date from event_timestamp."
+        tests:
+          - not_null
+      - name: search_time
+        description: "Derived search time from event_timestamp."
+        tests:
+          - not_null
+      - name: event_age_days
+        description: "Calculated days between event_timestamp and current timestamp."
+      - name: days_since_last_purchase
+        description: "Calculated days since the last purchase."

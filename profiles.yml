@@ -8,7 +8,7 @@ brave_de_project:
 
       # User/password auth
       user: PROJECT_LEARNER_SURYA_A
-      password: BCdeproject@2025
+      password: "BCdeproject@2025"
 
       role: PROJECT_LEARNER_DE_WRITE
       database: BRAVE_DATABASE
