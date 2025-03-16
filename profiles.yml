@@ -7,10 +7,10 @@ brave_de_project:
       account: QDLMHKH-FM67721
 
       # User/password auth
-      user: YOURUSERNAME
-      password: YOURPASSWORD
+      user: PROJECT_LEARNER_NITHIN_B
+      password: Snowflake1234$$
 
-      role: YOURROLE
+      role: PUBLIC
       database: BRAVE_DATABASE
       warehouse: BRAVE_WAREHOUSE
       schema: PROJECT_TEST

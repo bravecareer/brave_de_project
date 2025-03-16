@@ -3,7 +3,6 @@
    unique_key= ['user_id', 'search_event_id', 'timestamp']
 ) }}
 
-
 WITH user_journey AS (
    SELECT
        uj.user_id,
@@ -13,26 +12,25 @@ WITH user_journey AS (
        uj.has_pdp,
        uj.has_atc,
        uj.has_purchase,
+       uj.mkt_campaign,
+       uj.mkt_medium,
+       uj.mkt_source,
+       uj.mkt_content,
+       uj.geo_country,
+       uj.geo_region,
+       uj.geo_city,
+       uj.geo_zipcode,
        uj.session_id,
-       to_timestamp(replace(timestamp,' UTC','')) AS timestamp
-   FROM {{ source('de_project', 'user_journey') }} uj
+       to_timestamp(replace(uj.timestamp,' UTC','')) AS timestamp
+   FROM {{ ref('stg_campaign_performance_nb') }} uj
 ),
-
 
 valid_users AS (
    SELECT
        u.user_id
-   FROM {{ source('de_project', 'user_data') }} u
+   FROM {{ ref('stg_user_data_nb') }} u
    WHERE u.account_status = 'active'
 ),
-
-
-valid_products AS (
-   SELECT
-       p.product_id
-   FROM {{ source('de_project', 'product_data') }} p
-),
-
 
 final AS (
    SELECT
@@ -43,12 +41,18 @@ final AS (
        uj.has_pdp,
        uj.has_atc,
        uj.has_purchase,
+       uj.mkt_campaign,
+       uj.mkt_medium,
+       uj.mkt_source,
+       uj.mkt_content,
+       uj.geo_country,
+       uj.geo_region,
+       uj.geo_city,
+       uj.geo_zipcode,
        uj.session_id,
        uj.timestamp
    FROM user_journey uj
    LEFT JOIN valid_users vu ON uj.user_id = vu.user_id
-   LEFT JOIN valid_products vp ON uj.product_id = vp.product_id
 )
-
 
 SELECT * FROM final

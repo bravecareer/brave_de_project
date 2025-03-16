@@ -1,7 +1,7 @@
 unit_tests:
   - name: test_is_valid_timestamp
     description: "Check my test_is_valid_timestamp logic captures all known edge cases - timestamp."
-    model: fact_user_engagement
+    model: fact_campaign_performance_nb
     given:
       - input: source('de_project', 'user_journey') 
         rows:

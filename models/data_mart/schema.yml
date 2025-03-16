@@ -1,8 +1,82 @@
 version: 2
 
 models:
-  - name: fact_user_engagement  # Replace with your actual model name
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: fact_inventory_nb
+    description: "Fact table capturing inventory metrics at the inventory, product, and warehouse level."
+    columns:
+      - name: Inventory_ID
+        description: "Unique identifier for the inventory record"
+        tests:
+          - not_null
+
+      - name: Product_ID
+        description: "Unique identifier for the product"
+        tests:
+          - not_null
+
+      - name: Warehouse_ID
+        description: "Unique identifier for the warehouse"
+        tests:
+          - not_null
+
+      - name: Stock_Level
+        description: "Current stock level of the product in the warehouse"
+
+      - name: Quantity_in_stock
+        description: "Quantity of the product available in stock"
+
+      - name: Sales_Volume
+        description: "Total sales volume for the product"
+
+      - name: Safety_Stock
+        description: "Minimum stock level required to avoid stockouts"
+
+      - name: Average_Monthly_Demand
+        description: "Average number of units sold per month"
+
+      - name: Last_Restock_Date
+        description: "Date when the inventory was last restocked"
+
+      - name: Next_Restock_Date
+        description: "Expected date for the next restocking"
+
+      - name: Reorder_Level
+        description: "Stock level at which a new order should be placed"
+
+      - name: Inventory_Status
+        description: "Status of the inventory (e.g., In Stock, Out of Stock, Low Stock)"
+
+      - name: Restock_Date
+        description: "Date on which the inventory restock is scheduled"
+        tests:
+          - not_null
+
+      - name: Last_Audit_Date
+        description: "Date when the inventory was last audited"
+
+      - name: Product_Name
+        description: "Name of the product"
+
+      - name: Product_Category
+        description: "Category of the product"
+
+      - name: Price
+        description: "Price of the product"
+
+      - name: Supplier_ID
+        description: "Unique identifier of the product supplier"
+
+      - name: Product_Color
+        description: "Color of the product"
+
+      - name: Rating
+        description: "Product rating based on customer reviews"
+
+      - name: Weight_Grams
+        description: "Weight of the product in grams"
+
+  - name: fact_user_transaction_nb
+    description: "Fact table capturing user transactions at the session and cart level."
     columns:
       - name: user_id
         description: "Unique identifier for the user"
@@ -14,21 +88,283 @@ models:
           - not_null
       - name: search_event_id
         description: "Unique identifier for the search event"
+      - name: timestamp
+        description: "Timestamp of the transaction event"
+        tests:
+          - not_null
+      - name: session_id
+        description: "Session identifier for the transaction"
+        tests:
+          - not_null
+      - name: cart_id
+        description: "Cart identifier for the transaction"
+      - name: has_purchase
+        description: "Flag indicating if the user made a purchase"
+      - name: quantity_sold
+        description: "Number of items sold"
+      - name: total_amount
+        description: "Total amount for the transaction"
+
+  - name: dim_user_nb
+    description: "Dimension table containing user details."
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user"
+        tests:
+          - not_null
+          - unique
+      - name: first_name
+        description: "First name of the user"
+      - name: last_name
+        description: "Last name of the user"
+      - name: email
+        description: "Email of the user"
+      - name: signup_date
+        description: "Date the user signed up"
+      - name: preferred_language
+        description: "User's preferred language"
+      - name: dob
+        description: "User's date of birth"
+      - name: marketing_opt_in
+        description: "Flag indicating if the user opted in for marketing"
+      - name: account_status
+        description: "Current account status of the user"
+      - name: loyalty_points_balance
+        description: "Balance of loyalty points the user has"
+
+  - name: dim_product_nb
+    description: "Dimension table containing product details."
+    columns:
+      - name: product_id
+        description: "Unique identifier for the product"
+        tests:
+          - not_null
+          - unique
+      - name: product_name
+        description: "Name of the product"
+      - name: product_category
+        description: "Category of the product"
+      - name: price
+        description: "Price of the product"
+      - name: product_color
+        description: "Color of the product"
+      - name: manufacturing_date
+        description: "Manufacturing date of the product"
+      - name: expiration_date
+        description: "Expiration date of the product"
+      - name: warranty_period
+        description: "Warranty period for the product"
+      - name: rating
+        description: "Product rating"
+      - name: weight_grams
+        description: "Weight of the product in grams"
+      - name: discount_percentage
+        description: "Discount percentage applied to the product"
+
+  - name: dim_search_event_nb
+    description: "Dimension table containing details about search events."
+    columns:
+      - name: search_event_id
+        description: "Unique identifier for the search event"
+        tests:
+          - not_null
+          - unique
+      - name: session_id
+        description: "Session identifier for the user's journey"
+      - name: cart_id
+        description: "Cart identifier associated with the search event"
+      - name: search_terms
+        description: "Search terms entered by the user"
+      - name: search_results
+        description: "Number of search results for the query"
+      - name: search_type
+        description: "Type of search (e.g., full-text search, filtered search)"
+      - name: timestamp
+        description: "Timestamp when the search event occurred"
+
+  
+  - name: fact_campaign_performance_nb
+    description: "Fact table capturing campaign effectiveness metrics."
+    columns:
+      - name: search_event_id
+        description: "Unique identifier for the search event"
         tests:
           - not_null
       - name: timestamp
-        description: "Timestamp of the event"
+        description: "Timestamp when the event occurred"
         tests:
           - not_null
-      - name: has_qv
-        description: "Boolean flag indicating whether the user has viewed the product"
-      - name: has_pdp
-        description: "Boolean flag indicating whether the user has viewed the product detail page"
-      - name: has_atc
-        description: "Boolean flag indicating whether the user has added to cart"
-      - name: has_purchase
-        description: "Boolean flag indicating whether the user has made a purchase"
       - name: session_id
-        description: "Session identifier for the user interaction"
+        description: "Session identifier for the user journey"
+      - name: mkt_campaign
+        description: "Marketing campaign associated with the event"
+      - name: mkt_source
+        description: "Marketing source of the event"
+      - name: mkt_medium
+        description: "Marketing medium used for the campaign"
+      - name: mkt_content
+        description: "Marketing content associated with the event"
+      - name: user_id
+        description: "User identifier for the event"
+      - name: product_id
+        description: "Product identifier for the event"
+      - name: has_qv
+        description: "Flag indicating if the user viewed the product's Quick View"
+      - name: has_pdp
+        description: "Flag indicating if the user viewed the Product Detail Page"
+      - name: has_atc
+        description: "Flag indicating if the user added the product to cart"
+      - name: has_purchase
+        description: "Flag indicating if the user made a purchase"
+      - name: geo_country
+        description: "User's country based on geolocation"
+      - name: geo_region
+        description: "User's region based on geolocation"
+      - name: geo_city
+        description: "User's city based on geolocation"
+      - name: geo_zipcode
+        description: "User's zipcode based on geolocation"
+      - name: device_class
+        description: "Device used by the user (e.g., mobile, desktop)"
+
+  - name: stg_user_data_nb
+    description: "Staging table for user data, cleaning and transforming raw user information."
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user."
         tests:
           - not_null
+          - unique
+      - name: first_name
+        description: "User's first name."
+      - name: last_name
+        description: "User's last name."
+      - name: email
+        description: "User's email address, with validation applied."
+      - name: signup_date
+        description: "Date when the user signed up."
+      - name: preferred_language
+        description: "User's preferred language."
+      - name: dob
+        description: "User's date of birth."
+      - name: marketing_opt_in
+        description: "Indicates if the user opted into marketing communications."
+      - name: account_status
+        description: "Status of the user's account (e.g., active, inactive)."
+      - name: loyalty_points_balance
+        description: "User's current loyalty points balance."
+
+  - name: stg_product_nb
+    description: "Staging table for product data, standardizing product attributes."
+    columns:
+      - name: product_id
+        description: "Unique identifier for the product."
+        tests:
+          - not_null
+          - unique
+      - name: product_name
+        description: "Name of the product."
+      - name: product_category
+        description: "Category the product belongs to."
+      - name: price
+        description: "Price of the product."
+      - name: supplier_id
+        description: "Identifier of the product supplier."
+      - name: product_color
+        description: "Color of the product."
+      - name: manufacturing_date
+        description: "Date the product was manufactured."
+      - name: expiration_date
+        description: "Date the product expires (if applicable)."
+      - name: warranty_period
+        description: "Warranty period of the product."
+      - name: quantity_in_stock
+        description: "Current quantity of the product in stock."
+      - name: rating
+        description: "Customer rating of the product."
+      - name: sales_volume
+        description: "Total sales volume of the product."
+      - name: weight_grams
+        description: "Weight of the product in grams."
+      - name: discount_percentage
+        description: "Discount percentage applied to the product."
+
+  - name: stg_inventory_status_nb
+    description: "Staging table for inventory data, handling stock levels and warehouse details."
+    columns:
+      - name: inventory_id
+        description: "Unique identifier for the inventory record."
+        tests:
+          - not_null
+          - unique
+      - name: product_id
+        description: "Identifier of the associated product."
+      - name: warehouse_id
+        description: "Identifier of the warehouse storing the product."
+      - name: stock_level
+        description: "Current stock level of the product."
+      - name: quantity_in_stock
+        description: "Quantity of the product available in stock."
+      - name: sales_volume
+        description: "Total sales volume recorded for this inventory item."
+      - name: safety_stock
+        description: "Minimum stock level required to prevent stockouts."
+      - name: average_monthly_demand
+        description: "Average monthly demand for the product."
+      - name: last_restock_date
+        description: "Date when the inventory was last restocked."
+      - name: next_restock_date
+        description: "Planned date for the next restocking."
+      - name: reorder_level
+        description: "Stock level at which a new order is triggered."
+      - name: inventory_status
+        description: "Status of the inventory (e.g., In Stock, Low Stock, Out of Stock)."
+      - name: restock_date
+        description: "Scheduled date for restocking."
+      - name: last_audit_date
+        description: "Date when the inventory was last audited."
+
+  - name: stg_campaign_performance_nb
+    description: "Staging table for tracking user journeys and interactions."
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user."
+      - name: product_id
+        description: "Unique identifier for the product."
+      - name: search_event_id
+        description: "Unique identifier for the search event."
+        tests:
+          - not_null
+      - name: session_id
+        description: "Unique identifier for the user session."
+      - name: cart_id
+        description: "Unique identifier for the cart associated with the session."
+      - name: has_qv
+        description: "Boolean flag indicating if the user used Quick View."
+      - name: has_pdp
+        description: "Boolean flag indicating if the user viewed the Product Detail Page."
+      - name: has_atc
+        description: "Boolean flag indicating if the user added the product to their cart."
+      - name: has_purchase
+        description: "Boolean flag indicating if the user completed a purchase."
+      - name: mkt_campaign
+        description: "Marketing campaign associated with the user session."
+      - name: mkt_medium
+        description: "Marketing medium used for the campaign."
+      - name: mkt_source
+        description: "Source of the marketing traffic."
+      - name: mkt_content
+        description: "Marketing content details."
+      - name: geo_country
+        description: "User's country based on their IP."
+      - name: geo_region
+        description: "User's region based on their IP."
+      - name: geo_city
+        description: "User's city based on their IP."
+      - name: geo_zipcode
+        description: "User's postal code based on their IP."
+      - name: timestamp
+        description: "Timestamp of the interaction."
+        tests:
+          - not_null
+
