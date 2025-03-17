@@ -1,0 +1,39 @@
+name: dbt CI
+on:
+  push:
+    branches:
+      - bibhu/dev
+  workflow_dispatch:
+
+env:
+  SNOWFLAKE_ACCOUNT: QDLMHKH-FM67721
+  SNOWFLAKE_USER: PROJECT_LEARNER_BIBHU_R
+  SNOWFLAKE_PASSWORD: Sonu@007
+  SNOWFLAKE_DATABASE: BRAVE_DATABASE
+  SNOWFLAKE_ROLE: PROJECT_LEARNER_DE_WRITE
+  SNOW_FLAKE_WAREHOUSE: BRAVE_WAREHOUSE
+  SNOWFLAKE_SCHEMA: OJECT_TEST
+
+jobs:
+  dbt_ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install requirements
+        run: pip install dbt-core dbt-snowflake
+
+      - name: Install dbt dependencies
+        run: dbt deps
+
+      - name: Run lint check
+        run: sqlfluff lint models --dialect snowflake
+
+      - name: Run dbt test
+        run: dbt test --profiles-dir ./
+
+      - name: dbt run
+        run: dbt run --profiles-dir ./
+        

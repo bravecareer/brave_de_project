@@ -1,0 +1,921 @@
+version: 2
+
+models:
+  - name: fact_user_engagement_BS  
+    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user"
+        tests:
+          - not_null: 
+              config:
+                severity: warn
+      - name: product_id
+        description: "Unique identifier for the product"
+        tests:
+          - not_null
+      - name: search_event_id
+        description: "Unique identifier for the search event"
+        tests:
+          - not_null
+      - name: timestamp
+        description: "Timestamp of the event"
+        tests:
+          - not_null
+      - name: has_qv
+        description: "Boolean flag indicating whether the user has viewed the product"
+      - name: has_pdp
+        description: "Boolean flag indicating whether the user has viewed the product detail page"
+      - name: has_atc
+        description: "Boolean flag indicating whether the user has added to cart"
+      - name: has_purchase
+        description: "Boolean flag indicating whether the user has made a purchase"
+      - name: session_id
+        description: "Session identifier for the user interaction"
+        tests:
+          - not_null
+  
+  - name: stg_user_journey_BS
+    description: "This table contains staging data related to user journeys including events, search behaviors, marketing data, and user status."
+    columns:
+      - name: SEARCH_EVENT_ID
+        description: "Unique identifier for each search event."
+        tests:
+          - unique
+          - not_null
+      - name: TIMESTAMP
+        description: "Timestamp of the event."
+        tests:
+          - not_null
+      - name: APP_ID
+        description: "Application identifier where the event occurred."
+      - name: HAS_PDP
+        description: "Indicates if the user has viewed a product detail page (PDP)."
+      - name: HAS_ATC
+        description: "Boolean value Indicates if the user added a product to the cart (ATC)."
+      - name: HAS_PURCHASE
+        description: "Indicates if the user made a purchase."
+      - name: CART_ID
+        description: "Unique identifier for the shopping cart."
+      - name: SESSION_ID
+        description: "Unique identifier for the user's session."
+      - name: SEARCH_REQUEST_ID
+        description: "Unique identifier for the search request made by the user."
+      - name: SEARCH_RESULTS_COUNT
+        description: "The number of search results returned for the user's query."
+      - name: SEARCH_TERMS
+        description: "Search terms used by the user."
+        tests:
+          - not_null
+      - name: SEARCH_FEATURE
+        description: "Feature or functionality used during the search."
+      - name: SEARCH_TERMS_TYPE
+        description: "Type of search terms (e.g., brand, product)."
+      - name: SEARCH_TYPE
+        description: "Type of search (e.g., exact match, broad match)."
+      - name: LOGIN_STATUS
+        description: "Indicates the login status of the user (e.g., logged in, guest)."
+      - name: USER_ID
+        description: "Unique identifier for the user."
+        tests:
+          - not_null
+      - name: REGISTRATION_STATUS
+        description: "Indicates the user's registration status (e.g., registered, guest)."
+      - name: SEARCH_MODEL
+        description: "Search model or algorithm used to process the search."
+        tests:
+          - not_null
+      - name: MKT_MEDIUM
+        description: "Marketing medium (e.g., email, social media, etc.)."
+        tests:
+          - not_null
+      - name: MKT_SOURCE
+        description: "Marketing source (e.g., Google, Facebook, etc.)."
+        tests:
+          - not_null
+      - name: MKT_CONTENT
+        description: "Marketing content (e.g., banner, email, etc.)."
+        tests:
+          - not_null
+      - name: MKT_CAMPAIGN
+        description: "Marketing campaign name or identifier."
+        tests:
+          - not_null
+      - name: PRODUCT_ID
+        description: "Unique identifier for the product viewed or purchased."
+        tests:
+          - not_null
+      - name: dbt_loaded_at
+        description: "Timestamp of when the data was loaded into the DBT model."
+      - name: dbt_source
+        description: "The source name from which the data is pulled (e.g., 'de_project_user_journey')."
+
+  - name: stg_inventory_data_BS
+    description: "This model contains data related to inventory, including product stock, reorder levels, sales volumes, and restock information."
+    columns:
+      - name: inventory_id
+        description: "Unique identifier for each inventory record."
+        tests:
+          - not_null
+          - unique
+      - name: reorder_level
+        description: "The threshold level at which a reorder for the product should be triggered."
+        tests:
+          - not_null
+      - name: product_id
+        description: "Unique identifier for the product associated with the inventory record."
+        tests:
+          - not_null
+      - name: quantity_in_stock
+        description: "The number of units of the product currently in stock."
+        tests:
+          - not_null
+      - name: warehouse_id
+        description: "Unique identifier for the warehouse storing the product."
+        tests:
+          - not_null
+      - name: rating
+        description: "Customer rating for the product, typically from 1 to 5."
+        tests:
+          - not_null
+      - name: stock_level
+        description: "Current stock level, can be categorized as 'high', 'medium', or 'low'."
+        tests:
+          - not_null
+      - name: sales_volume
+        description: "Total sales volume for the product in a given time period."
+        tests:
+          - not_null
+      - name: restock_date
+        description: "The date when the product was last restocked."
+        tests:
+          - not_null
+      - name: weight
+        description: "Weight of the product in kilograms or pounds, depending on the system."
+        tests:
+          - not_null
+      - name: supplier_id
+        description: "Unique identifier for the supplier of the product."
+        tests:
+          - not_null
+      - name: discounts
+        description: "Discount percentage applied to the product, if any."
+      - name: storage_condition
+        description: "The recommended storage condition for the product (e.g., 'cold', 'dry', etc.)."
+        tests:
+          - not_null
+      - name: safety_stock
+        description: "The minimum level of stock to avoid stockouts."
+        tests:
+          - not_null
+      - name: inventory_status
+        description: "Current status of the inventory (e.g., 'in-stock', 'out-of-stock')."
+        tests:
+          - not_null
+      - name: average_monthly_demand
+        description: "The average monthly demand for the product."
+      - name: last_audit_date
+        description: "Date when the inventory was last audited."
+        tests:
+          - not_null
+      - name: last_restock_date
+        description: "The date the product was last restocked."
+        tests:
+          - not_null
+      - name: next_restock_date
+        description: "The planned date for the next restock of the product."        
+      - name: dbt_loaded_at
+        description: "Timestamp when the data was loaded into DBT."
+        tests:
+          - not_null
+      - name: dbt_source
+        description: "The source name from which the data was pulled (e.g., 'de_project_inventory_data')."
+        tests:
+          - not_null
+
+  - name: campaign_data_transformation_BS
+    description: "This model summarizes user campaign data, including campaign performance, search events, purchase events, and product interactions."
+    columns:
+      - name: MKT_CAMPAIGN
+        description: "The marketing campaign associated with the search or event."
+        tests:
+          - not_null
+          - unique
+      - name: MKT_MEDIUM
+        description: "The medium through which the marketing campaign was delivered (e.g., email, social media)."
+        tests:
+          - not_null
+      - name: MKT_SOURCE
+        description: "The source of the marketing campaign (e.g., Google, Facebook)."
+        tests:
+          - not_null
+      - name: MKT_CONTENT
+        description: "The content or ad related to the marketing campaign (e.g., banner ad, email subject)."
+        tests:
+          - not_null
+      - name: PRODUCT_ID
+        description: "The unique identifier for the product associated with the search or event."
+        tests:
+          - not_null
+          - unique
+      - name: UNIQUE_ITEMS_SEARCH
+        description: "The number of unique search terms associated with a given product."
+        tests:
+          - not_null
+      - name: TOTAL_SEARCH_EVENTS
+        description: "The total number of distinct search events for the product."
+        tests:
+          - not_null
+      - name: PURCHASE_EVENTS
+        description: "The total number of purchase events associated with the product."
+        tests:
+          - not_null
+      - name: ATC_EVENTS
+        description: "The total number of add-to-cart (ATC) events for the product."
+        tests:
+          - not_null
+      - name: PDP_EVENTS
+        description: "The total number of product detail page (PDP) view events for the product."
+        tests:
+          - not_null
+      - name: total_distinct_users
+        description: "The total number of distinct users interacting with the product."
+        tests:
+          - not_null
+      - name: dbt_loaded_at
+        description: "Timestamp of when the data was loaded into DBT."
+        tests:
+          - not_null
+      - name: dbt_source
+        description: "The source name from which the data was pulled (e.g., 'stg_user_journey')."
+        tests:
+          - not_null
+
+  - name: product_metrics_transformation_BS
+    description: "This model summarizes product metrics , including total searches, searches with specific actions (PDP, ATC, Purchase), and user registration status."
+    columns:
+      - name: PRODUCT_ID
+        description: "Unique identifier for the product being searched."
+        tests:
+          - not_null
+          - unique
+      - name: total_searches
+        description: "The total number of distinct searches performed for the product."
+        tests:
+          - not_null
+      - name: searches_with_pdp
+        description: "The total number of distinct searches where the product was viewed on a product detail page (PDP)."
+        tests:
+          - not_null
+      - name: searches_with_atc
+        description: "The total number of distinct searches where the product was added to the cart (ATC)."
+        tests:
+          - not_null
+      - name: searches_with_purchase
+        description: "The total number of distinct searches where the product was purchased."
+        tests:
+          - not_null
+      - name: average_search_result_count
+        description: "The average number of search results returned for the product searches."
+        tests:
+          - not_null
+      - name: searches_by_registered_users
+        description: "The total number of distinct searches made by registered users for the product."
+        tests:
+          - not_null
+      - name: searches_by_un_registered_users
+        description: "The total number of distinct searches made by unregistered users for the product."
+        tests:
+          - not_null
+      - name: total_interested_users
+        description: "The total number of distinct users who showed interest in the product by performing a search."
+        tests:
+          - not_null
+      - name: dbt_loaded_at
+        description: "Timestamp of when the data was loaded into DBT."
+        tests:
+          - not_null
+      - name: dbt_source
+        description: "The source name from which the data was pulled (e.g., 'stg_user_journey')."
+        tests:
+          - not_null
+
+  - name: user_journey_transformation_BS
+    description: "This model summarizes search event data, including counts and averages for various search metrics such as PDP views, ATC events, and purchase events."
+    columns:
+      - name: SEARCH_TERMS
+        description: "The search terms entered by the user."
+        tests:
+          - not_null
+          - unique
+          
+      - name: SEARCH_MODEL
+        description: "The search model used in the search event."
+        tests:
+          - not_null
+          
+      - name: PRODUCT_ID
+        description: "The unique identifier for the product related to the search event."
+        tests:
+          - not_null
+          - unique
+          
+      - name: total_searches
+        description: "The total number of distinct search events."
+        tests:
+          - not_null
+          
+      - name: searches_with_pdp
+        description: "The total number of distinct searches where the user viewed a product detail page (PDP)."
+        tests:
+          - not_null
+          
+      - name: searches_with_atc
+        description: "The total number of distinct searches where the user added a product to the cart (ATC)."
+        tests:
+          - not_null
+          
+      - name: searches_with_purchase
+        description: "The total number of distinct searches where the user completed a purchase."
+        tests:
+          - not_null
+          
+      - name: average_search_result_count
+        description: "The average number of search results returned per search event."
+        tests:
+          - not_null
+          
+      - name: searches_by_registered_users
+        description: "The total number of distinct searches made by users who are registered."
+        tests:
+          - not_null
+          
+      - name: searches_by_un_registered_users
+        description: "The total number of distinct searches made by users who are not registered."
+        tests:
+          - not_null
+          
+      - name: total_interested_users
+        description: "The total number of distinct users who were interested in a search event."
+        tests:
+          - not_null
+          
+      - name: dbt_loaded_at
+        description: "The timestamp of when the data was loaded into DBT."
+        tests:
+          - not_null
+          
+      - name: dbt_source
+        description: "The name of the source table or model from which the data was loaded."
+        tests:
+          - not_null
+
+  - name: fact_campaign_effectiveness_BS
+    description: "This model summarizes marketing campaign and  events, calculating key metrics such as total search events, purchases, and revenue."
+    columns:
+      - name: MKT_CAMPAIGN
+        description: "The marketing campaign associated with the search event."
+        tests:
+          - not_null
+          - unique
+          
+      - name: MKT_MEDIUM
+        description: "The marketing medium (e.g., email, social media) associated with the search event."
+        tests:
+          - not_null
+          
+      - name: MKT_SOURCE
+        description: "The source of the marketing campaign (e.g., Google, Facebook) associated with the search event."
+        tests:
+          - not_null
+          
+      - name: MKT_CONTENT
+        description: "The content of the marketing campaign (e.g., ad copy, banner) associated with the search event."
+        tests:
+          - not_null
+          
+      - name: PRODUCT_ID
+        description: "The unique identifier for the product involved in the search event."
+        tests:
+          - not_null
+          - unique
+          
+      - name: UNIQUE_ITEMS_SEARCH
+        description: "The number of unique items searched during the event."
+        tests:
+          - not_null
+          
+      - name: TOTAL_SEARCH_EVENTS
+        description: "The total number of search events associated with the marketing campaign."
+        tests:
+          - not_null
+          
+      - name: PURCHASE_EVENTS
+        description: "The number of search events where a purchase was made."
+        tests:
+          - not_null
+          
+      - name: ATC_EVENTS
+        description: "The number of search events where a product was added to the cart (ATC)."
+        tests:
+          - not_null
+          
+      - name: PDP_EVENTS
+        description: "The number of search events where the product detail page (PDP) was viewed."
+        tests:
+          - not_null
+          
+      - name: total_distinct_users
+        description: "The total number of distinct users who interacted with the search events."
+        tests:
+          - not_null
+          
+      - name: revenue
+        description: "The total revenue generated from purchases in the search events, calculated as the product of purchase events and product price."
+        tests:
+          - not_null
+          
+      - name: dbt_loaded_at
+        description: "The timestamp of when the data was loaded into DBT."
+        tests:
+          - not_null
+          
+      - name: dbt_source
+        description: "The name of the source table or model from which the data was loaded."
+        tests:
+          - not_null
+
+  - name: fact_inventory_status_BS
+    description: "This model summarizes inventory data, including stock levels, reorder needs, and safety stock status for products in various warehouses."
+    columns:
+      - name: INVENTORY_ID
+        description: "The unique identifier for the inventory record."
+        tests:
+          - not_null
+          - unique
+          
+      - name: PRODUCT_ID
+        description: "The unique identifier for the product in the inventory."
+        tests:
+          - not_null
+          - unique
+          
+      - name: WAREHOUSE_ID
+        description: "The unique identifier for the warehouse where the product is stored."
+        tests:
+          - not_null
+          
+      - name: STOCK_LEVEL
+        description: "The current stock level of the product in the warehouse."
+        tests:
+          - not_null
+          
+      - name: RESTOCK_DATE
+        description: "The date when the product is expected to be restocked."
+        tests:
+          - not_null
+          
+      - name: INVENTORY_STATUS
+        description: "The current status of the inventory (e.g., 'Available', 'Out of Stock')."
+        tests:
+          - not_null
+          
+      - name: LAST_AUDIT_DATE
+        description: "The date when the last inventory audit was performed."
+        tests:
+          - not_null
+          - unique
+          
+      - name: REORDER_LEVEL
+        description: "The stock level at which new inventory should be ordered."
+        tests:
+          - not_null
+          
+      - name: SAFETY_STOCK
+        description: "The minimum stock level needed to prevent stockouts."
+        tests:
+          - not_null
+          
+      - name: AVERAGE_MONTHLY_DEMAND
+        description: "The average monthly demand for the product."
+        tests:
+          - not_null
+          
+      - name: STOCK_STATUS
+        description: "The stock status of the product, which indicates whether the product is at reorder level, low stock, or sufficient stock."
+        tests:
+          - not_null
+          
+      - name: dbt_loaded_at
+        description: "The timestamp when the data was loaded into DBT."
+        tests:
+          - not_null    
+
+      - name: dbt_source
+        description: "The name of the source table or model"
+        tests:
+          - not_null
+
+  - name: fact_product_performance_BS
+    description: "This model provides a summary of product performance by joining with product details. It includes metrics such as total searches, ratings,  PDP views, ATC events, purchases, and revenue before and after discounts."
+    columns:
+      - name: PRODUCT_ID
+        description: "The unique identifier for the product involved in the search events."
+        tests:
+          - not_null
+          - unique
+          
+      - name: PRODUCT_NAME
+        description: "The name of the product associated with the search events."
+        tests:
+          - not_null
+          
+      - name: total_searches
+        description: "The total number of search events associated with the product."
+        tests:
+          - not_null
+          
+      - name: pdp_views
+        description: "The total number of search events where the product's product detail page (PDP) was viewed."
+        tests:
+          - not_null
+          
+      - name: total_atc_events
+        description: "The total number of search events where the product was added to the cart (ATC)."
+        tests:
+          - not_null
+          
+      - name: rating
+        description: "The average rating of the product."
+        tests:
+          - not_null
+          
+      - name: total_purchases
+        description: "The total number of search events where the product was purchased."
+        tests:
+          - not_null
+          
+      - name: revenue_wo_discount
+        description: "The total revenue generated from purchases without applying any discount, calculated as total purchases multiplied by product price."
+        tests:
+          - not_null
+          
+      - name: revenue_after_discount
+        description: "The total revenue generated from purchases after applying the discount percentage, calculated as total purchases multiplied by the discounted price."
+        tests:
+          - not_null
+          
+      - name: dbt_loaded_at
+        description: "The timestamp when the data was loaded into DBT."
+        tests:
+          - not_null
+          
+      - name: dbt_source
+        description: "The name of the source table or model from which the data was loaded."
+        tests:
+          - not_null
+
+  - name: fact_search_effectiveness_BS
+    description: "This model summarizes user product serach journey data, including metrics like search terms, product details, and conversion rates such as purchase rate and ATC rate."
+    columns:
+      - name: SEARCH_TERMS
+        description: "The search terms entered by the user."
+        tests:
+          - not_null
+          - unique
+          
+      - name: SEARCH_MODEL
+        description: "The search model used in the search event."
+        tests:
+          - not_null
+          
+      - name: PRODUCT_ID
+        description: "The unique identifier for the product involved in the search event."
+        tests:
+          - not_null
+          - unique
+          
+      - name: product_name
+        description: "The name of the product from the valid products table."
+        tests:
+          - not_null
+          
+      - name: total_searches
+        description: "The total number of search events for the product."
+        tests:
+          - not_null
+          
+      - name: searches_with_pdp
+        description: "The total number of searches where the product's product detail page (PDP) was viewed."
+        tests:
+          - not_null
+          
+      - name: searches_with_atc
+        description: "The total number of searches where the product was added to the cart (ATC)."
+        tests:
+          - not_null
+          
+      - name: searches_with_purchase
+        description: "The total number of searches where the product was purchased."
+        tests:
+          - not_null
+          
+      - name: average_search_result_count
+        description: "The average number of search results returned for the product."
+        tests:
+          - not_null
+          
+      - name: searches_by_registered_users
+        description: "The total number of searches made by registered users."
+        tests:
+          - not_null
+          
+      - name: searches_by_un_registered_users
+        description: "The total number of searches made by unregistered users."
+        tests:
+          - not_null
+          
+      - name: purchase_conversation_rate
+        description: "The conversion rate from searches to purchases, calculated as searches with purchase divided by total searches."
+        tests:
+          - not_null
+          
+      - name: atc_conversation_rate
+        description: "The conversion rate from searches to add-to-cart events, calculated as searches with ATC divided by total searches."
+        tests:
+          - not_null
+          
+      - name: dbt_loaded_at
+        description: "The timestamp when the data was loaded into DBT."
+        tests:
+          - not_null
+          
+      - name: dbt_source
+        description: "The name of the source table or model from which the data was loaded."
+        tests:
+          - not_null
+
+  - name: dim_product_BS
+    description: "This model contains the product dimension table, including key product attributes such as product ID, name, category, price, color, manufacturing and expiration dates, warranty period, rating, weight, and discount percentage."
+    columns:
+      - name: PRODUCT_ID
+        description: "Unique identifier for each product."
+        tests:
+          - not_null
+          - unique
+
+      - name: PRODUCT_NAME
+        description: "The name of the product."
+        tests:
+          - not_null
+
+      - name: PRODUCT_CATEGORY
+        description: "Category of the product (e.g., Electronics, Clothing)."
+        tests:
+          - not_null
+
+      - name: PRICE
+        description: "The price of the product."
+        tests:
+          - not_null
+
+      - name: PRODUCT_COLOR
+        description: "Color of the product."
+        tests:
+          - not_null
+
+      - name: MANUFACTURING_DATE
+        description: "The date when the product was manufactured."
+        tests:
+          - not_null
+
+      - name: EXPIRATION_DATE
+        description: "The expiration date of the product (if applicable)."
+        tests:
+          - not_null
+
+      - name: WARRANTY_PERIOD
+        description: "The warranty period for the product, typically in months."
+        tests:
+          - not_null
+
+      - name: RATING
+        description: "The product's rating based on user reviews (out of 5)."
+        tests:
+          - not_null
+
+      - name: WEIGHT_GRAMS
+        description: "Weight of the product in grams."
+        tests:
+          - not_null
+
+      - name: DISCOUNT_PERCENTAGE
+        description: "The percentage discount applied to the product price (if any)."
+        tests:
+          - not_null
+
+  - name: dim_search_event_BS
+    description: "This model contains the search dimension table, capturing search-related data such as search events, session details, search terms, results, types, and timestamps."
+    columns:
+      - name: SEARCH_EVENT_ID
+        description: "Unique identifier for each search event."
+        tests:
+          - not_null
+          - unique
+
+      - name: SESSION_ID
+        description: "Unique identifier for the session during which the search event occurred."
+        tests:
+          - not_null
+
+      - name: CART_ID
+        description: "Unique identifier for the cart associated with the search event, if applicable."
+        tests:
+          - not_null
+
+      - name: SEARCH_TERMS
+        description: "The search terms entered by the user during the search event."
+        tests:
+          - not_null
+          - unique
+
+      - name: SEARCH_RESULTS
+        description: "The number of results returned for the given search terms."
+        tests:
+          - not_null
+
+      - name: SEARCH_TYPE
+        description: "The type of search performed (e.g., product search, content search)."
+        tests:
+          - not_null
+
+      - name: TIMESTAMP
+        description: "The timestamp when the search event occurred."
+        tests:
+          - not_null
+
+      - name: DBT_LOADED_AT
+        description: "Timestamp indicating when the data was loaded into the DBT model."
+        tests:
+          - not_null
+
+      - name: DBT_SOURCE
+        description: "The source from which the data was loaded (e.g., external API, internal database)."
+        tests:
+          - not_null
+
+  - name: dim_user_BS
+    description: "This model contains user-related information, including personal details, account status, marketing preferences, and loyalty points balance."
+    columns:
+      - name: USER_ID
+        description: "Unique identifier for each user."
+        tests:
+          - not_null
+          - unique
+
+      - name: FIRST_NAME
+        description: "The first name of the user."
+        tests:
+          - not_null
+
+      - name: LAST_NAME
+        description: "The last name of the user."
+        tests:
+          - not_null
+
+      - name: EMAIL
+        description: "The email address of the user."
+        tests:
+          - not_null
+
+
+      - name: SIGNUP_DATE
+        description: "The date when the user signed up or created an account."
+        tests:
+          - not_null
+          
+      - name: PREFERRED_LANGUAGE
+        description: "The preferred language of the user."
+        tests:
+          - not_null
+
+      - name: DOB
+        description: "The date of birth of the user."
+        tests:
+          - not_null
+
+      - name: MARKETING_OPT_IN
+        description: "Indicates whether the user has opted into marketing communications (True/False)."
+        tests:
+          - not_null
+
+      - name: ACCOUNT_STATUS
+        description: "The current status of the user account (e.g., Active, Suspended, Closed)."
+        tests:
+          - not_null
+
+      - name: LOYALTY_POINTS_BALANCE
+        description: "The balance of loyalty points the user has accumulated."
+        tests:
+          - not_null
+
+  - name: dim_inventory_BS
+    description: "This model contains inventory-related data, including product stock levels, reorder thresholds, warehouse information, supplier details, and restocking schedules."
+    columns:
+      - name: INVENTORY_ID
+        description: "Unique identifier for each inventory record."
+        tests:
+          - not_null
+          - unique
+
+      - name: REORDER_LEVEL
+        description: "The threshold level of stock at which new inventory should be ordered."
+        tests:
+          - not_null
+
+      - name: PRODUCT_ID
+        description: "Unique identifier for each product in the inventory."
+        tests:
+          - not_null
+
+      - name: QUANTITY_IN_STOCK
+        description: "The current quantity of the product available in stock."
+        tests:
+          - not_null
+
+      - name: WAREHOUSE_ID
+        description: "Unique identifier for the warehouse where the inventory is stored."
+        tests:
+          - not_null
+
+      - name: RATING
+        description: "The rating of the product, usually based on customer feedback or quality metrics."
+        tests:
+          - not_null
+
+      - name: STOCK_LEVEL
+        description: "Current level of stock, can be a categorization like 'low', 'medium', or 'high'."
+        tests:
+          - not_null
+
+      - name: SALES_VOLUME
+        description: "The total number of units sold in a given time period."
+        tests:
+          - not_null
+
+      - name: RESTOCK_DATE
+        description: "The date when the next restock of the product is planned."
+        tests:
+          - not_null
+
+      - name: WEIGHT
+        description: "The weight of the product, usually in grams or kilograms."
+        tests:
+          - not_null
+
+      - name: SUPPLIER_ID
+        description: "Unique identifier for the supplier of the product."
+        tests:
+          - not_null
+
+      - name: DISCOUNTS
+        description: "The discount percentage currently applied to the product."
+        tests:
+          - not_null
+
+      - name: STORAGE_CONDITION
+        description: "The recommended storage conditions for the product (e.g., 'cool and dry')."
+        tests:
+          - not_null
+
+      - name: SAFETY_STOCK
+        description: "The buffer stock level to prevent stockouts."
+        tests:
+          - not_null
+
+      - name: INVENTORY_STATUS
+        description: "The current status of the inventory (e.g., 'available', 'out of stock', 'discontinued')."
+        tests:
+          - not_null
+
+      - name: AVERAGE_MONTHLY_DEMAND
+        description: "The average monthly demand for the product, used for restocking planning."
+        tests:
+          - not_null
+
+      - name: LAST_AUDIT_DATE
+        description: "The date when the last audit of inventory was performed."
+        tests:
+          - not_null
+
+      - name: LAST_RESTOCK_DATE
+        description: "The date when the product was last restocked."
+        tests:
+          - not_null
+
+      - name: NEXT_RESTOCK_DATE
+        description: "The date when the next restock of the product is expected."
+        tests:
+          - not_null
+
+      

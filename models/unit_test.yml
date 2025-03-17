@@ -1,0 +1,145 @@
+unit_tests:
+
+  - name: test_is_valid_stg_user_journey_BS
+    description: "Check my test_is_valid logic captures all known edge cases -"
+    model: stg_user_journey_BS
+    given:
+      - input: source('de_project', 'user_journey') 
+        rows:
+          - {SEARCH_EVENT_ID: 'e492bb94-97b8-47e4-9359-cde0d88282b8',	TIMESTAMP: '2024-07-11  7:11:41',	APP_ID: 'web-prod',	HAS_PDP: 'TRUE',	HAS_ATC: 'FALSE',	HAS_PURCHASE: 'TRUE',	CART_ID: '6e96598b-6117-4be8-8667-6c5940a82959',	SESSION_ID: '7a8635a6-ed0c-4408-8e2c-7831c5d20567',	SEARCH_REQUEST_ID: 'aca63ba5-1663-44a3-9c19-bc0568e3db94',	SEARCH_RESULTS_COUNT: '94',	SEARCH_TERMS: 'Shredded carrots',	SEARCH_FEATURE: 'organic',	SEARCH_TERMS_TYPE: 'type-ahead',	SEARCH_TYPE: 'product:grocery',	LOGIN_STATUS: 'not-logged-in',	USER_ID: 'a1b8bf69-b4cc-4af3-b7c6-8e4ab6286aea',	REGISTRATION_STATUS: 'registered',	SEARCH_MODEL: 'Model C',	MKT_MEDIUM: 'Unknown',	MKT_SOURCE: 'FB',	MKT_CONTENT: 'Unknown',	MKT_CAMPAIGN: 'one',	PRODUCT_ID: 'prod-12618' }
+          - {SEARCH_EVENT_ID: 'e492aa94-97b8-47e4-9359-cde0d88282b8',	TIMESTAMP: '2024-07-11  7:11:41',	APP_ID: 'web-prod',	HAS_PDP: 'TRUE',	HAS_ATC: 'FALSE',	HAS_PURCHASE: 'TRUE',	CART_ID: '6e96558b-6117-4be8-8667-6c5940a82959',	SESSION_ID: '7a8635a6-ed0c-4408-8e2c-7831c5d20567',	SEARCH_REQUEST_ID: 'aca63ba5-1663-44a3-9c19-bc0568e3db94',	SEARCH_RESULTS_COUNT: '94',	SEARCH_TERMS: 'Shredded carrots',	SEARCH_FEATURE: 'organic',	SEARCH_TERMS_TYPE: 'type-ahead',	SEARCH_TYPE: 'product:grocery',	LOGIN_STATUS: 'not-logged-in',	USER_ID: 'a1b8bf69-b4cc-4af3-b7c6-8e4ab6286aea',	REGISTRATION_STATUS: 'registered',	SEARCH_MODEL: 'Model C',	MKT_MEDIUM: 'Unknown',	MKT_SOURCE: 'IG',	MKT_CONTENT: 'Unknown',	MKT_CAMPAIGN: 'two',	PRODUCT_ID: 'prod-12618' }
+          - {SEARCH_EVENT_ID: 'e492ap94-97b8-47e4-9359-cde0d88282b8',	TIMESTAMP: '2024-07-11  7:11:41',	APP_ID: 'web-prod',	HAS_PDP: 'FALSE',	HAS_ATC: 'TRUE',	HAS_PURCHASE: 'FALSE',	CART_ID: '6e9598kb-6117-4be8-8667-6c5940a82959',	SESSION_ID: '7a8635a6-ed0c-4408-8e2c-7831c5d20567',	SEARCH_REQUEST_ID: 'aca63ba5-1663-44a3-9c19-bc0568e3db94',	SEARCH_RESULTS_COUNT: '94',	SEARCH_TERMS: 'Shredded  potatos',	SEARCH_FEATURE: 'organic',	SEARCH_TERMS_TYPE: 'type-ahead',	SEARCH_TYPE: 'product:grocery',	LOGIN_STATUS: 'not-logged-in',	USER_ID: 'a1b8bf69-b4cc-4af3-b7c6-8e4ab6286aea',	REGISTRATION_STATUS: 'registered',	SEARCH_MODEL: 'Model C',	MKT_MEDIUM: 'Unknown',	MKT_SOURCE: 'Link',	MKT_CONTENT: 'Unknown',	MKT_CAMPAIGN: 'three',	PRODUCT_ID: 'prod-12617' }
+    expect:
+      rows:
+        - {SEARCH_EVENT_ID: 'e492bb94-97b8-47e4-9359-cde0d88282b8',	TIMESTAMP: '2024-07-11 7:11:41',	APP_ID: 'web-prod',	HAS_PDP: 'TRUE',	HAS_ATC: 'FALSE',	HAS_PURCHASE: 'TRUE',	CART_ID: '6e96598b-6117-4be8-8667-6c5940a82959',	SESSION_ID: '7a8635a6-ed0c-4408-8e2c-7831c5d20567',	SEARCH_REQUEST_ID: 'aca63ba5-1663-44a3-9c19-bc0568e3db94',	SEARCH_RESULTS_COUNT: '94',	SEARCH_TERMS: 'Shredded carrots',	SEARCH_FEATURE: 'organic',	SEARCH_TERMS_TYPE: 'type-ahead',	SEARCH_TYPE: 'product:grocery',	LOGIN_STATUS: 'not-logged-in',	USER_ID: 'a1b8bf69-b4cc-4af3-b7c6-8e4ab6286aea',	REGISTRATION_STATUS: 'registered',	SEARCH_MODEL: 'Model C',	MKT_MEDIUM: 'Unknown',	MKT_SOURCE: 'FB',	MKT_CONTENT: 'Unknown',	MKT_CAMPAIGN: 'one',	PRODUCT_ID: 'prod-12618',		DBT_SOURCE: 'de_project_user_journey'}
+        - {SEARCH_EVENT_ID: 'e492aa94-97b8-47e4-9359-cde0d88282b8',	TIMESTAMP: '2024-07-11 7:11:41',	APP_ID: 'web-prod',	HAS_PDP: 'TRUE',	HAS_ATC: 'FALSE',	HAS_PURCHASE: 'TRUE',	CART_ID: '6e96558b-6117-4be8-8667-6c5940a82959',	SESSION_ID: '7a8635a6-ed0c-4408-8e2c-7831c5d20567',	SEARCH_REQUEST_ID: 'aca63ba5-1663-44a3-9c19-bc0568e3db94',	SEARCH_RESULTS_COUNT: '94',	SEARCH_TERMS: 'Shredded carrots',	SEARCH_FEATURE: 'organic',	SEARCH_TERMS_TYPE: 'type-ahead',	SEARCH_TYPE: 'product:grocery',	LOGIN_STATUS: 'not-logged-in',	USER_ID: 'a1b8bf69-b4cc-4af3-b7c6-8e4ab6286aea',	REGISTRATION_STATUS: 'registered',	SEARCH_MODEL: 'Model C',	MKT_MEDIUM: 'Unknown',	MKT_SOURCE: 'IG',	MKT_CONTENT: 'Unknown',	MKT_CAMPAIGN: 'two',	PRODUCT_ID: 'prod-12618',		DBT_SOURCE: 'de_project_user_journey'}
+        - {SEARCH_EVENT_ID: 'e492ap94-97b8-47e4-9359-cde0d88282b8',	TIMESTAMP: '2024-07-11 7:11:41',	APP_ID: 'web-prod',	HAS_PDP: 'FALSE',	HAS_ATC: 'TRUE',	HAS_PURCHASE: 'FALSE',	CART_ID: '6e9598kb-6117-4be8-8667-6c5940a82959',	SESSION_ID: '7a8635a6-ed0c-4408-8e2c-7831c5d20567',	SEARCH_REQUEST_ID: 'aca63ba5-1663-44a3-9c19-bc0568e3db94',	SEARCH_RESULTS_COUNT: '94',	SEARCH_TERMS: 'Shredded  potatos',	SEARCH_FEATURE: 'organic',	SEARCH_TERMS_TYPE: 'type-ahead',	SEARCH_TYPE: 'product:grocery',	LOGIN_STATUS: 'not-logged-in',	USER_ID: 'a1b8bf69-b4cc-4af3-b7c6-8e4ab6286aea',	REGISTRATION_STATUS: 'registered',	SEARCH_MODEL: 'Model C',	MKT_MEDIUM: 'Unknown',	MKT_SOURCE: 'Link',	MKT_CONTENT: 'Unknown',	MKT_CAMPAIGN: 'three',	PRODUCT_ID: 'prod-12617',		DBT_SOURCE: 'de_project_user_journey'}
+    overrides:
+      macros:
+        is_incremental: false
+  - name: test_is_valid_user_journey_transformation_BS
+    description: "Check my test_is_valid logic captures all known edge cases -"
+    model: user_journey_transformation_BS
+    given:
+      - input: ref('stg_user_journey_BS') 
+        rows:
+          - {SEARCH_EVENT_ID: 'e492bb94-97b8-47e4-9359-cde0d88282b8',	TIMESTAMP: '2024-07-11  7:11:41',	APP_ID: 'web-prod',	HAS_PDP: 'TRUE',	HAS_ATC: 'FALSE',	HAS_PURCHASE: 'TRUE',	CART_ID: '6e96598b-6117-4be8-8667-6c5940a82959',	SESSION_ID: '7a8635a6-ed0c-4408-8e2c-7831c5d20567',	SEARCH_REQUEST_ID: 'aca63ba5-1663-44a3-9c19-bc0568e3db94',	SEARCH_RESULTS_COUNT: '94',	SEARCH_TERMS: 'Shredded carrots',	SEARCH_FEATURE: 'organic',	SEARCH_TERMS_TYPE: 'type-ahead',	SEARCH_TYPE: 'product:grocery',	LOGIN_STATUS: 'not-logged-in',	USER_ID: 'a1b8bf69-b4cc-4af3-b7c6-8e4ab6286aea',	REGISTRATION_STATUS: 'registered',	SEARCH_MODEL: 'Model C',	MKT_MEDIUM: 'Unknown',	MKT_SOURCE: 'FB',	MKT_CONTENT: 'Unknown',	MKT_CAMPAIGN: 'one',	PRODUCT_ID: 'prod-12618' }
+          - {SEARCH_EVENT_ID: 'e492aa94-97b8-47e4-9359-cde0d88282b8',	TIMESTAMP: '2024-07-11  7:11:41',	APP_ID: 'web-prod',	HAS_PDP: 'TRUE',	HAS_ATC: 'FALSE',	HAS_PURCHASE: 'TRUE',	CART_ID: '6e96558b-6117-4be8-8667-6c5940a82959',	SESSION_ID: '7a8635a6-ed0c-4408-8e2c-7831c5d20567',	SEARCH_REQUEST_ID: 'aca63ba5-1663-44a3-9c19-bc0568e3db94',	SEARCH_RESULTS_COUNT: '94',	SEARCH_TERMS: 'Shredded carrots',	SEARCH_FEATURE: 'organic',	SEARCH_TERMS_TYPE: 'type-ahead',	SEARCH_TYPE: 'product:grocery',	LOGIN_STATUS: 'not-logged-in',	USER_ID: 'a1b8bf69-b4cc-4af3-b7c6-8e4ab6286aea',	REGISTRATION_STATUS: 'registered',	SEARCH_MODEL: 'Model C',	MKT_MEDIUM: 'Unknown',	MKT_SOURCE: 'IG',	MKT_CONTENT: 'Unknown',	MKT_CAMPAIGN: 'two',	PRODUCT_ID: 'prod-12618' }
+          - {SEARCH_EVENT_ID: 'e492ap94-97b8-47e4-9359-cde0d88282b8',	TIMESTAMP: '2024-07-11  7:11:41',	APP_ID: 'web-prod',	HAS_PDP: 'FALSE',	HAS_ATC: 'TRUE',	HAS_PURCHASE: 'FALSE',	CART_ID: '6e9598kb-6117-4be8-8667-6c5940a82959',	SESSION_ID: '7a8635a6-ed0c-4408-8e2c-7831c5d20567',	SEARCH_REQUEST_ID: 'aca63ba5-1663-44a3-9c19-bc0568e3db94',	SEARCH_RESULTS_COUNT: '94',	SEARCH_TERMS: 'Shredded  potatos',	SEARCH_FEATURE: 'organic',	SEARCH_TERMS_TYPE: 'type-ahead',	SEARCH_TYPE: 'product:grocery',	LOGIN_STATUS: 'not-logged-in',	USER_ID: 'a1b8bf69-b4cc-4af3-b7c6-8e4ab6286aea',	REGISTRATION_STATUS: 'registered',	SEARCH_MODEL: 'Model C',	MKT_MEDIUM: 'Unknown',	MKT_SOURCE: 'Link',	MKT_CONTENT: 'Unknown',	MKT_CAMPAIGN: 'three',	PRODUCT_ID: 'prod-12617' }
+    expect:
+      rows:
+        - {SEARCH_TERMS: 'Shredded carrots',	SEARCH_MODEL: 'Model C',	PRODUCT_ID: 'prod-12618',	TOTAL_SEARCHES: '2',	SEARCHES_WITH_PDP: '2',	SEARCHES_WITH_ATC: '0',	SEARCHES_WITH_PURCHASE: '2',	AVERAGE_SEARCH_RESULT_COUNT: '94',	SEARCHES_BY_REGISTERED_USERS: '2',	SEARCHES_BY_UN_REGISTERED_USERS: '0',	TOTAL_INTERESTED_USERS: '1',	DBT_SOURCE: 'stg_user_journey'} 
+        - {SEARCH_TERMS: 'Shredded  potatos',	SEARCH_MODEL: 'Model C',	PRODUCT_ID: 'prod-12617',	TOTAL_SEARCHES: '1',	SEARCHES_WITH_PDP: '0',	SEARCHES_WITH_ATC: '1',	SEARCHES_WITH_PURCHASE: '0',	AVERAGE_SEARCH_RESULT_COUNT: '94',	SEARCHES_BY_REGISTERED_USERS: '1',	SEARCHES_BY_UN_REGISTERED_USERS: '0',	TOTAL_INTERESTED_USERS: '1',	DBT_SOURCE: 'stg_user_journey'}
+    overrides:
+      macros:
+        is_incremental: false
+
+  - name: test_is_valid_campaign_data_transformation_BS
+    description: "Check my test_is_valid logic captures all known edge cases -"
+    model: campaign_data_transformation_BS
+    given:
+      - input: ref('stg_user_journey_BS') 
+        rows:
+          - {SEARCH_EVENT_ID: 'e492bb94-97b8-47e4-9359-cde0d88282b8',	TIMESTAMP: '2024-07-11  7:11:41',	APP_ID: 'web-prod',	HAS_PDP: 'TRUE',	HAS_ATC: 'FALSE',	HAS_PURCHASE: 'TRUE',	CART_ID: '6e96598b-6117-4be8-8667-6c5940a82959',	SESSION_ID: '7a8635a6-ed0c-4408-8e2c-7831c5d20567',	SEARCH_REQUEST_ID: 'aca63ba5-1663-44a3-9c19-bc0568e3db94',	SEARCH_RESULTS_COUNT: '94',	SEARCH_TERMS: 'Shredded carrots',	SEARCH_FEATURE: 'organic',	SEARCH_TERMS_TYPE: 'type-ahead',	SEARCH_TYPE: 'product:grocery',	LOGIN_STATUS: 'not-logged-in',	USER_ID: 'a1b8bf69-b4cc-4af3-b7c6-8e4ab6286aea',	REGISTRATION_STATUS: 'registered',	SEARCH_MODEL: 'Model C',	MKT_MEDIUM: 'paid search',	MKT_SOURCE: 'FB',	MKT_CONTENT: 'unknown',	MKT_CAMPAIGN: 'new_user',	PRODUCT_ID: 'prod-12618' }
+          - {SEARCH_EVENT_ID: 'e492aa94-97b8-47e4-9359-cde0d88282b8',	TIMESTAMP: '2024-07-11  7:11:41',	APP_ID: 'web-prod',	HAS_PDP: 'TRUE',	HAS_ATC: 'FALSE',	HAS_PURCHASE: 'TRUE',	CART_ID: '6e96558b-6117-4be8-8667-6c5940a82959',	SESSION_ID: '7a8635a6-ed0c-4408-8e2c-7831c5d20567',	SEARCH_REQUEST_ID: 'aca63ba5-1663-44a3-9c19-bc0568e3db94',	SEARCH_RESULTS_COUNT: '94',	SEARCH_TERMS: 'Shredded carrots',	SEARCH_FEATURE: 'organic',	SEARCH_TERMS_TYPE: 'type-ahead',	SEARCH_TYPE: 'product:grocery',	LOGIN_STATUS: 'not-logged-in',	USER_ID: 'a1b8bf69-b4cc-4af3-b7c6-8e4ab6286aea',	REGISTRATION_STATUS: 'registered',	SEARCH_MODEL: 'Model C',	MKT_MEDIUM: 'paid search',	MKT_SOURCE: 'FB',	MKT_CONTENT: 'unknown',	MKT_CAMPAIGN: 'new_user',	PRODUCT_ID: 'prod-12618' }
+          - {SEARCH_EVENT_ID: 'e492ap94-97b8-47e4-9359-cde0d88282b8',	TIMESTAMP: '2024-07-11  7:11:41',	APP_ID: 'web-prod',	HAS_PDP: 'FALSE',	HAS_ATC: 'TRUE',	HAS_PURCHASE: 'FALSE',	CART_ID: '6e9598kb-6117-4be8-8667-6c5940a82959',	SESSION_ID: '7a8635a6-ed0c-4408-8e2c-7831c5d20567',	SEARCH_REQUEST_ID: 'aca63ba5-1663-44a3-9c19-bc0568e3db94',	SEARCH_RESULTS_COUNT: '94',	SEARCH_TERMS: 'Shredded  potatos',	SEARCH_FEATURE: 'organic',	SEARCH_TERMS_TYPE: 'type-ahead',	SEARCH_TYPE: 'product:grocery',	LOGIN_STATUS: 'not-logged-in',	USER_ID: 'a1b8bf69-b4cc-4af3-b7c6-8e4ab6286aea',	REGISTRATION_STATUS: 'registered',	SEARCH_MODEL: 'Model C',	MKT_MEDIUM: 'unknown',	MKT_SOURCE: 'Link',	MKT_CONTENT: 'unknown',	MKT_CAMPAIGN: 'black_friday',	PRODUCT_ID: 'prod-12617' }
+    expect:
+      rows:
+        - {MKT_CAMPAIGN: 'new_user',	MKT_MEDIUM: 'paid search',	MKT_SOURCE: 'FB',	MKT_CONTENT: 'unknown',	PRODUCT_ID: 'prod-12618',	UNIQUE_ITEMS_SEARCH: '1',	TOTAL_SEARCH_EVENTS: '2',	PURCHASE_EVENTS: '2',	ATC_EVENTS: '0',	PDP_EVENTS: '2',	TOTAL_DISTINCT_USERS: '1'}
+        - {MKT_CAMPAIGN: 'black_friday',	MKT_MEDIUM: 'unknown',	MKT_SOURCE: 'Link',	MKT_CONTENT: 'unknown',	PRODUCT_ID: 'prod-12617',	UNIQUE_ITEMS_SEARCH: '1',	TOTAL_SEARCH_EVENTS: '1',	PURCHASE_EVENTS: '0',	ATC_EVENTS: '1',	PDP_EVENTS: '0',	TOTAL_DISTINCT_USERS: '1'}
+    overrides:
+      macros:
+        is_incremental: false  
+  - name: test_is_valid_fact_search_effectiveness_BS
+    description: "Check my test_is_valid logic captures all known edge cases -"
+    model: fact_search_effectiveness_BS
+    given:
+      - input: ref('user_journey_transformation_BS') 
+        rows:
+          - {SEARCH_TERMS: 'Shredded carrots',	SEARCH_MODEL: 'Model C',	PRODUCT_ID: 'prod-12618',	TOTAL_SEARCHES: '2',	SEARCHES_WITH_PDP: '2',	SEARCHES_WITH_ATC: '0',	SEARCHES_WITH_PURCHASE: '2',	AVERAGE_SEARCH_RESULT_COUNT: '94',	SEARCHES_BY_REGISTERED_USERS: '2',	SEARCHES_BY_UN_REGISTERED_USERS: '0',	TOTAL_INTERESTED_USERS: '1',	DBT_SOURCE: 'stg_user_journey'} 
+          - {SEARCH_TERMS: 'Shredded  potatos',	SEARCH_MODEL: 'Model C',	PRODUCT_ID: 'prod-12617',	TOTAL_SEARCHES: '1',	SEARCHES_WITH_PDP: '0',	SEARCHES_WITH_ATC: '1',	SEARCHES_WITH_PURCHASE: '0',	AVERAGE_SEARCH_RESULT_COUNT: '94',	SEARCHES_BY_REGISTERED_USERS: '1',	SEARCHES_BY_UN_REGISTERED_USERS: '0',	TOTAL_INTERESTED_USERS: '1',	DBT_SOURCE: 'stg_user_journey'}
+      - input: source('de_project', 'product_data')
+        rows:
+          - {product_id: 'prod-12618',PRODUCT_NAME: 'Coca-Cola Classic 12-Pack (12618)'}
+          - {product_id: 'prod-12617',PRODUCT_NAME: 'Cheetos (12617)'}
+    expect:
+      rows:
+        - {SEARCH_TERMS: 'Shredded carrots',	SEARCH_MODEL: 'Model C',	PRODUCT_ID: 'prod-12618',	PRODUCT_NAME: 'Coca-Cola Classic 12-Pack (12618)',	TOTAL_SEARCHES: '2',	SEARCHES_WITH_PDP: '2',	SEARCHES_WITH_ATC: '0',	SEARCHES_WITH_PURCHASE: '2',	AVERAGE_SEARCH_RESULT_COUNT: '94',	SEARCHES_BY_REGISTERED_USERS: '2',	SEARCHES_BY_UN_REGISTERED_USERS: '0',	PURCHASE_CONVERSATION_RATE: '1',	ATC_CONVERSATION_RATE: '0'}
+        - {SEARCH_TERMS: 'Shredded  potatos',	SEARCH_MODEL: 'Model C',	PRODUCT_ID: 'prod-12617',	PRODUCT_NAME: 'Cheetos (12617)', TOTAL_SEARCHES: '1',	SEARCHES_WITH_PDP: '0',	SEARCHES_WITH_ATC: '1',	SEARCHES_WITH_PURCHASE: '0',	AVERAGE_SEARCH_RESULT_COUNT: '94',	SEARCHES_BY_REGISTERED_USERS: '1',	SEARCHES_BY_UN_REGISTERED_USERS: '0',	PURCHASE_CONVERSATION_RATE: '0',	ATC_CONVERSATION_RATE: '1'}
+    overrides:
+      macros:
+        is_incremental: false 
+  
+  - name: test_is_valid_fact_prod_BS
+    description: "Check my test_is_valid logic captures all known edge cases -"
+    model: fact_product_performance_BS
+    given:
+      - input: ref('product_metrics_transformation_BS') 
+        rows:
+          - {PRODUCT_ID: 'prod-12618',	TOTAL_SEARCHES: '86',	SEARCHES_WITH_PDP: '42',	SEARCHES_WITH_ATC: '56',	SEARCHES_WITH_PURCHASE: '42',	AVERAGE_SEARCH_RESULT_COUNT: '362.046512',	SEARCHES_BY_REGISTERED_USERS: '48',	SEARCHES_BY_UN_REGISTERED_USERS: '38',	TOTAL_INTERESTED_USERS: '43'}
+          - {PRODUCT_ID: 'prod-12617',	TOTAL_SEARCHES: '86',	SEARCHES_WITH_PDP: '42',	SEARCHES_WITH_ATC: '56',	SEARCHES_WITH_PURCHASE: '40',	AVERAGE_SEARCH_RESULT_COUNT: '362.046512',	SEARCHES_BY_REGISTERED_USERS: '48',	SEARCHES_BY_UN_REGISTERED_USERS: '38',	TOTAL_INTERESTED_USERS: '43'}
+      - input: source('de_project', 'product_data')
+        rows:
+          - {product_id: 'prod-12618',PRODUCT_NAME: 'Coca-Cola Classic 12-Pack (12618)', PRICE: 64.14 , RATING: 3 ,discount_percentage: 25}
+          - {product_id: 'prod-12617',PRODUCT_NAME: 'Cheetos (12617)', PRICE: 10 , RATING: 5 ,discount_percentage: 10}
+    expect:
+      rows:
+        - {PRODUCT_ID: 'prod-12618',	PRODUCT_NAME: 'Coca-Cola Classic 12-Pack (12618)',	TOTAL_SEARCHES: '86',	PDP_VIEWS: '42',	TOTAL_ATC_EVENTS: '56',	RATING: '3',	TOTAL_PURCHASES: '42',	REVENUE_WO_DISCOUNT: '2693.88',	REVENUE_AFTER_DISCOUNT: '2020.41'}
+        - {PRODUCT_ID: 'prod-12617',	PRODUCT_NAME: 'Cheetos (12617)',	TOTAL_SEARCHES: '86',	PDP_VIEWS: '42',	TOTAL_ATC_EVENTS: '56',	RATING: '5',	TOTAL_PURCHASES: '40',	REVENUE_WO_DISCOUNT: '400',	REVENUE_AFTER_DISCOUNT: '360'}
+    overrides:
+      macros:
+        is_incremental: false 
+  
+  - name: test_is_valid_fact_campaign_effectiveness_BS
+    description: "Check my test_is_valid logic captures all known edge cases -"
+    model: fact_campaign_effectiveness_BS
+    given:
+      - input: ref('campaign_data_transformation_BS') 
+        rows:
+          - {MKT_CAMPAIGN: 'new_user',	MKT_MEDIUM: 'paid search',	MKT_SOURCE: 'FB',	MKT_CONTENT: 'unknown',	PRODUCT_ID: 'prod-12618',	UNIQUE_ITEMS_SEARCH: '1',	TOTAL_SEARCH_EVENTS: '2',	PURCHASE_EVENTS: '2',	ATC_EVENTS: '0',	PDP_EVENTS: '2',	TOTAL_DISTINCT_USERS: '1'}
+          - {MKT_CAMPAIGN: 'black_friday',	MKT_MEDIUM: 'unknown',	MKT_SOURCE: 'Link',	MKT_CONTENT: 'unknown',	PRODUCT_ID: 'prod-12617',	UNIQUE_ITEMS_SEARCH: '1',	TOTAL_SEARCH_EVENTS: '1',	PURCHASE_EVENTS: '0',	ATC_EVENTS: '1',	PDP_EVENTS: '0',	TOTAL_DISTINCT_USERS: '1'}
+      - input: source('de_project', 'product_data')
+        rows:
+          - {product_id: 'prod-12618',PRICE: 64.14 }
+          - {product_id: 'prod-12617',PRICE: 10 }
+    expect:
+      rows:
+        - {MKT_CAMPAIGN: 'new_user',	MKT_MEDIUM: 'paid search',	MKT_SOURCE: 'FB',	MKT_CONTENT: 'unknown',	PRODUCT_ID: 'prod-12618',	UNIQUE_ITEMS_SEARCH: '1',	TOTAL_SEARCH_EVENTS: '2',	PURCHASE_EVENTS: '2',	ATC_EVENTS: '0',	PDP_EVENTS: '2',	TOTAL_DISTINCT_USERS: '1', REVENUE: 128.28}
+        - {MKT_CAMPAIGN: 'black_friday',	MKT_MEDIUM: 'unknown',	MKT_SOURCE: 'Link',	MKT_CONTENT: 'unknown',	PRODUCT_ID: 'prod-12617',	UNIQUE_ITEMS_SEARCH: '1',	TOTAL_SEARCH_EVENTS: '1',	PURCHASE_EVENTS: '0',	ATC_EVENTS: '1',	PDP_EVENTS: '0',	TOTAL_DISTINCT_USERS: '1', REVENUE: 0}
+    overrides:
+      macros:
+        is_incremental: false  
+
+  - name: test_is_valid_stg_inventory_data_BS
+    description: "Check my test_is_valid logic captures all known edge cases -"
+    model: stg_inventory_data_BS
+    given:
+      - input: source('de_project', 'inventory_data')
+        rows:
+          - {INVENTORY_ID: '4',	PRODUCT_ID: 'prod-00610',	WAREHOUSE_ID: '24',	STOCK_LEVEL: '3090',	RESTOCK_DATE: '45380',	SUPPLIER_ID: '24',	STORAGE_CONDITION: 'Frozen',	INVENTORY_STATUS: 'in-stock',	LAST_AUDIT_DATE: '45526.6226917477',	REORDER_LEVEL: '845',	QUANTITY_IN_STOCK: '3090',	RATING: '4940871317920210',	SALES_VOLUME: '3313',	WEIGHT: '435003746220772',	DISCOUNTS: '28328666522978000',	SAFETY_STOCK: '379',	AVERAGE_MONTHLY_DEMAND: '987',	LAST_RESTOCK_DATE: '45306',	NEXT_RESTOCK_DATE: '45442'}          # - {'7a7b05ec-d559-4a0c-9fc7-41e84988f6e8',	'45379.241400463',	'web-prod',	'FALSE',	'TRUE',	'TRUE',	'c4da4cbe-fd53-4e65-84f6-b63e8c239282',	'207a4011-27d4-40fb-bad5-b7340f1a8fa6',	'bbe0d9ca-de27-4a3b-86c2-5d8becabaecd',	'55',	'Cornpop',	'alternate',	'type-ahead',	'product:grocery',	'logged-in',	'319466a7-5ac7-44d7-814c-2e266c7ea512',	'unknown',	'Model F',	'Unknown',	'Unknown',	'Unknown',	'Unknown',	'prod-11852',	'45730.5760603472',	'de_project_user_journey'}
+          - {INVENTORY_ID: '1340',	PRODUCT_ID: 'prod-00610',	WAREHOUSE_ID: '28',	STOCK_LEVEL: '4374',	RESTOCK_DATE: '45617',	SUPPLIER_ID: '69',	STORAGE_CONDITION: 'Ambient',	INVENTORY_STATUS: 'backordered',	LAST_AUDIT_DATE: '45420.6226918287',	REORDER_LEVEL: '330',	QUANTITY_IN_STOCK: '4374',	RATING: '1748230086574350',	SALES_VOLUME: '9669',	WEIGHT: '2413998454426610',	DISCOUNTS: '29686185263548200',	SAFETY_STOCK: '349',	AVERAGE_MONTHLY_DEMAND: '827',	LAST_RESTOCK_DATE: '45560',	NEXT_RESTOCK_DATE: '45681'}
+    expect:
+      rows:
+        - {INVENTORY_ID: '4',	REORDER_LEVEL: '845',	PRODUCT_ID: 'prod-00610',	QUANTITY_IN_STOCK: '3090',	WAREHOUSE_ID: '24',	RATING: '4940871317920210',	STOCK_LEVEL: '3090',	SALES_VOLUME: '3313',	RESTOCK_DATE: '45380',	WEIGHT: '435003746220772',	SUPPLIER_ID: '24',	DISCOUNTS: '28328666522978000',	STORAGE_CONDITION: 'Frozen',	SAFETY_STOCK: '379',	INVENTORY_STATUS: 'in-stock',	AVERAGE_MONTHLY_DEMAND: '987',	LAST_AUDIT_DATE: '45526.6226917477',	LAST_RESTOCK_DATE: '45306',	NEXT_RESTOCK_DATE: '45442'}
+        - {INVENTORY_ID: '1340',	REORDER_LEVEL: '330',	PRODUCT_ID: 'prod-00610',	QUANTITY_IN_STOCK: '4374',	WAREHOUSE_ID: '28',	RATING: '1748230086574350',	STOCK_LEVEL: '4374',	SALES_VOLUME: '9669',	RESTOCK_DATE: '45617',	WEIGHT: '2413998454426610',	SUPPLIER_ID: '69',	DISCOUNTS: '29686185263548200',	STORAGE_CONDITION: 'Ambient',	SAFETY_STOCK: '349',	INVENTORY_STATUS: 'backordered',	AVERAGE_MONTHLY_DEMAND: '827',	LAST_AUDIT_DATE: '45420.6226918287',	LAST_RESTOCK_DATE: '45560',	NEXT_RESTOCK_DATE: '45681'}
+    overrides:
+      macros:
+        is_incremental: false
+
+  - name: test_is_valid_fact_inventory_status_BS
+    description: "Check my test_is_valid logic captures all known edge cases -"
+    model: fact_inventory_status_BS
+    given:
+      - input: ref('stg_inventory_data_BS')
+        rows:
+          - {INVENTORY_ID: '4',	REORDER_LEVEL: '845',	PRODUCT_ID: 'prod-00610',	QUANTITY_IN_STOCK: '3090',	WAREHOUSE_ID: '24',	RATING: '4940871317920210',	STOCK_LEVEL: '3090',	SALES_VOLUME: '3313',	RESTOCK_DATE: '45380',	WEIGHT: '435003746220772',	SUPPLIER_ID: '24',	DISCOUNTS: '28328666522978000',	STORAGE_CONDITION: 'Frozen',	SAFETY_STOCK: '379',	INVENTORY_STATUS: 'in-stock',	AVERAGE_MONTHLY_DEMAND: '987',	LAST_AUDIT_DATE: '45526.6226917477',	LAST_RESTOCK_DATE: '45306',	NEXT_RESTOCK_DATE: '45442'}
+          - {INVENTORY_ID: '1340',	REORDER_LEVEL: '330',	PRODUCT_ID: 'prod-00610',	QUANTITY_IN_STOCK: '4374',	WAREHOUSE_ID: '28',	RATING: '1748230086574350',	STOCK_LEVEL: '4374',	SALES_VOLUME: '9669',	RESTOCK_DATE: '45617',	WEIGHT: '2413998454426610',	SUPPLIER_ID: '69',	DISCOUNTS: '29686185263548200',	STORAGE_CONDITION: 'Ambient',	SAFETY_STOCK: '349',	INVENTORY_STATUS: 'backordered',	AVERAGE_MONTHLY_DEMAND: '827',	LAST_AUDIT_DATE: '45420.6226918287',	LAST_RESTOCK_DATE: '45560',	NEXT_RESTOCK_DATE: '45681'}
+    expect:
+      rows:
+        - {INVENTORY_ID: '4',	PRODUCT_ID: 'prod-00610',	WAREHOUSE_ID: '24',	STOCK_LEVEL: '3090',	RESTOCK_DATE: '45380',	INVENTORY_STATUS: 'in-stock',	LAST_AUDIT_DATE: '45526.6226917477',	REORDER_LEVEL: '845',	SAFETY_STOCK: '379',	AVERAGE_MONTHLY_DEMAND: '987',	STOCK_STATUS: 'Sufficient Stock'}
+        - {INVENTORY_ID: '1340',	PRODUCT_ID: 'prod-00610',	WAREHOUSE_ID: '28',	STOCK_LEVEL: '4374',	RESTOCK_DATE: '45617',	INVENTORY_STATUS: 'backordered',	LAST_AUDIT_DATE: '45420.6226918287',	REORDER_LEVEL: '330',	SAFETY_STOCK: '349',	AVERAGE_MONTHLY_DEMAND: '827',	STOCK_STATUS: 'Sufficient Stock'}
+    overrides:
+      macros:
+        is_incremental: false    
+
+
