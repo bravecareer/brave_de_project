@@ -64,11 +64,12 @@ deduped_product AS (
   FROM {{ ref('dim_product_sae') }}
 ),
 
--- Deduplicate dim_search_terms_sae.
+-- Deduplicate dim_search_terms_sae and include intent_category.
 deduped_search_terms AS (
   SELECT 
     search_term,
     search_term_id,
+    intent_category,
     ROW_NUMBER() OVER (PARTITION BY search_term ORDER BY search_term_id) AS rn
   FROM {{ ref('dim_search_terms_sae') }}
 )
