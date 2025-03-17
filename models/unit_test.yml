@@ -1,0 +1,48 @@
+unit_tests:
+  - name: test_loyalty_points
+    description: "Check if loyalty points are properly cast to integer"
+    model: stg_user_data_bl
+    overrides:
+      macros:
+        # unit test this model in "full refresh" mode
+        is_incremental: false
+    given:
+      - input: source('de_project', 'user_data')
+        rows: 
+          - {user_id: '1', loyalty_points_balance: 234.0, account_status: 'active'}
+    expect:
+      rows:
+        - {user_id: '1', loyalty_points_balance: 234}
+
+  - name: test_marketing_opt_in
+    description: "Check if marketing opt in flag is properly cast to boolean"
+    model: stg_user_data_bl
+    overrides:
+      macros:
+        # unit test this model in "full refresh" mode
+        is_incremental: false 
+    given:
+      - input: source('de_project', 'user_data')
+        rows: 
+          - {user_id: '1', marketing_opt_in: 'TRUE', account_status: 'active'}
+          - {user_id: '2', marketing_opt_in: 'FALSE', account_status: 'active'}
+    expect:
+      rows: 
+          - {user_id: '1', marketing_opt_in: true}
+          - {user_id: '2', marketing_opt_in: false}
+
+  - name: test_active_accounts
+    description: "Check if only active accounts are taken in by the model"
+    model: stg_user_data_bl
+    overrides:
+      macros:
+        # unit test this model in "full refresh" mode
+        is_incremental: false
+    given:
+      - input: source('de_project', 'user_data')
+        rows: 
+          - {user_id: '1', account_status: 'active'}
+          - {user_id: '2', account_status: 'inactive'}
+    expect:
+      rows: 
+          - {user_id: '1', account_status: 'active'}

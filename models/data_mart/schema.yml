@@ -80,9 +80,7 @@ models:
     description: "Effectiveness of marketing campaigns for each medium and each geographic region"
     columns:
       - name: mkt_campaign
-        description: "Unique identifier for the marketing campaign"
-        tests:
-          - not_null
+        description: "Name of the marketing campaign"
       - name: mkt_content
         description: "Type of marketing content delivered to user"
       - name: mkt_medium
