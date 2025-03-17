@@ -26,7 +26,28 @@ aggregated AS (
     MAX(load_timestamp) AS last_updated
   FROM base
   GROUP BY product_id, search_date
+),
+
+-- Deduplicate dim_product_sae in case of duplicates.
+deduped_prod AS (
+  SELECT 
+    product_id,
+    product_name,
+    product_category,
+    ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY load_timestamp DESC) AS rn
+  FROM {{ ref('dim_product_sae') }}
 )
 
-SELECT *
-FROM aggregated
+SELECT
+  agg.product_id,
+  dp.product_name,
+  dp.product_category,
+  agg.search_date,
+  agg.total_views,
+  agg.atc_events,
+  agg.purchase_events,
+  agg.last_updated
+FROM aggregated AS agg
+LEFT JOIN deduped_prod AS dp
+  ON agg.product_id = dp.product_id
+WHERE dp.rn = 1

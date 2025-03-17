@@ -36,7 +36,30 @@ aggregated AS (
     MAX(conversion_error_flag) AS conversion_error_flag
   FROM base
   GROUP BY inventory_id, product_id, warehouse_id, as_of_date
+),
+
+-- Deduplicate dim_product_sae in case of duplicates.
+deduped_prod AS (
+  SELECT 
+    product_id,
+    product_name,
+    ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY load_timestamp DESC) AS rn
+  FROM {{ ref('dim_product_sae') }}
 )
 
-SELECT *
-FROM aggregated
+SELECT
+  agg.inventory_id,
+  agg.product_id,
+  dp.product_name,
+  agg.warehouse_id,
+  agg.as_of_date,
+  agg.stock_level,
+  agg.reorder_level,
+  agg.quantity_in_stock,
+  agg.safety_stock,
+  agg.last_updated,
+  agg.conversion_error_flag
+FROM aggregated AS agg
+LEFT JOIN deduped_prod AS dp
+  ON agg.product_id = dp.product_id
+WHERE dp.rn = 1

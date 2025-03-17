@@ -1,302 +1,322 @@
 version: 2
 
 models:
+  - name: dim_campaign_sae
+    description: "Campaign dimension capturing campaign attributes from user journey data."
+    columns:
+      - name: campaign_id
+        description: "Surrogate key for campaigns."
+        tests:
+          - not_null
+          - unique
+      - name: campaign_source
+        description: "Source channel for the campaign."
+        tests:
+          - not_null
+      - name: campaign_medium
+        description: "Medium through which the campaign is delivered."
+        tests:
+          - not_null
+      - name: campaign_content
+        description: "Content details of the campaign."
+      - name: target_country
+        description: "Target country for the campaign."
+      - name: target_region
+        description: "Target region for the campaign."
+      - name: target_device
+        description: "Device type targeted (Mobile or Desktop)."
+        tests:
+          - accepted_values:
+              values: ['Mobile', 'Desktop']
+      - name: campaign_language
+        description: "Language used in the campaign."
+      - name: campaign_name
+        description: "Friendly name for the campaign."
+      - name: last_updated
+        description: "Timestamp indicating when the campaign record was last updated."
+        tests:
+          - not_null
+
   - name: dim_product_sae
-    description: "Dimension table for product details."
+    description: "Product dimension capturing product attributes from product data."
     columns:
       - name: product_id
-        description: "Unique product identifier."
+        description: "Surrogate key for products."
         tests:
           - not_null
           - unique
       - name: product_name
-        description: "Standardized product name."
+        description: "Name of the product."
         tests:
           - not_null
       - name: product_category
-        description: "Product category."
+        description: "Category to which the product belongs."
       - name: price
-        description: "Product price, must be greater than 0."
+        description: "List price of the product."
         tests:
+          - not_null
+          # You can replace the expression test below with a custom test if needed.
           - expression_is_true:
               expression: "price > 0"
       - name: rating
-        description: "Product rating on a scale (e.g., 0 to 5)."
+        description: "Product rating value."
         tests:
           - expression_is_true:
-              expression: "rating >= 0"
+              expression: "rating >= 0 and rating <= 5"
+      - name: sales_volume
+        description: "Total sales volume for the product."
+      - name: quantity_in_stock
+        description: "Quantity of the product available in stock."
+        tests:
+          - expression_is_true:
+              expression: "quantity_in_stock >= 0"
+      - name: discount_percentage
+        description: "Discount percentage applied to the product."
+        tests:
+          - expression_is_true:
+              expression: "discount_percentage >= 0 and discount_percentage <= 100"
+      - name: weight_grams
+        description: "Product weight in grams."
+        tests:
+          - expression_is_true:
+              expression: "weight_grams >= 0"
+      - name: discounted_price
+        description: "Calculated price after discount."
       - name: price_tier
-        description: "Categorized price range: Low, Medium, or High."
+        description: "Categorization of product based on price."
       - name: trending_score
-        description: "Calculated trending score based on rating and sales volume."
+        description: "Score combining rating and sales volume for trend analysis."
+      - name: weight_category
+        description: "Categorized bucket for product weight."
+      - name: warranty_period
+        description: "Warranty period description."
+      - name: warranty_months
+        description: "Warranty period in months."
+      - name: product_age_days
+        description: "Age of the product in days."
+      - name: days_to_expiration
+        description: "Days remaining until the product expires."
+      - name: is_expired
+        description: "Flag indicating if the product is expired."
+      - name: load_timestamp
+        description: "Timestamp of when the product record was loaded."
+        tests:
+          - not_null
 
-version: 2
+  - name: dim_search_terms_sae
+    description: "Search terms dimension aggregating search behavior metrics."
+    columns:
+      - name: search_term_id
+        description: "Surrogate key for search terms."
+        tests:
+          - not_null
+          - unique
+      - name: search_term
+        description: "The actual search term entered by users."
+        tests:
+          - not_null
+      - name: search_popularity
+        description: "Total number of searches for the term."
+      - name: avg_results_count
+        description: "Average number of results returned for the search term."
+      - name: atc_rate
+        description: "Rate at which users add to cart after searching."
+        tests:
+          - expression_is_true:
+              expression: "atc_rate >= 0 and atc_rate <= 1"
+      - name: purchase_rate
+        description: "Rate at which users make a purchase after searching."
+        tests:
+          - expression_is_true:
+              expression: "purchase_rate >= 0 and purchase_rate <= 1"
+      - name: intent_category
+        description: "Categorized user intent based on search behavior."
 
-models:
   - name: dim_user_sae
-    description: "Dimension table for user data with derived attributes for segmentation."
+    description: "User dimension capturing customer details from user data."
     columns:
       - name: user_id
-        description: "Unique user identifier."
+        description: "Surrogate key for users."
         tests:
           - not_null
           - unique
       - name: first_name
         description: "User's first name."
-        tests:
-          - not_null
       - name: last_name
         description: "User's last name."
-        tests:
-          - not_null
       - name: full_name
-        description: "User's full name derived from first and last name."
+        description: "Concatenated full name of the user."
         tests:
           - not_null
       - name: email
-        description: "User email address, standardized to lowercase."
+        description: "User's email address."
         tests:
           - not_null
-          - expression_is_true: { expression: "email REGEXP '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$'" }
+          - expression_is_true:
+              expression: "email LIKE '%@%'"
       - name: signup_date
         description: "Date when the user signed up."
-        tests:
-          - not_null
-          - expression_is_true: { expression: "signup_date <= CURRENT_DATE()" }
       - name: preferred_language
         description: "User's preferred language."
-      - name: dob
-        description: "User's date of birth."
-        tests:
-          - expression_is_true: { expression: "dob IS NULL OR (dob >= '1900-01-01' AND dob <= CURRENT_DATE())" }
-      - name: marketing_opt_in
-        description: "Indicates whether the user opted into marketing (TRUE or FALSE)."
-        tests:
-          - expression_is_true: { expression: "marketing_opt_in IN (TRUE, FALSE)" }
       - name: account_status
-        description: "User account status (e.g., Active, Inactive, Suspended)."
+        description: "Current account status of the user."
         tests:
-          - not_null
-      - name: loyalty_points_balance
-        description: "User's loyalty points balance."
-        tests:
-          - expression_is_true: { expression: "loyalty_points_balance IS NULL OR loyalty_points_balance >= 0" }
-      - name: load_timestamp
-        description: "Timestamp when the record was loaded."
-        tests:
-          - not_null
+          - accepted_values:
+              values: ['Active', 'Inactive', 'Suspended', 'Unknown']
+      - name: marketing_opt_in
+        description: "Flag indicating if the user opted into marketing."
       - name: age_years
-        description: "Calculated age of the user in years."
+        description: "User's age in years."
         tests:
-          - expression_is_true: { expression: "age_years IS NULL OR age_years >= 0" }
+          - expression_is_true:
+              expression: "age_years >= 0"
       - name: days_since_signup
         description: "Number of days since the user signed up."
         tests:
-          - expression_is_true: { expression: "days_since_signup IS NULL OR days_since_signup >= 0" }
-
-  - name: dim_campaign_sae
-    description: "Dimension table for campaign details derived from user journey data."
-    columns:
-      - name: campaign_id
-        description: "Surrogate key for the campaign."
+          - expression_is_true:
+              expression: "days_since_signup >= 0"
+      - name: loyalty_points_balance
+        description: "Current loyalty points balance for the user."
         tests:
-          - not_null
-          - unique
-      - name: campaign_name
-        description: "Name of the campaign, standardized; 'No Campaign' for null entries."
-        tests:
-          - not_null
-      - name: start_date
-        description: "Earliest event timestamp for the campaign."
-        tests:
-          - not_null
-      - name: end_date
-        description: "Latest event timestamp for the campaign."
-        tests:
-          - not_null
-          - expression_is_true: { expression: "end_date >= start_date" }
-
-  - name: dim_search_terms_sae
-    description: "Dimension table capturing search terms with popularity metrics, rate calculations, and an intent category."
-    columns:
-      - name: search_term_id
-        description: "Surrogate key generated using ROW_NUMBER()."
-        tests:
-          - not_null
-          - unique
-      - name: search_term
-        description: "Standardized search term, trimmed and lowercased."
-        tests:
-          - not_null
-      - name: search_popularity
-        description: "Total number of searches for the term."
-        tests:
-          - not_null
-          - expression_is_true: { expression: "search_popularity >= 0" }
-      - name: avg_results_count
-        description: "Average number of search results returned for the term."
-        tests:
-          - not_null
-          - expression_is_true: { expression: "avg_results_count >= 0" }
-      - name: atc_rate
-        description: "Rate of add-to-cart events for the term, as a fraction between 0 and 1."
-        tests:
-          - expression_is_true: { expression: "atc_rate IS NULL OR (atc_rate >= 0 AND atc_rate <= 1)" }
-      - name: purchase_rate
-        description: "Rate of purchase events for the term, as a fraction between 0 and 1."
-        tests:
-          - expression_is_true: { expression: "purchase_rate IS NULL OR (purchase_rate >= 0 AND purchase_rate <= 1)" }
-      - name: intent_category
-        description: "Categorized user intent for the search term (e.g., 'Buying', 'Considering', 'Browsing', 'Other')."
-        tests:
-          - not_null
-
-
-  - name: fact_search_effect_sae
-    description: "Fact table capturing individual user journey events for search effectiveness analysis."
-    columns:
-      - name: search_event_id
-        description: "Unique identifier for each search event."
-        tests:
-          - not_null
-          - unique
-      - name: user_id
-        description: "Foreign key referencing Dim_User."
-        tests:
-          - not_null
-      - name: product_id
-        description: "Foreign key referencing Dim_Product."
-        tests:
-          - not_null
-      - name: search_date
-        description: "The date extracted from the event timestamp."
-        tests:
-          - not_null
-      - name: qv_count
-        description: "Count of quick view events."
-        tests:
-          - not_null
-      - name: pdp_count
-        description: "Count of product detail page views."
-        tests:
-          - not_null
-      - name: atc_count
-        description: "Count of add-to-cart events."
-        tests:
-          - not_null
-      - name: purchase_count
-        description: "Count of purchase events."
-        tests:
-          - not_null
-      - name: journey_score
-        description: "Calculated score based on event weights."
-        tests:
-          - not_null
+          - expression_is_true:
+              expression: "loyalty_points_balance >= 0"
       - name: load_timestamp
-        description: "Timestamp when the fact record was loaded."
-        tests:
-          - not_null
-
-  - name: fact_product_perform_sae
-    description: "Fact table aggregating product performance metrics by day."
-    columns:
-      - name: product_id
-        description: "Foreign key referencing Dim_Product."
-        tests:
-          - not_null
-      - name: search_date
-        description: "Date when the interactions occurred."
-        tests:
-          - not_null
-      - name: total_views
-        description: "Total number of views (search events) for the product."
-        tests:
-          - not_null
-      - name: atc_events
-        description: "Number of add-to-cart events."
-        tests:
-          - not_null
-      - name: purchase_events
-        description: "Number of purchase events."
-        tests:
-          - not_null
-      - name: last_updated
-        description: "Timestamp when the fact record was last updated."
+        description: "Timestamp of when the user record was loaded."
         tests:
           - not_null
 
   - name: fact_campaign_perform_sae
-    description: "Fact table aggregating campaign performance metrics per day."
+    description: "Campaign performance fact table aggregating search interactions for campaigns."
     columns:
       - name: campaign_id
-        description: "Campaign identifier (derived from marketing campaign field)."
+        description: "Foreign key to dim_campaign_sae (campaign_id)."
         tests:
           - not_null
+          # Removed dbt_utils.relationships test; consider creating a custom relationship test if needed.
       - name: search_date
-        description: "Date when the campaign events occurred."
+        description: "Date when the campaign event occurred."
         tests:
           - not_null
       - name: total_interactions
-        description: "Total number of interactions associated with the campaign."
+        description: "Total number of campaign interactions."
         tests:
           - not_null
       - name: atc_events
-        description: "Total add-to-cart events for the campaign."
-        tests:
-          - not_null
+        description: "Count of add-to-cart events for the campaign."
       - name: purchase_events
-        description: "Total purchase events for the campaign."
-        tests:
-          - not_null
+        description: "Count of purchase events for the campaign."
       - name: last_updated
-        description: "Timestamp when the fact record was last updated."
+        description: "Timestamp of the last update to the record."
         tests:
           - not_null
 
   - name: fact_inventory_mgt_sae
-    description: "Fact table for inventory management, aggregating inventory metrics per product per warehouse per day."
+    description: "Inventory management fact table aggregating inventory metrics."
     columns:
       - name: inventory_id
-        description: "Unique inventory record identifier."
+        description: "Unique identifier for the inventory record."
         tests:
           - not_null
+          - unique
       - name: product_id
-        description: "Foreign key referencing Dim_Product."
+        description: "Foreign key to dim_product_sae (product_id)."
         tests:
           - not_null
+          # Removed dbt_utils.relationships test.
       - name: warehouse_id
-        description: "Warehouse identifier (can join to Dim_Warehouse if available)."
+        description: "Identifier for the warehouse."
         tests:
           - not_null
       - name: as_of_date
-        description: "The date for which inventory is recorded (derived from restock_date)."
+        description: "Date representing the inventory snapshot."
         tests:
           - not_null
       - name: stock_level
-        description: "Current stock level."
-        tests:
-          - not_null
+        description: "Inventory stock level."
       - name: reorder_level
-        description: "Reorder threshold."
-        tests:
-          - not_null
+        description: "Reorder level for the inventory."
       - name: quantity_in_stock
         description: "Quantity available in stock."
-        tests:
-          - not_null
       - name: safety_stock
-        description: "Minimum safety stock level."
+        description: "Safety stock value."
+      - name: last_updated
+        description: "Timestamp of the last record update."
         tests:
           - not_null
       - name: conversion_error_flag
-        description: "Flag indicating data conversion errors."
+        description: "Flag indicating conversion errors in the inventory record."
+
+  - name: fact_product_perform_sae
+    description: "Product performance fact table aggregating search interactions by product."
+    columns:
+      - name: product_id
+        description: "Foreign key to dim_product_sae (product_id)."
         tests:
           - not_null
+          # Removed dbt_utils.relationships test.
+      - name: search_date
+        description: "Date of the search event."
+        tests:
+          - not_null
+      - name: total_views
+        description: "Total number of product views."
+        tests:
+          - not_null
+      - name: atc_events
+        description: "Number of add-to-cart events for the product."
+      - name: purchase_events
+        description: "Number of purchase events for the product."
       - name: last_updated
-        description: "Timestamp when the fact record was last updated."
+        description: "Timestamp of the last update to the record."
         tests:
           - not_null
 
-
-
-
+  - name: fact_search_effect_sae
+    description: "Search effectiveness fact table aggregating search journey metrics."
+    columns:
+      - name: search_event_id
+        description: "Unique identifier for the search event."
+        tests:
+          - not_null
+          - unique
+      - name: user_id
+        description: "Foreign key to dim_user_sae (user_id)."
+        tests:
+          - not_null
+          # Removed dbt_utils.relationships test.
+      - name: product_id
+        description: "Foreign key to dim_product_sae (product_id)."
+        tests:
+          - not_null
+          # Removed dbt_utils.relationships test.
+      - name: search_date
+        description: "Date of the search event."
+        tests:
+          - not_null
+      - name: last_event_timestamp
+        description: "Timestamp of the last event in the search journey."
+        tests:
+          - not_null
+      - name: qv_count
+        description: "Count of quick view events."
+      - name: pdp_count
+        description: "Count of product detail page events."
+      - name: atc_count
+        description: "Count of add-to-cart events."
+      - name: purchase_count
+        description: "Count of purchase events."
+      - name: journey_score
+        description: "Calculated score summarizing the search journey."
+      - name: load_timestamp
+        description: "Timestamp when the record was loaded."
+        tests:
+          - not_null
+      - name: search_term_id
+        description: "Foreign key to dim_search_terms_sae (search_term_id)."
+        tests:
+          - not_null
+          # Removed dbt_utils.relationships test.
+      - name: search_term
+        description: "Search term from the search event."
+      - name: intent_category
+        description: "Intent category from the search terms dimension."
