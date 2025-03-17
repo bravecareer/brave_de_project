@@ -20,5 +20,8 @@ WITH product_data AS (
    FROM {{ source('de_project', 'product_data') }} p
 )
 
-
 SELECT * FROM product_data
+{% if is_incremental() %}
+-- On incremental runs, only process new products allowing a few days for late-arriving facts
+WHERE event_time >= (SELECT DATEADD(day, -3, max(event_time)) from {{ this }})
+{% endif %}

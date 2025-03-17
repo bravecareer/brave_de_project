@@ -16,8 +16,7 @@ WITH user_data AS (
        u.marketing_opt_in,
        u.account_status,
        u.loyalty_points_balance
-   FROM {{ source('de_project', 'user_data') }} u
-   WHERE u.account_status = 'active'
+   FROM {{ ref('stg_user_data_bl') }} u
 )
 
 

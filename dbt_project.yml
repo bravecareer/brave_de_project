@@ -34,5 +34,8 @@ models:
       +materialized: table
     data_mart:
       +materialized: table
+    staging:
+      +materialized: table
   +copy_grants: true
+  +on_schema_change: "sync_all_columns"
 

@@ -1,7 +1,37 @@
 version: 2
 
 models:
-  - name: fact_user_engagement  # Replace with your actual model name
+  - name: dim_user_data_bl
+    description: 
+    config:
+      event_time: signup_date
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user. Primary Key."
+        tests:
+          - not_null
+      - name: first_name
+        description: "User's first name."
+      - name: last_name
+        description: "User's last name."
+      - name:
+
+  - name: dim_product_data_bl
+    description:
+    config:
+      event_time: manufacturing_date
+    columns:
+
+  - name: fact_product_performance_bl
+
+  - name: fact_campaign_effectiveness_bl
+
+  - name: fact_inventory_metrics_bl
+    description: 
+    columns: 
+
+
+  - name: fact_search_effectiveness_bl  # Replace with your actual model name
     description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
     columns:
       - name: user_id

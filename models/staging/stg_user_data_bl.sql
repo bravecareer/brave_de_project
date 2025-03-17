@@ -22,3 +22,7 @@ WITH user_data AS (
 
 
 SELECT * FROM user_data
+{% if is_incremental() %}
+-- On incremental runs, only process new users allowing a few days for late-arriving facts
+WHERE event_time >= (SELECT DATEADD(day, -3, max(event_time)) from {{ this }})
+{% endif %}
