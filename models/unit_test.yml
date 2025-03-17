@@ -1,26 +1,54 @@
 unit_tests:
-  - name: test_is_valid_timestamp
-    description: "Check my test_is_valid_timestamp logic captures all known edge cases - timestamp."
-    model: fact_user_engagement
+  - name: test_dim_user_full_name
+    description: 'Verify that full_name is constructed correctly in dim_user_sae.'
+    model: dim_user_sae
     given:
-      - input: source('de_project', 'user_journey') 
+      - input: ref('stg_user_data_sae')
         rows:
-          - {user_id: 1, product_id: 100, timestamp: '2024-02-17 18:41:07'}
-          - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
-          - {user_id: 999, product_id: 999, timestamp: '2024-02-17 18:42:07 UTC'}  
-      - input: source('de_project', 'user_data')
-        rows:
-          - {user_id: 1}
-          - {user_id: 2}
-      - input: source('de_project', 'product_data')
-        rows:
-          - {product_id: 100}
-          - {product_id: 101}
+          - user_id: "test_user_1"
+            first_name: "John"
+            last_name: "Doe"
+            load_timestamp: "2024-01-01 00:00:00"
     expect:
       rows:
-        - {user_id: 1, product_id: 100, timestamp: '2024-02-17 18:41:07'}
-        - {user_id: 2, product_id: 101, timestamp: '2024-02-17 18:42:07'}
-        - {user_id: 999, product_id: 999, timestamp: null}
+        - full_name: "John Doe"
 
+  - name: test_dim_user_age_years
+    description: 'Ensure age_years is computed correctly from dob in dim_user_sae.'
+    model: dim_user_sae
+    given:
+      - input: ref('stg_user_data_sae')
+        rows:
+          - user_id: "test_user_2"
+            dob: "1980-01-01"
+            load_timestamp: "2024-01-01 00:00:00"
+    expect:
+      rows:
+        - age_years: 44
 
+  - name: test_dim_product_price_tier
+    description: 'Verify that the price_tier is assigned correctly in dim_product_sae based on the price.'
+    model: dim_product_sae
+    given:
+      - input: ref('stg_product_data_sae')
+        rows:
+          - product_id: 'test_prod_1'
+            price: 40.0
+            load_timestamp: '2024-01-01 00:00:00'
+    expect:
+      rows:
+        - price_tier: 'Low'
 
+  - name: test_dim_product_trending_score
+    description: 'Check that trending_score is calculated correctly in dim_product_sae.'
+    model: dim_product_sae
+    given:
+      - input: ref('stg_product_data_sae')
+        rows:
+          - product_id: 'test_prod_2'
+            views: 100
+            sales: 50
+            load_timestamp: '2024-01-01 00:00:00'
+    expect:
+      rows:
+        - trending_score: 75  # Adjust based on your logic
