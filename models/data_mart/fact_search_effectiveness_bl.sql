@@ -1,28 +1,31 @@
 {{ config(
    materialized='incremental',
-   unique_key='search_event_id'
+   unique_key='product_id'
 ) }}
 
 
 WITH search_effectiveness AS (
    SELECT
-       ue.product_id
-        ue.has_qv,
-       ue.has_pdp,
-       ue.has_atc,
-       ue.has_purchase,
-       se.search_event_id,
-       se.session_id,
-       se.journey_id,
-       se.cart_id,
-       se.search_terms,
-       se.search_results_count AS search_results, -- Renaming column for clarity
-       se.search_type,
-       se.timestamp
-   FROM {{ ref('fact_user_engangement_bl') }} ue
-   LEFT JOIN {{ ref('dim_search_event_bl') }} se
-   GROUP BY ue.product_id
+       uj.product_id,
+       p.product_name,
+       uj.has_qv,
+       uj.has_pdp,
+       uj.has_atc,
+       uj.has_purchase,
+       uj.search_event_id
+   FROM {{ ref('stg_user_journey_bl') }} uj
+   LEFT JOIN {{ ref('dim_product_bl') }} p
+     ON uj.product_id = p.product_id
 )
 
 
-SELECT * FROM search_effectiveness
+SELECT
+   product_id,
+   product_name,
+   COUNT(has_qv) AS views,
+   COUNT(has_pdp) AS detail_views,
+   COUNT(has_atc) AS atc_events,
+   COUNT(has_purchase) AS purchases,
+   COUNT(search_event_id) AS searches
+ FROM search_effectiveness
+GROUP BY product_id, product_name

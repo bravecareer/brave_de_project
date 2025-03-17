@@ -40,12 +40,12 @@ WITH user_journey AS (
        uj.geo_timezone,
        uj.geo_zipcode,
        -- Timestamp
-       to_timestamp(replace(timestamp,' UTC','')) AS timestamp
+       uj.timestamp
    FROM {{ source('de_project', 'user_journey') }} uj
 )
 
 SELECT * FROM user_journey
 {% if is_incremental() %}
 -- On incremental runs, only process new transactions, up to two days ago
-WHERE event_time >= (SELECT DATEADD(day, -2, max(event_time)) from {{ this }})
+WHERE timestamp >= (SELECT DATEADD(day, -2, max(timestamp)) from {{ this }})
 {% endif %}

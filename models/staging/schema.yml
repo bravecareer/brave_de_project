@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stg_user_journey_bl  # Replace with your actual model name
+  - name: stg_user_journey_bl
     description: "staging table for user journey data"
     config:
       event_time: timestamp
@@ -109,8 +109,11 @@ models:
     description: "Staging table for product data"
     config:
       event_time: manufacturing_date
+    columns:
       - name: product_id
         description: "Unique identifier for the product. Primary key"
+        tests:
+          - not_null
       - name: product_name
         description: "Name of the product"
       - name: product_category
@@ -136,14 +139,45 @@ models:
     description: "Staging table for inventory data"
     config:
       event_time: last_audit_date
-      - name:
-        description:
-      - name:
-        description:
-      - name:
-        description:
-      - name:
-        description:
-      - name:
-        description:
+    columns:
+      - name: inventory_id
+        description: "Unique identifier for the inventory item. Primary key"
+        tests:
+          - not_null
+      - name: reorder_level
+        description: "Quantity at which product should be reordered"
+      - name: product_id
+        description: "Unique identifier for the product"
+      - name: quantity_in_stock
+        description: "Quantity currently in stock"
+      - name: warehouse_id
+        description: "Unique identifier for the warehouse"
+      - name: rating
+        description: "Rating (1-5) of the product from users"
+      - name: stock_level
+        description: "Stock level"
+      - name: sales_volume
+        description: "Sales volume"
+      - name: restock_date
+        description: "Date of last restock"
+      - name: weight
+        description: "Weight of the product"
+      - name: supplier_id
+        description: "Unique identifier for the supplier"
+      - name: discounts
+        description: "Discount, in %, applied to the product"
+      - name: storage_condition
+        description: "Condition under which inventory is stored"
+      - name: safety_stock
+        description: "Amount of safety stock"
+      - name: inventory_status
+        description: "Status of the inventory"
+      - name: average_monthly_demand
+        description: "Average monthly demand for the product"
+      - name: last_audit_date
+        description: "Date the inventory was last audited"
+      - name: last_restock_date
+        description: "Date of the previous restock"
+      - name: next_restock_date
+        description: "Date of the next restock"
       

@@ -30,3 +30,7 @@ WITH inventory_data AS (
 
 
 SELECT * FROM inventory_data
+{% if is_incremental() %}
+-- On incremental runs, only process new inventory allowing a few days for late-arriving facts
+WHERE last_audit_date >= (SELECT DATEADD(day, -3, max(last_audit_date)) from {{ this }})
+{% endif %}

@@ -23,5 +23,5 @@ WITH product_data AS (
 SELECT * FROM product_data
 {% if is_incremental() %}
 -- On incremental runs, only process new products allowing a few days for late-arriving facts
-WHERE event_time >= (SELECT DATEADD(day, -3, max(event_time)) from {{ this }})
+WHERE manufacturing_date >= (SELECT DATEADD(day, -3, max(manufacturing_date)) from {{ this }})
 {% endif %}
