@@ -1,26 +1,43 @@
+-- dim_product.sql: Creates a table of recent products, unique on product_id
 {{ config(
-   materialized='incremental',
-   unique_key='product_id'
-) }}
+    materialized='table',
+    unique_key='product_id'
+)}}
 
+-- Define date threshold for recent manufacturing (last 5 days)
+WITH date_threshold AS (
+    SELECT DATEADD(day, -5, CURRENT_DATE()) AS recent_date
+),
 
-WITH product_data AS (
-   SELECT
-       p.product_id,
-       p.product_name,
-       p.product_category,
-       p.price,
-       p.product_color,
-       p.manufacturing_date,
-       p.expiration_date,
-       p.warranty_period,
-       p.rating,
-       p.weight_grams,
-       p.discount_percentage
-   FROM {{ source('de_project', 'product_data') }} p
-   WHERE manufacturing_date >= CURRENT_DATE() - 5
-
+-- Select recent products with non-expired status and valid product_id
+recent_products AS (
+    SELECT
+        product_id,              -- Unique product identifier
+        weight_grams,            -- Product weight in grams
+        discount_percentage,     -- Discount percentage applied
+        rating,                  -- Customer or quality rating
+        warranty_period,         -- Warranty duration
+        price,                   -- Product price
+        product_name,            -- Name of the product
+        product_category,        -- Broad product category
+        product_sub_category,    -- Specific product sub-category
+        manufacturing_date       -- Product manufacturing date
+    FROM {{ source('de_project', 'product_data') }}
+    WHERE manufacturing_date >= (SELECT recent_date FROM date_threshold)
+      AND expiration_date IS NULL   -- Exclude products already expired
+      AND product_id IS NOT NULL    -- Ensure product_id is always available
 )
 
-
-SELECT * FROM product_data
+-- Final explicit selection from cleaned recent_products CTE
+SELECT
+    product_id,
+    weight_grams,
+    discount_percentage,
+    rating,
+    warranty_period,
+    price,
+    product_name,
+    product_category,
+    product_sub_category,
+    manufacturing_date
+FROM recent_products
