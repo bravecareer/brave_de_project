@@ -18,23 +18,21 @@ WITH search_events AS(
 )
  
    SELECT 
-        se.SEARCH_TERMS,
-        se.SEARCH_MODEL,
-        se.PRODUCT_ID,
-        p.product_name,
-        se.total_searches,
-        se.searches_with_pdp,
-        se.searches_with_atc,
-        se.searches_with_purchase,
-        se.average_search_result_count,
-        se.searches_by_registered_users,
-        se.searches_by_un_registered_users,
-        current_timestamp() AS dbt_loaded_at,
-        'user_journey_transform_BS' AS dbt_source
+    se.SEARCH_TERMS,
+    se.SEARCH_MODEL,
+    se.PRODUCT_ID,    
+    se.SEARCH_EVENT_ID,
+    se.HAS_PDP ,
+    se.HAS_ATC ,
+    se.HAS_PURCHASE,
+    se.SEARCH_RESULTS_COUNT,  
+    se.USER_REGISTRATION_STATUS ,
+    se.USER_ID, 
+    current_timestamp() AS dbt_loaded_at,
+    'user_journey_transform_BS' AS dbt_source
     FROM search_events se
     JOIN valid_products p 
-        ON se.product_id = p.product_id   
-   
+        ON se.product_id = p.product_id    
     WHERE
 {% if is_incremental() %}
     dbt_loaded_at > (SELECT max(dbt_loaded_at) FROM {{ this }})

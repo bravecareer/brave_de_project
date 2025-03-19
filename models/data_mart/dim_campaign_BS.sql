@@ -1,7 +1,7 @@
 {{ config(
    materialized='incremental',
-   unique_key=['MKT_CAMPAIGN', 'PRODUCT_ID'],
-   cluster_by=['MKT_CAMPAIGN', 'PRODUCT_ID']    
+   unique_key=['MKT_CAMPAIGN','PRODUCT_ID','SEARCH_EVENT_ID'],  
+   cluster_by=['MKT_CAMPAIGN','PRODUCT_ID']    
 ) }}
 
 WITH CAMPAIGN_METRICS AS(
@@ -10,15 +10,13 @@ WITH CAMPAIGN_METRICS AS(
     MKT_MEDIUM,
     MKT_SOURCE,
     MKT_CONTENT,
-    BR_LANG AS CAMPAIGN_LANGUAGE, 
-    PAGE_LANGUAGE, 
-    GEO_COUNTRY, 
-    GEO_REGION, 
-    GEO_CITY,
     PRODUCT_ID,
+    SEARCH_EVENT_ID,
     current_timestamp() AS dbt_loaded_at,
     'stg_user_journey' AS dbt_source
    FROM {{ ref('stg_user_journey_BS') }} 
+    
+   
     
 )
 

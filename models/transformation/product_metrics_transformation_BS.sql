@@ -11,14 +11,12 @@ WITH search_events AS (
 
 SELECT
     PRODUCT_ID,    
-    COUNT(DISTINCT SEARCH_EVENT_ID) AS total_searches,
-    COUNT(DISTINCT CASE WHEN HAS_PDP THEN SEARCH_EVENT_ID END) AS searches_with_pdp,
-    COUNT(DISTINCT CASE WHEN HAS_ATC THEN SEARCH_EVENT_ID END) AS searches_with_atc,
-    COUNT(DISTINCT CASE WHEN HAS_PURCHASE THEN SEARCH_EVENT_ID END) AS searches_with_purchase,
-    AVG(SEARCH_RESULTS_COUNT) AS average_search_result_count,  
-    COUNT(DISTINCT CASE WHEN REGISTRATION_STATUS = 'registered' THEN SEARCH_EVENT_ID END) AS searches_by_registered_users,
-    COUNT(DISTINCT CASE WHEN REGISTRATION_STATUS = 'unknown' THEN SEARCH_EVENT_ID END) AS searches_by_un_registered_users,
-    COUNT(DISTINCT USER_ID) AS total_interested_users,  
+    SEARCH_EVENT_ID,
+    HAS_PDP ,
+    HAS_ATC,
+    HAS_PURCHASE,
+    SEARCH_RESULTS_COUNT,  
+    USER_ID,  
     current_timestamp() AS dbt_loaded_at,
     'stg_user_journey' AS dbt_source
 FROM search_events
@@ -29,5 +27,3 @@ WHERE
 1=1
 {% endif %}
 
-GROUP BY 
-    PRODUCT_ID

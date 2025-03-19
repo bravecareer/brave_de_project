@@ -6,7 +6,8 @@
 
 WITH search_events AS (
     SELECT *
-    FROM {{ ref('stg_user_journey_BS') }} -- Reference to the user_journey table
+    FROM {{ ref('stg_user_journey_BS') }} 
+    WHERE MKT_CAMPAIGN != 'Unknown'
 )
 
 SELECT
@@ -15,12 +16,11 @@ SELECT
     MKT_SOURCE,
     MKT_CONTENT,
     PRODUCT_ID,
-    COUNT(DISTINCT sd.SEARCH_TERMS) AS UNIQUE_ITEMS_SEARCH,
-    COUNT(DISTINCT sd.SEARCH_EVENT_ID) AS TOTAL_SEARCH_EVENTS,
-    COUNT( CASE WHEN sd.HAS_PURCHASE THEN 1  END) AS PURCHASE_EVENTS,
-    COUNT( CASE WHEN sd.HAS_ATC THEN 1  END) AS ATC_EVENTS,
-    COUNT( CASE WHEN sd.HAS_PDP THEN 1  END) AS PDP_EVENTS,
-    count( DISTINCT sd.user_id ) as total_distinct_users,
+    SEARCH_TERMS,
+    SEARCH_EVENT_ID,
+    HAS_PURCHASE,
+    HAS_ATC,
+    USER_ID,
     current_timestamp() AS dbt_loaded_at,
     'stg_user_journey' AS dbt_source
     
@@ -32,7 +32,6 @@ WHERE
 TRUE
 {% endif %}
 
-GROUP BY
-    sd.MKT_CAMPAIGN, sd.MKT_MEDIUM, sd.MKT_SOURCE, sd.MKT_CONTENT, sd.product_id
+
 
 

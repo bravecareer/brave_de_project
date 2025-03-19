@@ -31,7 +31,7 @@ WITH search_events AS (
         GEO_CITY,
         REGISTRATION_STATUS,
         SEARCH_MODEL,
-        COALESCE(MKT_MEDIUM, 'Unknown') AS MKT_MEDIUM,
+        MKT_MEDIUM,
         COALESCE(MKT_SOURCE, 'Unknown') AS MKT_SOURCE,
         COALESCE(MKT_CONTENT, 'Unknown') AS MKT_CONTENT,
         COALESCE(MKT_CAMPAIGN, 'Unknown') AS MKT_CAMPAIGN,
@@ -39,6 +39,7 @@ WITH search_events AS (
         current_timestamp() AS dbt_loaded_at,
         'de_project_user_journey' AS dbt_source
     FROM {{ source('de_project', 'user_journey') }}
+    WHERE MKT_MEDIUM IS NOT NULL
 )
 
 SELECT *
