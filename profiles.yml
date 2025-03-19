@@ -4,13 +4,13 @@ brave_de_project:
   outputs:
     dev:
       type: snowflake
-      account: QDLMHKH-FM67721
+      account: pq32479.ca-central-1.aws
 
       # User/password auth
-      user: YOURNAME
-      password: YOUR PASSWORD
+      user: PROJECT_LEARNER_BERNARD_A
+      password: Lapel2177!!
 
-      role: PROJECT_LEARNER_DE_WRITE
+      role: PROJECT_LEARNER_DE_READ
       database: BRAVE_DATABASE
       warehouse: BRAVE_WAREHOUSE
       schema: project_test
