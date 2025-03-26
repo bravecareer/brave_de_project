@@ -34,3 +34,105 @@ models:
         description: "Session identifier for the user interaction"
         tests:
           - not_null
+
+  - name: fact_search_activity_ba
+    description: "Fact table for user search activities, joined with product, user, and marketing data"
+    columns:
+      - name: search_event_id
+        tests: [unique, not_null]
+      - name: user_id
+      - name: product_id
+      - name: has_atc
+        tests:
+          - accepted_values:
+              values: [true, false, 0, 1]
+      - name: has_purchase
+        tests:
+          - accepted_values:
+              values: [true, false, 0, 1]
+
+  - name: fact_product_performance_ba
+    description: "Aggregates key performance metrics for each product, including views, ATC events, and purchases."
+    columns:
+      - name: product_id
+        description: "Unique identifier for the product."
+        tests: [unique, not_null]
+      - name: product_name
+        description: "Name of the product."
+      - name: product_category
+        description: "Category to which the product belongs."
+      - name: price
+        description: "Price of the product."
+      - name: rating
+        description: "Customer rating of the product."
+      - name: discount_percentage
+        description: "Current discount percentage on the product."
+      - name: total_views
+        description: "Total number of times the product was viewed."
+      - name: total_atc_events
+        description: "Total number of Add to Cart events for the product."
+      - name: total_purchases
+        description: "Total number of purchases of the product."
+      - name: atc_rate_percentage
+        description: "Percentage of views that led to an Add to Cart event."
+      - name: purchase_rate_percentage
+        description: "Percentage of views that resulted in a purchase."
+
+  - name: dim_user_data_search_ba
+    description: "Dimension table for user profiles"
+    columns:
+      - name: user_id
+        tests: [unique, not_null]
+      - name: account_status
+        tests:
+          - accepted_values:
+              values: ['active', 'inactive', 'suspended']
+
+  - name: dim_product_search_ba
+    description: "Dimension table for product metadata"
+    columns:
+      - name: product_id
+        tests: [unique, not_null]
+      - name: product_category
+      - name: price
+      - name: discount_percentage
+
+  - name: dim_geo_search_ba
+    description: "Dimension table for geographic information"
+    columns:
+      - name: geo_country
+      - name: geo_region
+      - name: geo_city
+
+  - name: dim_device_search_ba
+    description: "Dimension table for device information"
+    columns:
+      - name: device_class
+        tests:
+          - accepted_values:
+              values: ['mobile', 'desktop', 'tablet']
+
+  - name: dim_marketing_search_ba
+    description: "Dimension table for marketing attribution data"
+    columns:
+      - name: mkt_campaign
+      - name: mkt_medium
+      - name: mkt_source
+      - name: mkt_content
+
+  - name: dim_cart_search_ba
+    description: "Dimension table for cart-level data"
+    columns:
+      - name: cart_id
+        tests: [unique]
+      - name: fulfillment_type
+      - name: selected_store_id
+
+  - name: dim_inventory_search_ba
+    description: "Dimension table for product inventory and stock levels"
+    columns:
+      - name: inventory_item_key
+        tests: [unique, not_null]
+      - name: stock_level
+      - name: reorder_level
+      - name: safety_stock

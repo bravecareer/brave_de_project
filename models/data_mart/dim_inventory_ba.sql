@@ -25,7 +25,7 @@ WITH inventory_data AS (
        i.last_audit_date,
        i.last_restock_date,
        i.next_restock_date
-   FROM {{ source('de_project', 'inventory_data') }} i
+   FROM {{ ref('stg_inventory_data_ba') }} i
    WHERE last_audit_date >= CURRENT_DATE() - 5
 )
 

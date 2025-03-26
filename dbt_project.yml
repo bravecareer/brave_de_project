@@ -31,9 +31,11 @@ models:
     database: BRAVE_DATABASE
     schema: project_test
     raw_data:
-      +materialized: table
+      +materialized: view
+      snowflake_warehouse: brave_warehouse
     data_mart:
       +materialized: table
+      snowflake_warehouse: brave_warehouse
   +copy_grants: true
 
 tests:

@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: stg_user_journey_ba
+    description: "Staging model for raw user journey search events"
+    columns:
+      - name: search_event_id
+        description: "Unique identifier for each search event"
+        tests: [unique, not_null]
+      - name: timestamp
+        description: "Timestamp of the search event"
+      - name: session_id
+        description: "Session identifier"
+      - name: user_id
+        description: "User who performed the search"
+        tests: [not_null]
+      - name: product_id
+        description: "Product that was searched"
+      - name: has_atc
+        description: "Whether the product was added to cart"
+        tests:
+          - accepted_values:
+              values: [true, false, 0, 1]
+      - name: has_purchase
+        description: "Whether the product was purchased"
+        tests:
+          - accepted_values:
+              values: [true, false, 0, 1]
+
+  - name: stg_product_data_ba
+    description: "Staging model for raw product data"
+    columns:
+      - name: product_id
+        description: "Primary key for products"
+        tests: [unique, not_null]
+      - name: product_name
+      - name: product_category
+      - name: price
+      - name: rating
+
+  - name: stg_user_data_ba
+    description: "Staging model for user account data"
+    columns:
+      - name: user_id
+        description: "Primary key for users"
+        tests: [unique, not_null]
+      - name: signup_date
+      - name: account_status
+        tests:
+          - accepted_values:
+              values: ['active', 'inactive', 'suspended']
+
+  - name: stg_inventory_data_ba
+    description: "Staging model for inventory data"
+    columns:
+      - name: inventory_item_key
+        description: "Unique identifier for each inventory item"
+        tests: [unique, not_null]
+      - name: product_id
+      - name: stock_level
+      - name: warehouse_id

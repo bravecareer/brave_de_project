@@ -3,6 +3,7 @@ version: 2
 sources:
   - name: de_project
     database: brave_database
+    schema: de_project
     tables:
       - name: inventory_data
         columns:
