@@ -35,22 +35,6 @@ models:
         tests:
           - not_null
 
-  - name: fact_search_activity_ba
-    description: "Fact table for user search activities, joined with product, user, and marketing data"
-    columns:
-      - name: search_event_id
-        tests: [unique, not_null]
-      - name: user_id
-      - name: product_id
-      - name: has_atc
-        tests:
-          - accepted_values:
-              values: [true, false, 0, 1]
-      - name: has_purchase
-        tests:
-          - accepted_values:
-              values: [true, false, 0, 1]
-
   - name: fact_product_performance_ba
     description: "Aggregates key performance metrics for each product, including views, ATC events, and purchases."
     columns:
