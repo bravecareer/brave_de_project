@@ -7,7 +7,13 @@ Latitude, Longitude, TimeZone8*/
 ) }}
 
 WITH geo AS (
-    SELECT DISTINCT
+    SELECT 
+        {{ 
+        dbt_utils.generate_surrogate_key([
+        'geo_latitude',
+        'geo_longitude',
+        ]) 
+    }} AS geo_id,
         g.geo_country,
         geo_region,
         geo_city,

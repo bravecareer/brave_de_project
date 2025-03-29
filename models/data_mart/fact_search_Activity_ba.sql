@@ -98,12 +98,3 @@ LEFT JOIN product_enriched pe ON be.product_id = pe.product_id
 LEFT JOIN user_enriched ue ON be.user_id = ue.user_id
 
 
-/*SELECT
-  product_name,
-  product_category,
-  COUNT(*) AS total_searches,
-  SUM(CASE WHEN has_atc THEN 1 ELSE 0 END) AS total_atc,
-  ROUND(SUM(CASE WHEN has_atc THEN 1 ELSE 0 END) * 1.0 / COUNT(*), 2) AS atc_rate
-FROM {{ ref('fact_search_activity') }}
-GROUP BY product_name, product_category
-ORDER BY atc_rate DESC*/
