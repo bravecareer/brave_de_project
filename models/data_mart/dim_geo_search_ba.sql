@@ -1,7 +1,3 @@
-/*GeoKey	Surrogate key
-Country, Region, City, ZipCode	
-Latitude, Longitude, TimeZone8*/
-
 {{ config(
    materialized='table'
 ) }}

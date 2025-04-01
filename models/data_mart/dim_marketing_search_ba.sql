@@ -1,6 +1,3 @@
-/*MarketingKey	Surrogate key
-MktCampaign, MktMedium, MktSource, MktContent*/	
-
 {{ config(
    materialized='table'
 ) }}

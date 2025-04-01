@@ -1,10 +1,3 @@
-/*InventoryItemKey	Surrogate key
-InventoryID, ProductID, WarehouseID	
-StockLevel, RestockDate, StorageCondition	
-InventoryStatus, LastAuditDate, ReorderLevel	
-QuantityInStock, SafetyStock, SalesVolume	
-AverageMonthlyDemand, LastRestockDate, NextRestockDate
-*/
 {{ config(
    materialized='table',
    unique_key='inventory_id'

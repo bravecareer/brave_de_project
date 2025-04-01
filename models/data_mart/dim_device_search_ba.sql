@@ -1,7 +1,3 @@
-/*DeviceKey	Surrogate key
-DeviceClass, BrowserLang, ViewHeight, ViewWidth, ScreenHeight, ScreenWidth, etc.
-*/
-
 {{ config(
    materialized='table'
 ) }}

@@ -12,9 +12,8 @@ LoyaltyPointsBalance*/
 WITH users AS ( 
     SELECT
         u.user_id,
-        u.first_name,
-        u.last_name,
-        u.email,
+        CONCAT(u.first_name, ' ', u.last_name) AS full_name,
+        CASE WHEN u.email not like '%_@__%.__%' THEN NULL ELSE u.email END AS email,
         u.signup_date,
         u.preferred_language,
         u.dob,

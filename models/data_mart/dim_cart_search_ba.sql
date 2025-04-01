@@ -1,8 +1,3 @@
-/*CartID	Primary key
-FulfillmentType	
-SelectedStoreID, SelectedTimeslotDate/Time/Type	
-ShoppingMode (e.g., delivery vs pickup)*/
-
 {{ config(
    materialized='table',
    unique_key='cart_id'

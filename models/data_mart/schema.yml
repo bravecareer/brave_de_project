@@ -64,7 +64,7 @@ models:
         description: "Percentage of views that resulted in a purchase."
 
 
-  - name: campaign_effectiveness
+  - name: fact_campaign_effectiveness_ba
     description: "Aggregates campaign performance metrics, including impressions, clicks, ATC events, and purchases."
     columns:
       - name: mkt_campaign
@@ -94,7 +94,7 @@ models:
         description: "Average revenue per click."
 
 
-  - name: inventory_summary
+  - name: fact_inventory_summary_ba
     description: "Aggregates inventory levels, stock status, and demand forecasting by product and warehouse."
     columns:
       - name: product_id

@@ -1,11 +1,3 @@
-/*ProductID	Primary key
-ProductName, Category, Color, Price	
-SupplierID	Connects to inventory and vendors
-ManufacturingDate, ExpirationDate	
-WarrantyPeriod, WeightGrams	
-DiscountPercentage, Rating, SalesVolume	
-QuantityInStock	Optional – snapshot metric from inventory*/
-
 {{ config(
    materialized='table',
    unique_key='product_id'
