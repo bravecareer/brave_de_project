@@ -3,6 +3,8 @@
    unique_key='cart_id'
 ) }}
 
+-- depends_on: {{ ref('stg_user_journey_ba') }}
+
 WITH cart AS (
     SELECT DISTINCT
         c.cart_id,

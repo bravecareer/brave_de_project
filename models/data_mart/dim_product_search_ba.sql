@@ -3,6 +3,8 @@
    unique_key='product_id'
 ) }}
 
+-- depends_on: {{ ref('stg_product_data_ba') }}
+
 WITH products AS (
     SELECT
         p.product_id,

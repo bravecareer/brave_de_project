@@ -2,6 +2,8 @@
    materialized='table'
 ) }}
 
+-- depends_on: {{ ref('stg_user_journey_ba') }}
+
 WITH marketing AS (
     SELECT DISTINCT
         m.mkt_campaign,

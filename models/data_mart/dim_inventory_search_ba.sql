@@ -3,6 +3,8 @@
    unique_key='inventory_id'
 ) }}
 
+-- depends_on: {{ ref('stg_inventory_data_ba') }}
+
 WITH inventory AS (
     SELECT
         i.inventory_id,

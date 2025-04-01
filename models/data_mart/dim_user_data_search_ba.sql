@@ -9,6 +9,8 @@ LoyaltyPointsBalance*/
    unique_key='user_id'
 ) }}
 
+-- depends_on: {{ ref('stg_user_data_ba') }} 
+
 WITH users AS ( 
     SELECT
         u.user_id,
