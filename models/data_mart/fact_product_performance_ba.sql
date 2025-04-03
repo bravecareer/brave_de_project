@@ -1,3 +1,7 @@
+{{ config(
+   materialized='table'
+) }}
+
 WITH event_aggregates AS (
     SELECT
         product_id,

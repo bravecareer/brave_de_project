@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: fact_user_engagement  # Replace with your actual model name
+  - name: fact_user_engagement_ba  # Replace with your actual model name
     description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
     columns:
       - name: user_id
@@ -121,7 +121,7 @@ models:
         description: "Stock status indicator (Reorder Required, Restock Soon, Sufficient Stock)."
 
         
-  - name: dim_user_data_search_ba
+  - name: dim_user_data_ba
     description: "Dimension table for user profiles"
     columns:
       - name: user_id
@@ -131,7 +131,7 @@ models:
           - accepted_values:
               values: ['active', 'inactive', 'suspended']
 
-  - name: dim_product_search_ba
+  - name: dim_product_ba
     description: "Dimension table for product metadata"
     columns:
       - name: product_id
@@ -140,22 +140,22 @@ models:
       - name: price
       - name: discount_percentage
 
-  - name: dim_geo_search_ba
+  - name: dim_geo_ba
     description: "Dimension table for geographic information"
     columns:
       - name: geo_country
       - name: geo_region
       - name: geo_city
 
-  - name: dim_device_search_ba
+  - name: dim_device_ba
     description: "Dimension table for device information"
     columns:
       - name: device_class
         tests:
           - accepted_values:
-              values: ['mobile', 'desktop', 'tablet']
+              values: ['Mobile', 'Desktop']
 
-  - name: dim_marketing_search_ba
+  - name: dim_marketing_ba
     description: "Dimension table for marketing attribution data"
     columns:
       - name: mkt_campaign
@@ -163,7 +163,7 @@ models:
       - name: mkt_source
       - name: mkt_content
 
-  - name: dim_cart_search_ba
+  - name: dim_cart_ba
     description: "Dimension table for cart-level data"
     columns:
       - name: cart_id
@@ -171,10 +171,10 @@ models:
       - name: fulfillment_type
       - name: selected_store_id
 
-  - name: dim_inventory_search_ba
+  - name: dim_inventory_ba
     description: "Dimension table for product inventory and stock levels"
     columns:
-      - name: inventory_item_key
+      - name: inventory_id
         tests: [unique, not_null]
       - name: stock_level
       - name: reorder_level

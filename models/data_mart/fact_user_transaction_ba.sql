@@ -1,5 +1,5 @@
 {{ config(
-   materialized='incremental',
+   materialized='table',
    unique_key=['user_id', 'search_event_id', 'product_id', 'timestamp']
 ) }}
 

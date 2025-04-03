@@ -1,4 +1,6 @@
--- models/marts/inventory_summary.sql
+{{ config(
+   materialized='table'
+) }}
 
 WITH inventory_aggregates AS (
     SELECT

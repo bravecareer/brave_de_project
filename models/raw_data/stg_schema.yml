@@ -53,7 +53,7 @@ models:
   - name: stg_inventory_data_ba
     description: "Staging model for inventory data"
     columns:
-      - name: inventory_item_key
+      - name: inventory_id
         description: "Unique identifier for each inventory item"
         tests: [unique, not_null]
       - name: product_id

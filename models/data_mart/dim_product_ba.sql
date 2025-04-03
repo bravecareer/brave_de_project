@@ -22,6 +22,7 @@ WITH products AS (
         p.weight_grams,
         p.discount_percentage
 FROM {{ ref('stg_product_data_ba') }} p
+--WHERE manufacturing_date >= CURRENT_DATE() - 5
 )
 
 SELECT * FROM products

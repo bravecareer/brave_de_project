@@ -1,3 +1,7 @@
+{{ config(
+   materialized='table'
+) }}
+
 WITH base_events AS (
     SELECT
         be.search_event_id,
