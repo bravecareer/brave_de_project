@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: fact_user_engagement
+    description: "Fact table of user engagement events"
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+      - name: product_id
+        tests:
+          - not_null
+      - name: session_id
+        tests:
+          - not_null
+      - name: has_purchase
+        tests:
+          - accepted_values:
+              values: [true, false]

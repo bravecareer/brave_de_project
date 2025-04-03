@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: stg_users
+    description: "Cleaned user engagement events from raw source"
+    columns:
+      - name: user_id
+        description: "Unique identifier"
+        tests:
+          - not_null
+      - name: session_id
+        description: "Session identifier"
+        tests:
+          - not_null

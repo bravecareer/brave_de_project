@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: dim_products
+    description: "Dimension table for product metadata"
+    columns:
+      - name: product_id
+        tests:
+          - not_null
+          - unique
+
