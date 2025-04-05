@@ -26,3 +26,28 @@ SELECT
     ROUND((ea.total_purchases * 100.0) / NULLIF(ea.total_views, 0), 2) AS purchase_rate_percentage
 FROM event_aggregates ea
 LEFT JOIN {{ ref('stg_product_data_ba') }} p ON ea.product_id = p.product_id
+
+/*SELECT
+    p.product_id,
+    p.product_name,
+    p.product_category,
+    p.price,
+    COUNT(search_event_id) AS total_views,
+    SUM(CASE WHEN f.has_atc THEN 1 ELSE 0 END) AS total_atc_events,
+    SUM(CASE WHEN f.has_purchase THEN 1 ELSE 0 END) AS total_purchases,
+    ROUND(
+        SUM(CASE WHEN f.has_atc THEN 1 ELSE 0 END) * 100.0 /
+        NULLIF(COUNT(f.search_event_id), 0), 2
+    ) AS atc_rate_percentage,
+    ROUND(
+        SUM(CASE WHEN f.has_purchase THEN 1 ELSE 0 END) * 100.0 /
+        NULLIF(COUNT(f.search_event_id), 0), 2
+    ) AS purchase_rate_percentage
+FROM fact_user_engagement_ba f
+JOIN dim_product_ba p ON f.product_id = p.product_id
+GROUP BY
+    p.product_id,
+    p.product_name,
+    p.product_category,
+    p.price
+ORDER BY total_purchases DESC;*/
