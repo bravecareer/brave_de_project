@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: dim_inventory_sh
+    description: "Inventory data summery by product"
+    columns:
+      - name: inventory_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+      - name: product_id
+        description: "Foreign key to find the product detatls"
+        tests:
+          - not_null
+          - relationships:
+              to: source('de_project', 'inventory_data')
+              field: product_id
+
+  - name: fact_mkt_engagement_sh
+    description: "marketing data summery by product"
+    columns:
+      - name: product_id
+        description: "Foreign key"
+        tests:
+          - not_null
