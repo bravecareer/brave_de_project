@@ -35,9 +35,9 @@ unit_tests:
     given: 
       - input: source('de_project', 'user_journey')
         rows: 
-          - {user_id: 1, product_id: 100, has_atc: true}
-          - {user_id: 2, product_id: 101, has_atc: true}
-          - {user_id: 999, product_id: 999, has_atc: false}
+          - {user_id: 1, product_id: 100, has_atc: true,  timestamp: '2025-06-06 18:41:07'}
+          - {user_id: 2, product_id: 101, has_atc: true,  timestamp: '2025-06-06 18:41:07'}
+          - {user_id: 999, product_id: 999, has_atc: false,  timestamp: '2025-06-06 18:41:07'}
 
       - input: source('de_project', 'product_data')
         rows:
@@ -49,7 +49,7 @@ unit_tests:
       rows: 
         - {product_id: 100, ATCS: 1}
         - {product_id: 101, ATCS: 1}
-        - {product_id: 999, ATCS : 0 }        
+        - {product_id: 999, ATCS : 0}        
 
 
 
