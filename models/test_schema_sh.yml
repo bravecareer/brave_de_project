@@ -18,10 +18,29 @@ models:
               to: source('de_project', 'inventory_data')
               field: product_id
 
+      - name: restock_date
+        description: "the restock date for the inventory"
+        tests:
+          - not_null
+
+      - name: stock_level
+        description: "the current stock level of the product"
+      - name: safety_stock
+        description: "the safety stock amount of the product"
+        tests:
+          - not_null              
+
   - name: fact_mkt_engagement_sh
     description: "marketing data summery by product"
     columns:
       - name: product_id
         description: "Foreign key"
+      - name: mkt_content
+        description: "mkt_content data of the product"
+      - name: mkt_source
+        description: "mkt source of the product"
+      - name: mkt_campaign
+        description: "mkt campaign data of the product"     
         tests:
           - not_null
+ 

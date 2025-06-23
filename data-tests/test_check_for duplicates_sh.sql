@@ -6,8 +6,7 @@ m.mkt_campaign,
 m.mkt_content, 
 m.mkt_medium, 
 m.mkt_medium, 
-m.mkt_source,
-COUNT(*)
-FROM {{ref('fact_mkt_engagement')}}
+m.mkt_source
+FROM {{ref('fact_mkt_engagement_sh')}} m
 GROUP BY m.product_id, m.mkt_campaign, m.mkt_content, m.mkt_medium, m.mkt_medium, m.mkt_source
-HAVING COUNT >1
+HAVING COUNT(*) >1

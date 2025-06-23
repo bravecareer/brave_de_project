@@ -1,15 +1,25 @@
-.venv
-venv
+# environment files (if using virtualenv)
 .env
-env
-
-target/
-dbt_packages/
-logs/
-
+.venv
+venv/
+__pycache__
+*.pyc
+.ruff_cache
+.sqlfluff
 .DS_Store
 
+# DBT log files
+logs/
+
+# Secrets 
+profiles.yml
+.env
 .user.yml
 
-.ruff_cache
-__pycache__
+# DBT artifacts
+target/
+dbt_packages/
+
+# Mac and VS Code system files
+.DS_Store
+.vscode/
