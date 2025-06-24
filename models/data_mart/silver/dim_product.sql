@@ -17,7 +17,7 @@ WITH product_data AS (
        p.rating,
        p.weight_grams,
        p.discount_percentage
-   FROM {{ source('de_project', 'product_data') }} p
+   FROM {{ref('raw_purchased_products_sh') }} p
    WHERE manufacturing_date >= CURRENT_DATE() - 5
 
 )
