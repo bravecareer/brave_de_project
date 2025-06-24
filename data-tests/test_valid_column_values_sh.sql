@@ -3,7 +3,7 @@
 WITH CTE_TEST_1 as (SELECT
     ATCS,
     quantity_sold
-FROM {{ref('fact_mkt_engagement_sh_2')}} 
+FROM {{ref('fact_mkt_engagement_sh')}} 
     WHERE ATCS < 0
     OR quantity_sold < 0
 ),

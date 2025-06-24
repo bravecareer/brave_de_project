@@ -41,7 +41,7 @@ unit_tests:
 
   - name: test_join_is_valid_fact_mkt_engagement 
     description: "check_join_logic_for_mkt_data_by_product_id"
-    model: fact_mkt_engagement_sh_2
+    model: fact_mkt_engagement_sh
 
     given: 
       #- input: source('de_project', 'user_journey')

@@ -30,7 +30,7 @@ models:
         tests:
           - not_null              
 
-  - name: fact_mkt_engagement_sh_2
+  - name: fact_mkt_engagement_sh
     description: "marketing data summery by product"
     columns:
       - name: product_id
