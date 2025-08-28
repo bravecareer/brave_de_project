@@ -1,82 +1,55 @@
 unit_tests:
   - name: test_join_is_valid_dim_inventory_sh
     description: "check_join_logic_for_inventory_by_product_id"
-    model: dim_inventory_by_product_sh
+    model: dim_inventory_sh
 
     given:
-      #- input: source('de_project','user_journey')
-       # rows:
-        #  - {user_id: 1, product_id: 100, has_purchase: true}
-         # - {user_id: 2, product_id: 101, has_purchase: true}
-         # - {user_id: 999, product_id: 999, has_purchase: false}
+      - input: source('de_project','user_journey')
+        rows:
+          - {user_id: 1, product_id: 100, has_purchase: true}
+          - {user_id: 2, product_id: 101, has_purchase: true}
+          - {user_id: 999, product_id: 999, has_purchase: false}
 
-     # - input: source('de_project', 'product_data')
-       # rows:
-          #- {product_id: 100}
-          #- {product_id: 101}
-          #- {product_id: 999}      
-      
-     # - input: source('de_project', 'inventory_data')
-       # rows:
-        #  - {inventory_id: 1, product_id: 100, quantity_in_stock: 10} 
-        #  - {inventory_id: 2, product_id: 101, quantity_in_stock: 11}
-        #  - {inventory_id: 3, product_id: 999, quantity_in_stock: 12}   
-    - input: ref('raw_inventory_data_sh')   
-      rows:
-        - {inventory_id: 1, product_id: 100, quantity_in_stock: 10} 
-        - {inventory_id: 2, product_id: 101, quantity_in_stock: 11}
-        - {inventory_id: 3, product_id: 999, quantity_in_stock: 12}
-
-    - input: ref('raw_purchased_products_sh')
-      rows:
+      - input: source('de_project', 'product_data')
+        rows:
           - {product_id: 100}
           - {product_id: 101}
           - {product_id: 999}      
+      
+      - input: source('de_project', 'inventory_data')
+        rows:
+          - {inventory_id: 1, product_id: 100, quantity_in_stock: 10} 
+          - {inventory_id: 2, product_id: 101, quantity_in_stock: 11}
+          - {inventory_id: 3, product_id: 999, quantity_in_stock: 12}   
 
     expect:
       rows:
-        - {inventory_id: 1, quantity_in_stock: 10, product_id: 100}
-        - {inventory_id: 2, quantity_in_stock: 11, product_id: 101}
-        - {inventory_id: 3, quantity_in_stock: 12 , product_id: 999,}
+        - {inventory_id: 1, product_id: 100, quantity_sold: 1 , quantity_in_stock: 10}
+        - {inventory_id: 2, product_id: 101, quantity_sold: 1, quantity_in_stock: 11}
+        - {inventory_id: 3, product_id: 999, quantity_sold: null, quantity_in_stock: 12}
 
   - name: test_join_is_valid_fact_mkt_engagement 
     description: "check_join_logic_for_mkt_data_by_product_id"
     model: fact_mkt_engagement_sh
 
     given: 
-      #- input: source('de_project', 'user_journey')
-        #rows: 
-        #  - {user_id: 1, product_id: 100, has_atc: true,  timestamp: '2025-06-06 18:41:07'}
-        #  - {user_id: 2, product_id: 101, has_atc: true,  timestamp: '2025-06-06 18:41:07'}
-        #  - {user_id: 999, product_id: 999, has_atc: false,  timestamp: '2025-06-06 18:41:07'}
+      - input: source('de_project', 'user_journey')
+        rows: 
+          - {user_id: 1, product_id: 100, has_atc: true,  timestamp: '2025-06-06 18:41:07'}
+          - {user_id: 2, product_id: 101, has_atc: true,  timestamp: '2025-06-06 18:41:07'}
+          - {user_id: 999, product_id: 999, has_atc: false,  timestamp: '2025-06-06 18:41:07'}
 
-      #- input: source('de_project', 'product_data')
-        #rows:
-        #  - {product_id: 100}
-        #  - {product_id: 101}
-        #  - {product_id: 999}     
+      - input: source('de_project', 'product_data')
+        rows:
+          - {product_id: 100}
+          - {product_id: 101}
+          - {product_id: 999}     
 
-    #expect:
-      #rows: 
-       # - {product_id: 100, ATCS: 1}
-       # - {product_id: 101, ATCS: 1}
-       # - {product_id: 999, ATCS : 0}   
-    - input: ref('dim_campaign_sh')   
-      rows:
-         - {product_id: 100, has_atc: true,  timestamp: '2025-06-06 18:41:07'}
-         - {product_id: 101, has_atc: true,  timestamp: '2025-06-06 18:41:07'}
-         - {product_id: 999, has_atc: false,  timestamp: '2025-06-06 18:41:07'}
-
-    - input: ref('raw_purchased_products_sh')
-      rows:
-         - {product_id: 100}
-         - {product_id: 101}
-         - {product_id: 999} 
     expect:
       rows: 
         - {product_id: 100, ATCS: 1}
         - {product_id: 101, ATCS: 1}
-        - {product_id: 999, ATCS : 0}     
+        - {product_id: 999, ATCS : 0}        
 
 
 

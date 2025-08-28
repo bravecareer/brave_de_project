@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: dim_inventory_by_product_sh
+  - name: dim_inventory_sh
     description: "Inventory data summery by product"
     columns:
       - name: inventory_id
@@ -35,12 +35,12 @@ models:
     columns:
       - name: product_id
         description: "Foreign key"
-      #- name: mkt_content
-      #  description: "mkt_content data of the product"
-      #- name: mkt_source
-      #  description: "mkt source of the product"
-      #- name: mkt_campaign
-      #  description: "mkt campaign data of the product"     
+      - name: mkt_content
+        description: "mkt_content data of the product"
+      - name: mkt_source
+        description: "mkt source of the product"
+      - name: mkt_campaign
+        description: "mkt campaign data of the product"     
         tests:
           - not_null
  
