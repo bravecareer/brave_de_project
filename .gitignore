@@ -2,7 +2,7 @@
 venv
 .env
 env
-
+.idea/
 target/
 dbt_packages/
 logs/
