@@ -1,0 +1,83 @@
+version: 2
+
+unit_tests:
+  # -----------------------------------------------------------
+  # dim_user_yl — keeps only ACTIVE users
+  # -----------------------------------------------------------
+  - name: test_dim_user_filters_active_only
+    model: dim_user_yl
+    overrides:
+      macros:
+        is_incremental: false   # <-- required for incremental models on dbt 1.10
+    given:
+      - input: ref('stg_user_data_yl')
+        rows:
+          - user_id: u_active
+            first_name: Kyle
+            last_name: Griffith
+            email: kyle@example.com
+            signup_date: "2024-01-01"
+            preferred_language: en
+            dob: "1990-01-01"
+            marketing_opt_in: true
+            account_status: active
+            loyalty_points_balance: 10
+          - user_id: u_inactive
+            first_name: Amy
+            last_name: Cobb
+            email: amy@example.com
+            signup_date: "2024-01-02"
+            preferred_language: en
+            dob: "1991-02-02"
+            marketing_opt_in: false
+            account_status: inactive
+            loyalty_points_balance: 0
+    expect:
+      rows:
+        - user_id: u_active
+          first_name: Kyle
+          last_name: Griffith
+          email: kyle@example.com
+          signup_date: "2024-01-01"
+          preferred_language: en
+          dob: "1990-01-01"
+          marketing_opt_in: true
+          account_status: active
+          loyalty_points_balance: 10
+
+
+  # -----------------------------------------------------------
+  # dim_product_yl — passes through typed fields
+  # -----------------------------------------------------------
+  - name: test_dim_product_passes_typed_fields
+    model: dim_product_yl
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('stg_product_data_yl')
+        rows:
+          - product_id: prod-00001
+            product_name: "Marie Callender's Chicken Pot Pie"
+            product_category: Frozen Foods
+            price: 8.50
+            product_color:
+            manufacturing_date: "2024-01-01"
+            expiration_date: "2025-01-01"
+            warranty_period: 12
+            rating: 4.2
+            weight_grams: 500
+            discount_percentage: 10
+    expect:
+      rows:
+        - product_id: prod-00001
+          product_name: "Marie Callender's Chicken Pot Pie"
+          product_category: Frozen Foods
+          price: 8.50
+          product_color:
+          manufacturing_date: "2024-01-01"
+          expiration_date: "2025-01-01"
+          warranty_period: 12
+          rating: 4.2
+          weight_grams: 500
+          discount_percentage: 10
