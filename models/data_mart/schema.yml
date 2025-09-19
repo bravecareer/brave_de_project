@@ -1,34 +1,434 @@
 version: 2
 
 models:
-  - name: fact_user_engagement  # Replace with your actual model name
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  - name: fact_user_engagement_yl  
+    description: "Event-level user engagement (grain: session_id + search_event_id + product_id + event_ts). Built with INNER JOINs to dims."
+
+    tests:
+      # Guard the intended grain in addition to the hashed PK
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: ['session_id','search_event_id','product_id','event_ts']
+          severity: error
+
+    columns:
+      # Primary key
+      - name: journey_event_sk
+        description: "Technical PK from stg_user_journey_yl."
+        tests:
+          - not_null
+          - unique
+
+      # Foreign keys (INNER JOIN means these should always exist)
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_user_yl')
+              field: user_id
+
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_product_yl')
+              field: product_id
+
+      - name: search_event_id
+        tests:
+          - relationships:
+              to: ref('dim_search_event_yl')   
+              field: search_event_id
+
+      # Timestamps & derived date
+      - name: event_ts
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "{{ column_name }} <= current_timestamp"  # no future events
+
+      - name: collector_ts
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "{{ column_name }} >= event_ts"
+              severity: warn                                
+
+      - name: event_date
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "{{ column_name }} = to_date(event_ts)"  # ensure date is derived correctly
+
+      # Engagement flags (must be TRUE/FALSE)
+      - name: has_qv
+        tests:
+          - not_null
+          - accepted_values: { values: [true, false] }
+
+      - name: has_pdp
+        tests:
+          - not_null
+          - accepted_values: { values: [true, false] }
+
+      - name: has_atc
+        tests:
+          - not_null
+          - accepted_values: { values: [true, false] }
+
+      - name: has_purchase
+        tests:
+          - not_null
+          - accepted_values: { values: [true, false] }
+
+ 
+
+
+  - name: fact_user_transaction_yl
+    description: "Order-line style purchases aggregated from stg_user_journey_yl with LEFT JOIN to stg_product_data_yl. Grain = (user_id, search_event_id, product_id, event_ts)."
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: ['user_id','search_event_id','product_id','event_ts']
+
+    columns:
+      # Natural keys / grain
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_user_yl')
+              field: user_id
+              severity: warn       
+
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_product_yl')
+              field: product_id
+              severity: warn
+
+      - name: search_event_id
+        tests:
+          - relationships:
+              to: ref('dim_search_event_yl')  
+              field: search_event_id
+              severity: warn
+
+      # Timestamps
+      - name: event_ts
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "{{ column_name }} <= current_timestamp()"    # no future events
+
+      - name: collector_ts
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "{{ column_name }} >= event_ts"              
+              severity: warn                                 # relax if clock skew/late data is possible
+
+      - name: order_date
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "{{ column_name }} = to_date(event_ts)"
+
+      # Measures
+      - name: quantity_sold
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "{{ column_name }} >= 0"
+
+      - name: total_amount
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "{{ column_name }} >= 0"
+
+
+
+
+
+
+  - name: fact_campaign_metric_yl
+    description: "Session-level campaign metrics using LAST-TOUCH attribution. Grain = (campaign_sk, session_id)."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: ["campaign_sk","session_id"]
+
+    columns:
+      - name: campaign_sk
+        description: "FK to dim_campaign_yl."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_campaign_yl')
+              field: campaign_sk
+      
+      - name: session_id
+        description: "Session identifier."
+        tests: 
+          - not_null
+
+      - name: attribution_model
+        description: "Attribution rule used (e.g., 'last_touch')."
+        tests:
+          - accepted_values:
+              values: ["last_touch"]
+
+      - name: attributed_ts
+        description: "Timestamp of the touch that received credit."
+
+      - name: attributed_date
+        description: "Date derived from attributed_ts."
+
+      - name: atc
+        description: "Did the session add to cart? (0/1)"
+        tests:
+          - not_null
+          - accepted_values: {values: [0,1]}
+
+      - name: purchase
+        description: "Did the session purchase? (0/1)"
+        tests:
+          - not_null
+          - accepted_values: {values: [0,1]}
+
+      - name: revenue
+        description: "Revenue attributed to the session (use price_at_event when available)."
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "{{ column_name }} >= 0"
+
+      - name: dbt_processed_at
+        description: "When this row was last (re)processed by dbt."
+
+
+
+
+  - name: fact_inventory_metrics_yl
+    description: "Inventory metrics fact table with stock levels and operational data"
+    columns:
+      - name: inventory_id
+        description: "Unique identifier for inventory record"
+        tests:
+          - not_null
+          - unique
+      
+      - name: product_id
+        description: "Foreign key to dim_product - Identifies which product this inventory item belongs to"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_product_yl')
+              field: product_id
+
+      - name: warehouse_id
+        description: "The identifier for the warehouse"
+
+      - name: quantity_in_stock_clean
+        description: "Current quantity in stock (cleaned)"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "{{ column_name }} >= 0"
+      
+      - name: average_monthly_demand_clean
+        description: "Average monthly demand (cleaned)"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "{{ column_name }} >= 0"
+      
+      - name: stock_level_status
+        description: "Stock level status based on business rules"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["out_of_stock", "Below Safety Stock", "Below Reorder Level", "Overstocked", "Normal"]
+      
+      - name: restock_date
+        description: "Date when item was restocked"
+ 
+      - name: next_restock_date
+        description: "Planned next restock date"
+      
+      - name: dbt_processed_at
+        description: "When this row was last processed by dbt"
+        tests:
+          - not_null
+
+
+
+  - name: dim_campaign_yl
+    description: "One row per (campaign, source, medium, content). Surrogate key = campaign_sk."
+    columns:
+      - name: campaign_sk
+        description: "Surrogate key of campaign|source|medium|content."
+        tests:
+          - not_null
+          - unique
+
+      - name: mkt_campaign
+        description: "UTM campaign (normalized)."
+        tests: 
+         - not_null
+
+      - name: mkt_source
+        description: "UTM source (normalized)."
+        tests: 
+         - not_null
+
+      - name: mkt_medium
+        description: "UTM medium (normalized)."
+        tests:
+          - not_null    
+   
+      - name: mkt_content
+        description: "UTM content / creative label (normalized)."
+
+      - name: last_seen_at
+        description: "Most recent event_ts seen for this campaign combo."
+
+      - name: dbt_processed_at
+        description: "When this row was last built by dbt."
+
+
+
+  - name: dim_inventory_yl
+    description: "Inventory dimension table with product and warehouse attributes"   
+    columns:
+      - name: inventory_id
+        description: "Unique identifier for inventory record"
+        tests:
+          - not_null
+          - unique
+        
+      - name: warehouse_id
+        description: "The identifier for the warehouse"
+      
+      - name: supplier_id
+        description: "The identifier for the supplier"
+
+      - name: inventory_status_clean
+        description: "Cleaned inventory status (in-stock, backordered, etc.)"
+        tests:
+          - not_null
+      
+      - name: storage_condition_clean
+        description: "Cleaned storage condition (ambient, frozen, temperature controlled, etc.)"
+        tests:
+          - not_null
+      
+      - name: dbt_processed_at
+        description: "When this row was last processed by dbt"
+        tests:
+          - not_null
+
+
+  - name: dim_user_yl
+    description: "Active users only (filtered in the model)."
     columns:
       - name: user_id
-        description: "Unique identifier for the user"
+        description: "Natural key."
+        tests: [not_null, unique]
+
+      - name: email
+        
+      - name: signup_date
         tests:
           - not_null
-      - name: product_id
-        description: "Unique identifier for the product"
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "{{ column_name }} <= current_date"
+
+
+      - name: account_status
         tests:
-          - not_null
+          # model filters to 'active'—keep this tight so the contract is explicit
+          - accepted_values: { values: ['active'] }
+
+      - name: dbt_processed_at
+        tests: [not_null]
+
+
+
+
+
+  - name: dim_search_event_yl
+    description: "One row per search_event_id sourced from stg_user_journey_yl."
+    columns:
       - name: search_event_id
-        description: "Unique identifier for the search event"
+        tests: [not_null, unique]
+
+      - name: event_ts
         tests:
           - not_null
-      - name: timestamp
-        description: "Timestamp of the event"
+          - dbt_expectations.expect_column_values_to_be_between:
+               arguments:
+                 max_value: "{{ current_timestamp() }}"
+                 strictly: false 
+
+      - name: collector_ts
         tests:
           - not_null
-      - name: has_qv
-        description: "Boolean flag indicating whether the user has viewed the product"
-      - name: has_pdp
-        description: "Boolean flag indicating whether the user has viewed the product detail page"
-      - name: has_atc
-        description: "Boolean flag indicating whether the user has added to cart"
-      - name: has_purchase
-        description: "Boolean flag indicating whether the user has made a purchase"
-      - name: session_id
-        description: "Session identifier for the user interaction"
+          - collector_after_event:
+              arguments:
+                event_col: event_ts
+
+      - name: search_results
         tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+              where: "search_results is not null"
+              severity: warn   
+
+      - name: dbt_processed_at
+        tests: [not_null]
+
+
+
+
+  - name: dim_product_yl
+    description: "Products with pricing/attributes from stg_product_data_yl."
+    columns:
+      - name: product_id
+        tests: 
+          - not_null
+          - unique
+
+      - name: price
+        tests:
+          - price_nonnegative: { column_name: price }
+
+      - name: rating
+        tests:
+          - rating_between_0_5: { column_name: rating }
+
+      - name: discount_percentage
+        tests:
+          - discount_pct_between_0_100: { column_name: discount_percentage }
+
+      - name: weight_grams
+        tests:
+          - weight_nonnegative: { column_name: weight_grams }
+
+      - name: dbt_processed_at
+        tests: 
           - not_null
