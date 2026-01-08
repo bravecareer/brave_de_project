@@ -16,7 +16,10 @@ WITH product_data AS (
        p.warranty_period,
        p.rating,
        p.weight_grams,
-       p.discount_percentage
+       p.discount_percentage,
+       p.quantity_in_stock,
+       p.sales_volume,
+       p.supplier_id
    FROM {{ source('de_project', 'product_data') }} p
 )
 

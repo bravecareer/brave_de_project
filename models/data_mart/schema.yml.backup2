@@ -1,0 +1,284 @@
+version: 2
+
+models:
+  - name: dim_product
+    description: "Product dimension table containing all product attributes from raw product data"
+    columns:
+      - name: product_id
+        description: "Unique identifier for each product"
+        tests:
+          - not_null
+          - unique
+      - name: product_name
+        description: "Name of the product"
+        tests:
+          - not_null
+      - name: product_category
+        description: "Category classification of the product"
+      - name: price
+        description: "Current price of the product"
+        tests:
+          - not_null
+      - name: product_color
+        description: "Color variant of the product"
+      - name: manufacturing_date
+        description: "Date when the product was manufactured"
+      - name: expiration_date
+        description: "Expiration date of the product"
+      - name: warranty_period
+        description: "Warranty period for the product"
+      - name: rating
+        description: "Customer rating of the product"
+      - name: weight_grams
+        description: "Weight of the product in grams"
+      - name: discount_percentage
+        description: "Current discount percentage applied to the product"
+      - name: quantity_in_stock
+        description: "Current quantity available in stock"
+      - name: sales_volume
+        description: "Total sales volume of the product"
+      - name: supplier_id
+        description: "Identifier for the product supplier"
+
+  - name: dim_user
+    description: "User dimension table containing active user information"
+    columns:
+      - name: user_id
+        description: "Unique identifier for each user"
+        tests:
+          - not_null
+          - unique
+      - name: first_name
+        description: "User's first name"
+      - name: last_name
+        description: "User's last name"
+      - name: email
+        description: "User's email address (validated for format)"
+      - name: signup_date
+        description: "Date when user signed up"
+      - name: preferred_language
+        description: "User's preferred language"
+      - name: dob
+        description: "User's date of birth"
+      - name: marketing_opt_in
+        description: "Whether user opted in for marketing communications"
+      - name: account_status
+        description: "Status of the user account (filtered to 'active' only)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['active']
+      - name: loyalty_points_balance
+        description: "User's current loyalty points balance"
+
+  - name: dim_search_event
+    description: "Search event dimension table capturing unique user search interactions"
+    columns:
+      - name: search_event_id
+        description: "Unique identifier for each search event"
+        tests:
+          - not_null
+      - name: timestamp
+        description: "Timestamp when the search occurred"
+        tests:
+          - not_null
+      - name: session_id
+        description: "Session identifier for the search"
+      - name: cart_id
+        description: "Shopping cart identifier"
+      - name: search_terms
+        description: "Terms used in the search query"
+      - name: search_results
+        description: "Number of results returned from the search"
+      - name: search_type
+        description: "Type of search performed"
+
+  - name: dim_inventory
+    description: "Inventory dimension table with stock and warehouse information"
+    columns:
+      - name: inventory_id
+        description: "Unique identifier for inventory record"
+        tests:
+          - not_null
+          - unique
+      - name: product_id
+        description: "Product identifier linked to inventory"
+        tests:
+          - not_null
+      - name: warehouse_id
+        description: "Warehouse identifier where inventory is stored"
+      - name: quantity_in_stock
+        description: "Current quantity in stock"
+      - name: stock_level
+        description: "Current stock level indicator"
+      - name: reorder_level
+        description: "Threshold for triggering reorder"
+      - name: safety_stock
+        description: "Minimum safety stock level"
+      - name: rating
+        description: "Rating associated with inventory item"
+      - name: sales_volume
+        description: "Sales volume for this inventory item"
+      - name: restock_date
+        description: "Date when inventory was last restocked"
+      - name: weight
+        description: "Weight of inventory item"
+      - name: supplier_id
+        description: "Supplier identifier for this inventory"
+      - name: discounts
+        description: "Discount information for inventory"
+      - name: storage_condition
+        description: "Required storage conditions"
+      - name: inventory_status
+        description: "Current status of inventory"
+      - name: average_monthly_demand
+        description: "Average monthly demand for this item"
+      - name: last_audit_date
+        description: "Date of last inventory audit"
+      - name: last_restock_date
+        description: "Date of most recent restock"
+      - name: next_restock_date
+        description: "Scheduled date for next restock"
+
+  - name: fact_user_engagement
+    description: "Fact table tracking user engagement events on user, product, and search event level"
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user"
+        tests:
+          - not_null
+      - name: product_id
+        description: "Unique identifier for the product"
+        tests:
+          - not_null
+      - name: search_event_id
+        description: "Unique identifier for the search event"
+        tests:
+          - not_null
+      - name: timestamp
+        description: "Timestamp of the engagement event"
+        tests:
+          - not_null
+      - name: has_qv
+        description: "Boolean flag indicating whether the user performed a quick view"
+      - name: has_pdp
+        description: "Boolean flag indicating whether the user viewed the product detail page"
+      - name: has_atc
+        description: "Boolean flag indicating whether the user added the product to cart"
+      - name: has_purchase
+        description: "Boolean flag indicating whether the user completed a purchase"
+      - name: session_id
+        description: "Session identifier for the user interaction"
+        tests:
+          - not_null
+
+  - name: fact_user_transaction
+    description: "Fact table containing aggregated transaction data for purchased products"
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user who made the transaction"
+        tests:
+          - not_null
+      - name: product_id
+        description: "Unique identifier for the purchased product"
+        tests:
+          - not_null
+      - name: timestamp
+        description: "Timestamp of the transaction"
+        tests:
+          - not_null
+      - name: search_event_id
+        description: "Search event that led to the transaction"
+      - name: session_id
+        description: "Session identifier for the transaction"
+      - name: cart_id
+        description: "Shopping cart identifier"
+      - name: has_purchase
+        description: "Boolean flag confirming purchase (always TRUE in this table)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true]
+      - name: quantity_sold
+        description: "Number of items sold in this transaction"
+      - name: total_amount
+        description: "Total transaction amount"
+      - name: avg_price
+        description: "Average price of items in transaction"
+      - name: min_price
+        description: "Minimum price of items in transaction"
+      - name: max_price
+        description: "Maximum price of items in transaction"
+- name: fact_conversion_funnel
+    description: "Fact table tracking conversion funnel metrics by date and product, including ATC rate"
+    columns:
+      - name: funnel_date
+        description: "Date of the conversion funnel analysis"
+        tests:
+          - not_null
+      - name: product_id
+        description: "Product identifier"
+        tests:
+          - not_null
+      - name: product_name
+        description: "Product name from dimension table"
+      - name: product_category
+        description: "Product category from dimension table"
+      - name: total_users
+        description: "Total unique users who interacted with the product"
+      - name: qv_users
+        description: "Users who performed quick view"
+      - name: pdp_users
+        description: "Users who viewed product detail page"
+      - name: atc_users
+        description: "Users who added to cart"
+      - name: purchase_users
+        description: "Users who completed purchase"
+      - name: qv_to_pdp_rate
+        description: "Conversion rate from quick view to product detail page (%)"
+      - name: pdp_to_atc_rate
+        description: "ATC Rate - Conversion rate from PDP to add-to-cart (%)"
+      - name: atc_to_purchase_rate
+        description: "Conversion rate from add-to-cart to purchase (%)"
+      - name: overall_conversion_rate
+        description: "Overall conversion rate from initial view to purchase (%)"
+
+  - name: fact_campaign_metrics
+    description: "Fact table containing marketing campaign performance metrics including ROI"
+    columns:
+      - name: campaign_date
+        description: "Date of campaign activity"
+        tests:
+          - not_null
+      - name: mkt_campaign
+        description: "Marketing campaign identifier"
+        tests:
+          - not_null
+      - name: mkt_source
+        description: "Marketing source (e.g., google, facebook)"
+      - name: mkt_medium
+        description: "Marketing medium (e.g., paid search, social)"
+      - name: product_id
+        description: "Product identifier"
+      - name: product_name
+        description: "Product name from dimension table"
+      - name: product_category
+        description: "Product category from dimension table"
+      - name: total_users
+        description: "Total users reached by campaign"
+      - name: atc_users
+        description: "Users who added to cart through campaign"
+      - name: purchase_users
+        description: "Users who purchased through campaign"
+      - name: total_revenue
+        description: "Total revenue generated by campaign"
+      - name: campaign_atc_rate
+        description: "Campaign ATC rate (%)"
+      - name: campaign_conversion_rate
+        description: "Campaign purchase conversion rate (%)"
+      - name: campaign_roi_percentage
+        description: "Campaign ROI as percentage - key metric for marketing effectiveness"
+      - name: revenue_per_user
+        description: "Average revenue per user reached by campaign"
+      - name: estimated_campaign_cost
+        description: "Estimated campaign cost based on user count"

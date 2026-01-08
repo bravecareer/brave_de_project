@@ -11,7 +11,7 @@ WITH user_journey AS (
        uj.search_event_id,
        uj.session_id,
        uj.cart_id,
-       uj.timestamp
+       to_timestamp(replace(timestamp,' UTC','')) AS timestamp
    FROM {{ source('de_project', 'user_journey') }} uj
    WHERE uj.has_purchase = TRUE
 ),
@@ -25,8 +25,11 @@ transaction_data AS (
       uj.session_id,
       uj.cart_id,
       uj.has_purchase,      
-      COUNT(uj.has_purchase) AS quantity_sold, -- Counting the number of purchase events
-      SUM(p.price) AS total_amount -- Summing the price of the purchased products
+      COUNT(*) AS quantity_sold,
+      SUM(p.price) AS total_amount,
+      AVG(p.price) AS avg_price,
+      MIN(p.price) AS min_price,
+      MAX(p.price) AS max_price
    FROM user_journey uj
    LEFT JOIN {{ source('de_project', 'product_data') }} p
      ON uj.product_id = p.product_id
