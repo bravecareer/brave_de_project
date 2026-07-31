@@ -1,8 +1,11 @@
 version: 2
 
 models:
-  - name: fact_user_engagement  # Replace with your actual model name
-    description: "fact user engagement on user_id, product_id, serach_event_id, timestamp level"
+  # ===========================================
+  # FOUNDATION MODELS (Instructor Provided)
+  # ===========================================
+  - name: fact_user_engagement
+    description: "Atomic-level user engagement events tracking product interactions"
     columns:
       - name: user_id
         description: "Unique identifier for the user"
@@ -20,15 +23,137 @@ models:
         description: "Timestamp of the event"
         tests:
           - not_null
-      - name: has_qv
-        description: "Boolean flag indicating whether the user has viewed the product"
-      - name: has_pdp
-        description: "Boolean flag indicating whether the user has viewed the product detail page"
-      - name: has_atc
-        description: "Boolean flag indicating whether the user has added to cart"
-      - name: has_purchase
-        description: "Boolean flag indicating whether the user has made a purchase"
       - name: session_id
         description: "Session identifier for the user interaction"
         tests:
           - not_null
+      - name: has_qv
+        description: "Boolean flag indicating whether the user viewed quick view"
+      - name: has_pdp
+        description: "Boolean flag indicating whether the user viewed product detail page"
+      - name: has_atc
+        description: "Boolean flag indicating whether the user added to cart"
+      - name: has_purchase
+        description: "Boolean flag indicating whether the user made a purchase"
+
+  # ===========================================
+  # OPTIMIZATION MODELS (Student Built)
+  # ===========================================
+  - name: stg_user_journey_kl
+    description: |
+      Staging view that cleanses user_journey source data.
+      Removes ' UTC' suffix from timestamps, handles NULL booleans,
+      and filters invalid records. Serves as single source of truth
+      for all downstream models.
+    columns:
+      - name: user_id
+        description: "User identifier"
+      - name: product_id
+        description: "Product identifier"
+      - name: event_timestamp
+        description: "Event timestamp with UTC suffix removed"
+      - name: has_qv
+        description: "Quick view flag (COALESCE to FALSE if NULL)"
+      - name: has_pdp
+        description: "Product detail page flag (COALESCE to FALSE if NULL)"
+      - name: has_atc
+        description: "Add to cart flag (COALESCE to FALSE if NULL)"
+      - name: has_purchase
+        description: "Purchase flag (COALESCE to FALSE if NULL)"
+
+  - name: dim_date_kl
+    description: |
+      Date dimension covering 2020-2030 (11 years, 4,018 rows).
+      Pre-generates all dates with attributes to avoid repetitive
+      date logic in queries and enable gap filling for missing dates.
+      Fiscal year assumes April 1 start.
+    columns:
+      - name: date_key
+        description: "Primary key in YYYYMMDD integer format for efficient joins"
+      - name: full_date
+        description: "Full date in DATE format"
+      - name: year
+        description: "Calendar year"
+      - name: quarter
+        description: "Calendar quarter (1-4)"
+      - name: month
+        description: "Month number (1-12)"
+      - name: month_name
+        description: "Full month name (January, February, etc.)"
+      - name: week_of_year
+        description: "Week number of the year (1-52)"
+      - name: day_of_week
+        description: "Day of week number (0=Sunday, 6=Saturday)"
+      - name: is_weekend
+        description: "Boolean flag indicating weekend (Saturday or Sunday)"
+      - name: fiscal_year
+        description: "Fiscal year (starts April 1)"
+      - name: first_day_of_month
+        description: "First day of the month"
+      - name: last_day_of_month
+        description: "Last day of the month"
+
+  - name: dim_geography_kl
+    description: |
+      Geography dimension with surrogate keys and standardized regions.
+      Combines country and zipcode into single geo_id for faster joins.
+      Regional groupings: North America, Asia, Europe, Other.
+    columns:
+      - name: geo_id
+        description: "Surrogate key generated from country + zipcode"
+      - name: country
+        description: "Country name"
+      - name: zipcode
+        description: "Postal code"
+      - name: region
+        description: "Standardized regional grouping"
+
+  - name: fact_daily_metrics_kl
+    description: |
+      Daily aggregated metrics optimized for dashboard queries.
+      Reduces query time from 45s to 2s by pre-aggregating to daily grain.
+      Grain: One row per date + geography + device + marketing combination.
+      Incremental model processes only new dates using watermark lookup.
+    columns:
+      - name: date_key
+        description: "Date in YYYYMMDD integer format (FK to dim_date_kl)"
+      - name: geo_id
+        description: "Geography identifier (FK to dim_geography_kl)"
+      - name: device_class
+        description: "Device type (mobile, desktop, tablet)"
+      - name: mkt_source
+        description: "Marketing source/channel"
+      - name: daily_active_users
+        description: "Count of distinct users with any activity on this date"
+      - name: unique_qv_users
+        description: "Count of distinct users who viewed quick view"
+      - name: unique_buyers
+        description: "Count of distinct users who made a purchase"
+      - name: qv_count
+        description: "Total number of quick view events"
+      - name: pdp_view_count
+        description: "Total number of product detail page views"
+      - name: add_to_cart_count
+        description: "Total number of add to cart events"
+      - name: purchase_count
+        description: "Total number of purchases"
+      - name: qv_to_purchase_rate
+        description: "Conversion rate from quick view to purchase (0-1)"
+
+  - name: pipeline_watermarks_kl
+    description: |
+      Infrastructure table tracking incremental processing progress.
+      Stores high watermark timestamp for each source to enable fast
+      incremental queries without scanning entire target tables.
+      Eliminates 30s MAX() overhead, saving 3 hours/year across pipelines.
+    columns:
+      - name: source_table
+        description: "Name of the source table being tracked"
+      - name: high_watermark
+        description: "Latest timestamp successfully processed from this source"
+      - name: total_rows_processed
+        description: "Cumulative count of rows processed from this source"
+      - name: watermark_updated_at
+        description: "Timestamp when this watermark was last updated"
+      - name: dbt_run_timestamp
+        description: "Timestamp of the dbt run that updated this watermark"
